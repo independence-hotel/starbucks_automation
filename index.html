@@ -164,7 +164,7 @@
                     <img src="logo.png" alt="Hotel Logo" class="h-14 w-auto mx-auto object-contain" onerror="this.onerror=null; this.src='Logo PNG-white.png';">
                 </div>
                 <h1 class="text-sm font-extrabold tracking-widest uppercase">INDEPENDENCE HOTEL</h1>
-                <p class="text-slate-300 text-xs mt-0.5 font-medium">USER Authentication Portal</p>
+                <p class="text-slate-300 text-xs mt-0.5 font-medium">Starbucks Staff Portal</p>
             </div>
 
             <!-- Login Form Card (White Theme) -->
@@ -194,7 +194,7 @@
             </div>
 
             <div class="text-center relative z-10 pb-2">
-                <p class="text-[11px] text-slate-400 font-light"> @2026 INDEPENDENCE HOTEL-SIHANOUKVILLE /p>
+                <p class="text-[11px] text-slate-400 font-light">&copy; 2026 INDEPENDENCE HOTEL-SIHANOUKVILLE</p>
             </div>
         </div>
     </div>
@@ -283,7 +283,7 @@
         </div>
 
         <div class="text-center mt-6 mb-10">
-            <p class="text-[11px] text-slate-400 font-light">@2026 Independence Hotel, Sihanoukville</p>
+            <p class="text-[11px] text-slate-400 font-light">&copy; 2026 Independence Hotel, Sihanoukville</p>
         </div>
     </div>
 
@@ -366,7 +366,7 @@
     <script>
         // --- LOGIN AUTHENTICATION LOGIC ---
         function checkAuth() {
-            const loggedUser = localStorage.getItem('independence_logged_user');
+            const loggedUser = localStorage.getItem('starbucks_logged_user');
             if (loggedUser) {
                 document.getElementById('loginScreen').style.display = 'none';
                 document.getElementById('loggedInUserDisplay').innerText = loggedUser.split(' ')[0]; 
@@ -392,13 +392,13 @@
             }
 
             const userInfo = `${fullName} (${phone})`;
-            localStorage.setItem('independence_logged_user', userInfo);
+            localStorage.setItem('starbucks_logged_user', userInfo);
             checkAuth();
         }
 
         function handleLogout() {
             if (confirm("តើអ្នកពិតជាចង់ចាកចេញ (Logout) មែនទេ?")) {
-                localStorage.removeItem('independence_logged_user');
+                localStorage.removeItem('starbucks_logged_user');
                 window.location.reload();
             }
         }
