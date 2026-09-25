@@ -46,20 +46,11 @@
             position: relative;
         }
 
-        /* Modern Glowing & Pulse Animations */
         @keyframes pulseGlow {
             0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(27, 54, 93, 0.4); }
             50% { transform: scale(1.08); box-shadow: 0 0 15px 4px rgba(27, 54, 93, 0.3); }
         }
         .step-pulse { animation: pulseGlow 1.2s infinite ease-in-out; }
-
-        @keyframes lineGrow {
-            from { width: 0%; }
-            to { width: 100%; }
-        }
-        .animate-line {
-            animation: lineGrow 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
     </style>
 </head>
 <body class="font-sans pb-28 text-slate-800 text-xs">
@@ -181,7 +172,7 @@
         </div>
     </div>
 
-    <!-- Modern Dynamic UX/UI Step-by-Step Progress Modal (Sent ➔ Processed ➔ Delivered) -->
+    <!-- Dynamic UX/UI Step-by-Step Progress Modal (Sent ➔ Processed ➔ Delivered) -->
     <div id="loadingOverlay" class="fixed inset-0 bg-slate-900/70 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl animate-fade-in text-center space-y-5 border border-slate-100">
             
@@ -354,7 +345,6 @@
             confirmModal.classList.add('hidden');
             loadingOverlay.classList.remove('hidden');
 
-            // Reset UI states
             const mainIconBg = document.getElementById('mainIconBg');
             const mainIcon = document.getElementById('mainIcon');
             const progressTitle = document.getElementById('progressTitle');
@@ -371,6 +361,12 @@
             const step3Icon = document.getElementById('step3Icon');
             const step3Text = document.getElementById('step3Text');
 
+            // Reset states
+            mainIconBg.className = "w-12 h-12 rounded-full bg-blue-50 text-navyPrimary flex items-center justify-center text-xl shadow-md transition-all duration-500 step-pulse";
+            mainIcon.className = "fa-solid fa-cloud-arrow-up";
+            progressTitle.innerText = "PROCESSING ORDER...";
+            progressSubtitle.innerText = "Initializing secure connection...";
+
             // --- STAGE 1: SENT ---
             setTimeout(() => {
                 step1Icon.className = "w-7 h-7 rounded-full bg-navyPrimary text-white flex items-center justify-center text-[10px] shadow-md";
@@ -381,9 +377,9 @@
 
             // --- STAGE 2: PROCESSED ---
             setTimeout(() => {
-                step2Icon.className = "w-7 h-7 rounded-full bg-sky-500 text-white flex items-center justify-center text-[10px] shadow-md step-pulse";
+                step2Icon.className = "w-7 h-7 rounded-full bg-sky-500 text-white flex items-center justify-center text-[10px] shadow-sm step-pulse";
                 step2Text.className = "text-[9px] font-extrabold text-sky-600";
-                mainIcon.className = "fa-solid fa-cloud-arrow-up";
+                mainIcon.className = "fa-solid fa-gears";
                 progressSubtitle.innerText = "Syncing with Google Sheets & Telegram...";
             }, 800);
 
@@ -418,13 +414,14 @@
                     
                     line2Fill.style.width = "100%";
                     
-                    step3Icon.className = "w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] shadow-md animate-bounce";
+                    step3Icon.className = "w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] shadow-sm";
                     step3Text.className = "text-[9px] font-extrabold text-emerald-600";
                     
-                    mainIconBg.className = "w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xl shadow-md";
+                    // Green checkmark icon and styling
+                    mainIconBg.className = "w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xl shadow-md animate-bounce";
                     mainIcon.className = "fa-solid fa-check";
                     
-                    progressTitle.innerText = "ORDER SUCCESSFULLY COMPLETED!";
+                    progressTitle.innerText = "THANK YOU FOR YOUR ORDER!";
                     progressSubtitle.innerText = "PDF generated & sent to Telegram successfully.";
 
                     // 📳 Phone Vibration Trigger
@@ -432,9 +429,10 @@
                         navigator.vibrate([150, 75, 150]);
                     }
 
+                    // Delay 3 seconds (3000ms) before reloading
                     setTimeout(() => { 
                         window.location.reload(); 
-                    }, 2000);
+                    }, 3000);
                 }, 1200);
 
             }).catch(error => {
