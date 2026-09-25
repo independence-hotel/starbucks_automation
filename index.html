@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Starbucks Order App</title>
+    <title>Starbucks Food Order App</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -29,7 +29,6 @@
         input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         .btn-press:active { transform: scale(0.96); transition: transform 0.1s ease; }
         
-        /* Smooth Fade & Scale Animations */
         @keyframes fadeIn {
             from { opacity: 0; transform: scale(0.95); }
             to { opacity: 1; transform: scale(1); }
@@ -38,7 +37,6 @@
             animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
-        /* Main Mobile Container */
         .app-container {
             max-width: 430px;
             margin: 0 auto;
@@ -61,7 +59,7 @@
                 </div>
                 
                 <h1 class="text-white text-xs font-extrabold tracking-widest uppercase">INDEPENDENCE HOTEL BY DARA</h1>
-                <p class="text-slate-300 text-[12px] mt-0.5 font-semibold tracking-wider">BAKERY ORDER</p>
+                <p class="text-slate-300 text-[12px] mt-0.5 font-semibold tracking-wider">FOOD ORDER</p>
             </div>
 
             <form id="orderForm" class="px-3 space-y-3">
@@ -75,7 +73,6 @@
                     
                     <div class="space-y-2">
                         <div>
-                            <!-- Starbucks Branches -->
                             <label class="text-[9px] text-slate-500 font-bold uppercase tracking-wider mb-0.5 block">SELECT BRANCH *</label>
                             <div class="relative">
                                 <select id="branch" required class="w-full pl-7 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:ring-1 focus:ring-navyPrimary appearance-none font-semibold text-slate-700 transition-all">
@@ -122,9 +119,8 @@
                 <div class="flex items-center justify-between px-1 pt-1">
                     <div class="flex items-center space-x-1.5">
                         <i class="fa-solid fa-utensils text-navyPrimary text-[11px]"></i>
-                        <h2 class="font-bold text-navyPrimary text-[11px] uppercase">Bakery Menu</h2>
+                        <h2 class="font-bold text-navyPrimary text-[11px] uppercase">Food Menu</h2>
                     </div>
-                    <!-- Exactly 4 items for Starbucks -->
                     <span class="text-[9px] font-bold text-slate-400 uppercase">4 Items</span>
                 </div>
 
@@ -161,7 +157,7 @@
             </div>
             <div>
                 <h3 class="font-extrabold text-sm text-slate-900 uppercase">Confirm Order</h3>
-                <p class="text-[11px] text-slate-500 mt-1">Are you sure you want to submit this bakery order to the kitchen?</p>
+                <p class="text-[11px] text-slate-500 mt-1">Are you sure you want to submit this food order to the kitchen?</p>
             </div>
             <div class="grid grid-cols-2 gap-2 pt-1">
                 <button type="button" id="cancelBtn" class="bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl font-bold text-xs transition-all btn-press">
@@ -197,20 +193,20 @@
         const timeDatalist = document.getElementById('timeOptions');
         let optionsHTML = '';
         for (let m = 0; m < 24 * 60; m += 5) { 
-            let totalMinutes = (330 + m) % (24 * 60); // 330 minutes = 05:30 AM
+            let totalMinutes = (330 + m) % (24 * 60);
             let i = Math.floor(totalMinutes / 60);
             let j = totalMinutes % 60;
 
             let hour = i % 12 || 12;
             let ampm = i < 12 ? 'AM' : 'PM';
-            let min = j < 10 ? '0' + j : j; // Ensure two digits for minutes
+            let min = j < 10 ? '0' + j : j;
             let displayHour = hour < 10 ? '0' + hour : hour;
             
             optionsHTML += `<option value="${displayHour}:${min} ${ampm}">`;
         }
         timeDatalist.innerHTML = optionsHTML;
 
-        // Starbucks Items - Prices set to 0 as calculations are handled via Google Sheet Formulas
+        // មុខទំនិញ Starbucks Food Menu
         const bakeryItems = [
             { id: 'item1', name: 'Egg Salad Wrap', price: 0 },
             { id: 'item2', name: 'Chicken Salad Wrap', price: 0 },
@@ -226,7 +222,6 @@
             
             const card = document.createElement('div');
             card.className = "bg-cardWhite p-2.5 rounded-xl shadow-sm border border-slate-200/80 flex justify-between items-center transition-all";
-            // Retaining the amber style and croissant icon identical to the BROWN layout
             card.innerHTML = `
                 <div class="flex items-center space-x-2.5 flex-1 pr-2">
                     <div class="w-7 h-7 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center shrink-0 border border-amber-100 shadow-sm">
@@ -293,7 +288,7 @@
         // Open Confirmation Modal
         openConfirmBtn.addEventListener('click', function() {
             if (totalQty === 0) {
-                alert("Please add at least one bakery item to your order!");
+                alert("Please add at least one item to your order!");
                 return;
             }
             if (!orderForm.checkValidity()) {
@@ -322,9 +317,9 @@
                 item2: quantities['item2'] || 0,
                 item3: quantities['item3'] || 0,
                 item4: quantities['item4'] || 0,
-                item5: 0, // Padded with 0s for Backend structure (Google Sheet Columns)
-                item6: 0, 
-                item7: 0, 
+                item5: quantities['item5'] || 0,
+                item6: quantities['item6'] || 0,
+                item7: quantities['item7'] || 0,
                 pickupTime: document.getElementById('pickupTime').value,
                 orderedBy: document.getElementById('orderedBy').value,
                 totalQty: totalQty,
