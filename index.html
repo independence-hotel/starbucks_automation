@@ -151,16 +151,23 @@
         </div>
     </div>
 
-    <!-- Confirmation Modal -->
+    <!-- Confirmation Modal with Summary -->
     <div id="confirmModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-2xl max-w-xs w-full p-5 shadow-2xl animate-fade-in text-center space-y-4 border border-slate-100">
-            <div class="w-12 h-12 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center mx-auto text-lg border border-amber-100 shadow-sm">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl animate-fade-in text-center space-y-3 border border-slate-100">
+            <div class="w-10 h-10 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center mx-auto text-base border border-amber-100 shadow-sm">
                 <i class="fa-solid fa-triangle-exclamation"></i>
             </div>
             <div>
-                <h3 class="font-extrabold text-sm text-slate-900 uppercase">Confirm Order</h3>
-                <p class="text-[11px] text-slate-500 mt-1">Are you sure you want to submit this food order to the kitchen?</p>
+                <h3 class="font-extrabold text-xs text-slate-900 uppercase">CONFIRM ORDER</h3>
             </div>
+
+            <!-- Summary Box -->
+            <div id="orderSummaryBox" class="bg-slate-50 p-2.5 rounded-xl border border-slate-200 text-left space-y-1.5 text-[10px]">
+                <!-- Injected via JavaScript -->
+            </div>
+
+            <p class="text-[10px] text-slate-500 font-medium">Are you sure you want to submit this order?</p>
+
             <div class="grid grid-cols-2 gap-2 pt-1">
                 <button type="button" id="cancelBtn" class="bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl font-bold text-xs transition-all btn-press">
                     Cancel
@@ -247,12 +254,12 @@
         }
         timeDatalist.innerHTML = optionsHTML;
 
-        // Food Menu Items with Matched Icons & Navy Theme
+        // Food Menu Items with Emojis & Navy Theme
         const bakeryItems = [
-            { id: 'item1', name: 'Egg Salad Wrap', price: 0, icon: 'fa-egg' },
-            { id: 'item2', name: 'Chicken Salad Wrap', price: 0, icon: 'fa-drumstick-bite' },
-            { id: 'item3', name: 'Salad Wrapped', price: 0, icon: 'fa-leaf' },
-            { id: 'item4', name: 'Fresh Sandwich', price: 0, icon: 'fa-bread-slice' }
+            { id: 'item1', name: 'Egg Salad Wrap', price: 0, emoji: '🥚' },
+            { id: 'item2', name: 'Chicken Salad Wrap', price: 0, emoji: '🍗' },
+            { id: 'item3', name: 'Salad Wrapped', price: 0, emoji: '🥗' },
+            { id: 'item4', name: 'Fresh Sandwich', price: 0, emoji: '🥪' }
         ];
 
         const menuContainer = document.getElementById('menuContainer');
@@ -265,19 +272,15 @@
             card.className = "bg-cardWhite p-2.5 rounded-xl shadow-sm border border-slate-200/80 flex justify-between items-center transition-all";
             card.innerHTML = `
                 <div class="flex items-center space-x-2.5 flex-1 pr-2">
-                    <div class="w-7 h-7 rounded-lg bg-blue-50 text-navyPrimary flex items-center justify-center shrink-0 border border-blue-100 shadow-sm">
-                        <i class="fa-solid ${item.icon} text-xs"></i>
+                    <div class="w-7 h-7 rounded-lg bg-blue-50 text-navyPrimary flex items-center justify-center shrink-0 border border-blue-100 shadow-sm text-sm">
+                        ${item.emoji}
                     </div>
                     <h3 class="font-bold text-xs text-slate-900">${item.name}</h3>
                 </div>
                 <div class="flex items-center space-x-1.5 bg-slate-50 rounded-lg p-1 border border-slate-200">
-                    <button type="button" class="w-6 h-6 flex items-center justify-center text-navyPrimary bg-white rounded-md shadow-sm border border-slate-200 btn-press font-bold transition-all" onclick="updateQty('${item.id}', -1, ${item.price})">
-                        <i class="fa-solid fa-minus text-[9px]"></i>
-                    </button>
-                    <input type="number" id="qty-${item.id}" value="0" min="0" class="font-black text-navyDark w-8 text-center text-xs bg-transparent focus:outline-none" oninput="manualInputQty('${item.id}', this.value, ${item.price})">
-                    <button type="button" class="w-6 h-6 flex items-center justify-center text-white bg-navyPrimary rounded-lg shadow-sm btn-press font-bold transition-all" onclick="updateQty('${item.id}', 1, ${item.price})">
-                        <i class="fa-solid fa-plus text-[9px]"></i>
-                    </button>
+                    <button type="button" class="px-2 h-6 flex items-center justify-center text-slate-500 bg-white rounded-md shadow-sm border border-slate-200 btn-press font-bold text-[9px] transition-all" onclick="updateQty('${item.id}', -10, ${item.price})">-10</button>
+                    <input type="number" id="qty-${item.id}" value="0" min="0" class="font-black text-navyDark w-9 text-center text-sm bg-transparent focus:outline-none" oninput="manualInputQty('${item.id}', this.value, ${item.price})">
+                    <button type="button" class="px-2 h-6 flex items-center justify-center text-slate-500 bg-white rounded-md shadow-sm border border-slate-200 btn-press font-bold text-[9px] transition-all" onclick="updateQty('${item.id}', 10, ${item.price})">+10</button>
                 </div>
             `;
             menuContainer.appendChild(card);
@@ -289,13 +292,15 @@
         window.updateQty = function(id, change, price) {
             let currentQty = quantities[id];
             let newQty = currentQty + change;
-            if (newQty < 0) return; 
+            if (newQty < 0) newQty = 0; 
+
+            let actualChange = newQty - currentQty;
 
             quantities[id] = newQty;
             document.getElementById(`qty-${id}`).value = newQty;
 
-            totalQty += change;
-            totalAmount += (change * price);
+            totalQty += actualChange;
+            totalAmount += (actualChange * price);
             
             document.getElementById('totalQtyDisplay').innerText = totalQty;
         };
@@ -314,7 +319,32 @@
             document.getElementById('totalQtyDisplay').innerText = totalQty;
         };
 
-        document.getElementById('orderDate').valueAsDate = new Date();
+        // --- ORDER DATE: DEFAULT TO TOMORROW (TODAY + 1) ---
+        let tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        document.getElementById('orderDate').valueAsDate = tomorrow;
+
+        // --- LOCAL STORAGE: LOAD SAVED PREFERENCES ---
+        if (localStorage.getItem('stb_branch')) {
+            document.getElementById('branch').value = localStorage.getItem('stb_branch');
+        }
+        if (localStorage.getItem('stb_pickupTime')) {
+            document.getElementById('pickupTime').value = localStorage.getItem('stb_pickupTime');
+        }
+        if (localStorage.getItem('stb_orderedBy')) {
+            document.getElementById('orderedBy').value = localStorage.getItem('stb_orderedBy');
+        }
+
+        // --- LOCAL STORAGE: SAVE PREFERENCES ON CHANGE ---
+        document.getElementById('branch').addEventListener('change', function() {
+            localStorage.setItem('stb_branch', this.value);
+        });
+        document.getElementById('pickupTime').addEventListener('input', function() {
+            localStorage.setItem('stb_pickupTime', this.value);
+        });
+        document.getElementById('orderedBy').addEventListener('input', function() {
+            localStorage.setItem('stb_orderedBy', this.value);
+        });
 
         // Modal Elements
         const orderForm = document.getElementById('orderForm');
@@ -323,6 +353,7 @@
         const cancelBtn = document.getElementById('cancelBtn');
         const confirmYesBtn = document.getElementById('confirmYesBtn');
         const loadingOverlay = document.getElementById('loadingOverlay');
+        const orderSummaryBox = document.getElementById('orderSummaryBox');
 
         openConfirmBtn.addEventListener('click', function() {
             if (totalQty === 0) {
@@ -333,6 +364,37 @@
                 orderForm.reportValidity();
                 return;
             }
+
+            // Build Summary Content
+            const branch = document.getElementById('branch').value;
+            const orderDate = document.getElementById('orderDate').value;
+            const pickupTime = document.getElementById('pickupTime').value;
+            const orderedBy = document.getElementById('orderedBy').value;
+
+            let summaryHTML = `
+                <div class="border-b border-slate-200 pb-1.5 space-y-0.5">
+                    <p class="font-bold text-slate-700">📍 ${branch}</p>
+                    <p class="text-slate-500">📅 Date: <span class="font-semibold text-slate-700">${orderDate}</span> | ⏰ Time: <span class="font-semibold text-slate-700">${pickupTime}</span></p>
+                    <p class="text-slate-500">👤 Staff: <span class="font-semibold text-slate-700">${orderedBy}</span></p>
+                </div>
+                <div class="space-y-1 pt-1 max-h-32 overflow-y-auto">
+            `;
+
+            bakeryItems.forEach(item => {
+                let qty = quantities[item.id] || 0;
+                if (qty > 0) {
+                    summaryHTML += `
+                        <div class="flex justify-between items-center text-slate-700">
+                            <span>${item.emoji} ${item.name}</span>
+                            <span class="font-extrabold text-navyPrimary">x${qty}</span>
+                        </div>
+                    `;
+                }
+            });
+
+            summaryHTML += `</div>`;
+            orderSummaryBox.innerHTML = summaryHTML;
+
             confirmModal.classList.remove('hidden');
         });
 
