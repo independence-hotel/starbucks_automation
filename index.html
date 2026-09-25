@@ -25,439 +25,496 @@
     <style>
         body { -webkit-tap-highlight-color: transparent; background-color: #e2e8f0; }
         ::-webkit-scrollbar { width: 0px; background: transparent; }
-        input[type="number"]::-webkit-inner-spin-button, 
+        input[type="number"]::-webkit-inner-spin-button,
         input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-        .btn-press:active { transform: scale(0.96); transition: transform 0.1s ease; }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
+
+        /* ── Ripple & Press Animation ── */
+        .btn-press { position: relative; overflow: hidden; }
+        .btn-press::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle, rgba(255,255,255,0.35) 0%, transparent 70%);
+            transform: scale(0);
+            opacity: 0;
+            border-radius: inherit;
+            pointer-events: none;
         }
-        .animate-fade-in {
-            animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
+        .btn-press:active::after { transform: scale(2.5); opacity: 1; transition: transform 0.25s ease, opacity 0.25s ease; }
+        .btn-press:active { transform: scale(0.95); transition: transform 0.12s cubic-bezier(.4,0,.2,1); }
 
         .app-container {
             max-width: 430px;
             margin: 0 auto;
             min-height: 100vh;
             background-color: #F8FAFC;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
             position: relative;
         }
 
+        /* ── Header shimmer ── */
+        @keyframes shimmerSlide {
+            0%   { transform: translateX(-120%); }
+            100% { transform: translateX(220%); }
+        }
+        .header-shimmer::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.08) 50%, transparent 60%);
+            animation: shimmerSlide 3.5s infinite ease-in-out;
+            pointer-events: none;
+        }
+
+        /* ── Card entrance ── */
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(18px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .card-enter { animation: slideUp 0.38s cubic-bezier(0.16,1,0.3,1) forwards; opacity: 0; }
+
+        /* ── Modal fade-scale ── */
+        @keyframes fadeScale {
+            from { opacity: 0; transform: scale(0.92) translateY(8px); }
+            to   { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .animate-fade-in { animation: fadeScale 0.28s cubic-bezier(0.16,1,0.3,1) forwards; }
+
+        /* ── Qty counter pulse on change ── */
+        @keyframes qtyPop {
+            0%   { transform: scale(1); }
+            40%  { transform: scale(1.35); color: #1B365D; }
+            100% { transform: scale(1); }
+        }
+        .qty-pop { animation: qtyPop 0.22s ease; }
+
+        /* ── Card hover lift ── */
+        .menu-card { transition: box-shadow 0.2s ease, transform 0.2s ease; }
+        .menu-card:hover { box-shadow: 0 6px 18px rgba(27,54,93,0.1); transform: translateY(-1px); }
+
+        /* ── Sticky footer slide-in ── */
+        @keyframes footerIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .footer-bar { animation: footerIn 0.5s 0.3s cubic-bezier(0.16,1,0.3,1) both; }
+
+        /* ── Total quantity number flip ── */
+        @keyframes numFlip {
+            0%   { transform: translateY(-8px); opacity: 0; }
+            100% { transform: translateY(0);    opacity: 1; }
+        }
+        .num-flip { animation: numFlip 0.18s ease forwards; }
+
+        /* ── Place Order button glow ── */
+        @keyframes btnGlow {
+            0%,100% { box-shadow: 0 4px 14px rgba(27,54,93,0.25); }
+            50%     { box-shadow: 0 4px 22px rgba(27,54,93,0.45); }
+        }
+        #openConfirmBtn { animation: btnGlow 2.4s infinite ease-in-out; }
+        #openConfirmBtn:hover { animation: none; box-shadow: 0 6px 22px rgba(27,54,93,0.4); transform: translateY(-1px); transition: all 0.2s ease; }
+
+        /* ── Step progress pulse ── */
         @keyframes pulseGlow {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(27, 54, 93, 0.4); }
-            50% { transform: scale(1.08); box-shadow: 0 0 15px 4px rgba(27, 54, 93, 0.3); }
+            0%,100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(27,54,93,0.4); }
+            50%     { transform: scale(1.08); box-shadow: 0 0 15px 4px rgba(27,54,93,0.3); }
         }
         .step-pulse { animation: pulseGlow 1.2s infinite ease-in-out; }
+
+        /* ── Backdrop overlay fade ── */
+        @keyframes backdropIn {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+        .backdrop-in { animation: backdropIn 0.22s ease forwards; }
+
+        select:focus, input:focus {
+            outline: 2px solid #1B365D;
+            outline-offset: 1px;
+            transition: outline 0.15s ease;
+        }
+
+        .emoji-icon { transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1); display: inline-block; }
+        .menu-card:hover .emoji-icon { transform: scale(1.18) rotate(-4deg); }
+        .qty-btn { transition: background 0.15s ease, transform 0.1s ease; }
+        .qty-btn:hover { background: #EEF2FF !important; color: #1B365D; }
     </style>
 </head>
 <body class="font-sans pb-28 text-slate-800 text-sm">
 
-    <div class="app-container flex flex-col justify-between">
+<div class="app-container flex flex-col justify-between">
+    <div>
+        <!-- Header -->
+        <div class="bg-navyPrimary text-center py-4 px-3 shadow-md rounded-b-2xl mb-3 relative overflow-hidden header-shimmer">
+            <div class="bg-white p-1.5 rounded-xl inline-block mb-2 shadow-md border border-slate-200 transition-transform duration-300 hover:scale-105">
+                <img src="Logo PNG-white.png" alt="Logo" class="h-14 w-auto mx-auto object-contain" onerror="this.onerror=null; this.src='logo.png';">
+            </div>
+            <h1 class="text-white text-sm font-extrabold tracking-widest uppercase">INDEPENDENCE HOTEL BY DARA</h1>
+            <p class="text-slate-300 text-xs mt-0.5 font-semibold tracking-wider">FOOD ORDER</p>
+        </div>
+
+        <form id="orderForm" class="px-3 space-y-3">
+            <!-- Outlet & Schedule Card -->
+            <div class="bg-cardWhite p-3.5 rounded-xl shadow-sm border border-slate-200/80 space-y-2.5 card-enter" style="animation-delay:0.05s">
+                <div class="flex items-center space-x-1.5 border-b border-slate-100 pb-1.5">
+                    <i class="fa-solid fa-store text-navyPrimary text-xs"></i>
+                    <h2 class="font-bold text-navyPrimary text-xs uppercase">Outlet & Schedule</h2>
+                </div>
+
+                <div class="space-y-2.5">
+                    <div>
+                        <label class="text-[11px] text-slate-500 font-bold uppercase tracking-wider mb-0.5 block">SELECT BRANCH *</label>
+                        <div class="relative">
+                            <select id="branch" required class="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-1 focus:ring-navyPrimary appearance-none font-semibold text-slate-700 transition-all">
+                                <option value="">Select Branch...</option>
+                                <option value="STARBUCKS 1">STARBUCKS 1</option>
+                                <option value="STARBUCKS 2">STARBUCKS 2</option>
+                                <option value="STARBUCKS 3">STARBUCKS 3</option>
+                            </select>
+                            <i class="fa-solid fa-location-dot absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+                            <i class="fa-solid fa-chevron-down absolute right-3 top-3 text-slate-400 text-xs"></i>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2.5">
+                        <div>
+                            <label class="text-[11px] text-slate-500 font-bold uppercase tracking-wider mb-0.5 block">Order Date *</label>
+                            <div class="relative">
+                                <input type="date" id="orderDate" required class="w-full pl-7 pr-2 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-1 focus:ring-navyPrimary font-semibold text-slate-700 transition-all">
+                                <i class="fa-regular fa-calendar absolute left-2.5 top-2.5 text-slate-400 text-xs"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-[11px] text-slate-500 font-bold uppercase tracking-wider mb-0.5 block">Pickup Time *</label>
+                            <div class="relative">
+                                <input type="text" id="pickupTime" list="timeOptions" placeholder="e.g. 05:30 AM" required autocomplete="off" class="w-full pl-7 pr-2 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-1 focus:ring-navyPrimary font-semibold text-slate-700 transition-all">
+                                <datalist id="timeOptions"></datalist>
+                                <i class="fa-regular fa-clock absolute left-2.5 top-2.5 text-slate-400 text-xs"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="text-[11px] text-slate-500 font-bold uppercase tracking-wider mb-0.5 block">Ordered By *</label>
+                        <div class="relative">
+                            <input type="text" id="orderedBy" placeholder="Staff Name" required class="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-1 focus:ring-navyPrimary font-semibold text-slate-700 transition-all">
+                            <i class="fa-regular fa-user absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Food Menu Title -->
+            <div class="flex items-center justify-between px-1 pt-1 card-enter" style="animation-delay:0.12s">
+                <div class="flex items-center space-x-1.5">
+                    <i class="fa-solid fa-utensils text-navyPrimary text-xs"></i>
+                    <h2 class="font-bold text-navyPrimary text-xs uppercase">Food Menu</h2>
+                </div>
+                <span class="text-[11px] font-bold text-slate-400 uppercase">4 Items</span>
+            </div>
+
+            <!-- Menu List -->
+            <div id="menuContainer" class="space-y-2.5"></div>
+        </form>
+    </div>
+
+    <div class="text-center mt-6 mb-20">
+        <p class="text-[11px] text-slate-400 font-light">@2026 Independence Hotel, Sihanoukville</p>
+    </div>
+</div>
+
+<!-- Sticky Footer -->
+<div class="fixed bottom-0 left-0 w-full bg-transparent p-3 z-20 pointer-events-none">
+    <div class="max-w-[430px] mx-auto bg-white/95 backdrop-blur-md border border-slate-200 p-3.5 shadow-2xl rounded-2xl pointer-events-auto flex items-center justify-between footer-bar">
         <div>
-            <!-- Header -->
-            <div class="bg-navyPrimary text-center py-4 px-3 shadow-md rounded-b-2xl mb-3 relative overflow-hidden">
-                <div class="bg-white p-1.5 rounded-xl inline-block mb-2 shadow-md border border-slate-200">
-                    <img src="Logo PNG-white.png" alt="Logo" class="h-14 w-auto mx-auto object-contain" onerror="this.onerror=null; this.src='logo.png';">
-                </div>
-                
-                <h1 class="text-white text-sm font-extrabold tracking-widest uppercase">INDEPENDENCE HOTEL BY DARA</h1>
-                <p class="text-slate-300 text-xs mt-0.5 font-semibold tracking-wider">FOOD ORDER</p>
-            </div>
-
-            <form id="orderForm" class="px-3 space-y-3">
-                <!-- Outlet & Schedule Card -->
-                <div class="bg-cardWhite p-3.5 rounded-xl shadow-sm border border-slate-200/80 space-y-2.5">
-                    <div class="flex items-center space-x-1.5 border-b border-slate-100 pb-1.5">
-                        <i class="fa-solid fa-store text-navyPrimary text-xs"></i>
-                        <h2 class="font-bold text-navyPrimary text-xs uppercase">Outlet & Schedule</h2>
-                    </div>
-                    
-                    <div class="space-y-2.5">
-                        <div>
-                            <label class="text-[11px] text-slate-500 font-bold uppercase tracking-wider mb-0.5 block">SELECT BRANCH *</label>
-                            <div class="relative">
-                                <select id="branch" required class="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-1 focus:ring-navyPrimary appearance-none font-semibold text-slate-700 transition-all">
-                                    <option value="">Select Branch...</option>
-                                    <option value="STARBUCKS 1">STARBUCKS 1</option>
-                                    <option value="STARBUCKS 2">STARBUCKS 2</option>
-                                    <option value="STARBUCKS 3">STARBUCKS 3</option>
-                                </select>
-                                <i class="fa-solid fa-location-dot absolute left-3 top-2.5 text-slate-400 text-xs"></i>
-                                <i class="fa-solid fa-chevron-down absolute right-3 top-3 text-slate-400 text-xs"></i>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-2.5">
-                            <div>
-                                <label class="text-[11px] text-slate-500 font-bold uppercase tracking-wider mb-0.5 block">Order Date *</label>
-                                <div class="relative">
-                                    <input type="date" id="orderDate" required class="w-full pl-7 pr-2 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-1 focus:ring-navyPrimary font-semibold text-slate-700 transition-all">
-                                    <i class="fa-regular fa-calendar absolute left-2.5 top-2.5 text-slate-400 text-xs"></i>
-                                </div>
-                            </div>
-                            <div>
-                                <label class="text-[11px] text-slate-500 font-bold uppercase tracking-wider mb-0.5 block">Pickup Time *</label>
-                                <div class="relative">
-                                    <input type="text" id="pickupTime" list="timeOptions" placeholder="e.g. 05:30 AM" required autocomplete="off" class="w-full pl-7 pr-2 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-1 focus:ring-navyPrimary font-semibold text-slate-700 transition-all">
-                                    <datalist id="timeOptions"></datalist>
-                                    <i class="fa-regular fa-clock absolute left-2.5 top-2.5 text-slate-400 text-xs"></i>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="text-[11px] text-slate-500 font-bold uppercase tracking-wider mb-0.5 block">Ordered By *</label>
-                            <div class="relative">
-                                <input type="text" id="orderedBy" placeholder="Staff Name" required class="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-1 focus:ring-navyPrimary font-semibold text-slate-700 transition-all">
-                                <i class="fa-regular fa-user absolute left-3 top-2.5 text-slate-400 text-xs"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Food Menu Title -->
-                <div class="flex items-center justify-between px-1 pt-1">
-                    <div class="flex items-center space-x-1.5">
-                        <i class="fa-solid fa-utensils text-navyPrimary text-xs"></i>
-                        <h2 class="font-bold text-navyPrimary text-xs uppercase">Food Menu</h2>
-                    </div>
-                    <span class="text-[11px] font-bold text-slate-400 uppercase">4 Items</span>
-                </div>
-
-                <!-- Menu List Container -->
-                <div id="menuContainer" class="space-y-2.5"></div>
-            </form>
+            <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Total Quantity</p>
+            <p class="text-xl font-black text-navyDark">
+                <span id="totalQtyDisplay">0</span>
+                <span class="text-xs font-semibold text-slate-500">units</span>
+            </p>
         </div>
+        <button type="button" id="openConfirmBtn" class="bg-navyPrimary hover:bg-navyDark text-white px-5 py-3 rounded-xl text-sm font-bold transition-all flex items-center space-x-2 btn-press">
+            <span>PLACE ORDER</span>
+            <i class="fa-solid fa-paper-plane text-xs"></i>
+        </button>
+    </div>
+</div>
 
-        <div class="text-center mt-6 mb-20">
-            <p class="text-[11px] text-slate-400 font-light">@2026 Independence Hotel, Sihanoukville</p>
+<!-- Confirm Modal -->
+<div id="confirmModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden backdrop-in">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl animate-fade-in text-center space-y-3.5 border border-slate-100">
+        <div class="w-11 h-11 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center mx-auto text-lg border border-amber-100 shadow-sm">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <div>
+            <h3 class="font-extrabold text-sm text-slate-900 uppercase">CONFIRM ORDER</h3>
+        </div>
+        <div id="orderSummaryBox" class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-left space-y-2 text-xs"></div>
+        <p class="text-xs text-slate-600 font-medium">Are you sure you want to submit this order?</p>
+        <div class="grid grid-cols-2 gap-2.5 pt-1">
+            <button type="button" id="cancelBtn" class="bg-slate-100 hover:bg-slate-200 text-slate-700 py-3 rounded-xl font-bold text-sm transition-all btn-press">Cancel</button>
+            <button type="button" id="confirmYesBtn" class="bg-navyPrimary hover:bg-navyDark text-white py-3 rounded-xl font-bold text-sm shadow-md shadow-navyPrimary/20 transition-all btn-press">Yes, Submit</button>
         </div>
     </div>
+</div>
 
-    <!-- Sticky Footer Summary -->
-    <div class="fixed bottom-0 left-0 w-full bg-transparent p-3 z-20 pointer-events-none">
-        <div class="max-w-[430px] mx-auto bg-white/95 backdrop-blur-md border border-slate-200 p-3.5 shadow-2xl rounded-2xl pointer-events-auto flex items-center justify-between">
-            <div>
-                <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Total Quantity</p>
-                <p class="text-xl font-black text-navyDark"><span id="totalQtyDisplay">0</span> <span class="text-xs font-semibold text-slate-500">units</span></p>
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="fixed inset-0 bg-slate-900/70 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl animate-fade-in text-center space-y-5 border border-slate-100">
+        <div class="flex flex-col items-center space-y-2">
+            <div id="mainIconBg" class="w-12 h-12 rounded-full bg-blue-50 text-navyPrimary flex items-center justify-center text-xl shadow-md transition-all duration-500 step-pulse">
+                <i id="mainIcon" class="fa-solid fa-cloud-arrow-up"></i>
             </div>
-            <button type="button" id="openConfirmBtn" class="bg-navyPrimary hover:bg-navyDark text-white px-5 py-3 rounded-xl text-sm font-bold shadow-md shadow-navyPrimary/20 transition-all flex items-center space-x-2 btn-press">
-                <span>PLACE ORDER</span> 
-                <i class="fa-solid fa-paper-plane text-xs"></i>
-            </button>
+            <h3 id="progressTitle" class="font-extrabold text-sm text-slate-900 uppercase tracking-wider">Processing Order...</h3>
         </div>
-    </div>
-
-    <!-- Confirmation Modal with Summary -->
-    <div id="confirmModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl animate-fade-in text-center space-y-3.5 border border-slate-100">
-            <div class="w-11 h-11 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center mx-auto text-lg border border-amber-100 shadow-sm">
-                <i class="fa-solid fa-triangle-exclamation"></i>
-            </div>
-            <div>
-                <h3 class="font-extrabold text-sm text-slate-900 uppercase">CONFIRM ORDER</h3>
-            </div>
-
-            <!-- Summary Box -->
-            <div id="orderSummaryBox" class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-left space-y-2 text-xs">
-                <!-- Injected via JavaScript -->
-            </div>
-
-            <p class="text-xs text-slate-600 font-medium">Are you sure you want to submit this order?</p>
-
-            <div class="grid grid-cols-2 gap-2.5 pt-1">
-                <button type="button" id="cancelBtn" class="bg-slate-100 hover:bg-slate-200 text-slate-700 py-3 rounded-xl font-bold text-sm transition-all btn-press">
-                    Cancel
-                </button>
-                <button type="button" id="confirmYesBtn" class="bg-navyPrimary hover:bg-navyDark text-white py-3 rounded-xl font-bold text-sm shadow-md shadow-navyPrimary/20 transition-all btn-press">
-                    Yes, Submit
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Dynamic UX/UI Step-by-Step Progress Modal -->
-    <div id="loadingOverlay" class="fixed inset-0 bg-slate-900/70 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl animate-fade-in text-center space-y-5 border border-slate-100">
-            <div class="flex flex-col items-center space-y-2">
-                <div id="mainIconBg" class="w-12 h-12 rounded-full bg-blue-50 text-navyPrimary flex items-center justify-center text-xl shadow-md transition-all duration-500 step-pulse">
-                    <i id="mainIcon" class="fa-solid fa-cloud-arrow-up"></i>
+        <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 w-full space-y-3">
+            <div class="flex items-center justify-between px-2 relative">
+                <div class="flex flex-col items-center space-y-1 z-10">
+                    <div id="step1Icon" class="w-7 h-7 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center text-xs shadow-sm transition-all duration-300">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </div>
+                    <span id="step1Text" class="text-[11px] font-bold text-slate-400 transition-colors">Sent</span>
                 </div>
-                <h3 id="progressTitle" class="font-extrabold text-sm text-slate-900 uppercase tracking-wider">Processing Order...</h3>
-            </div>
-            <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 w-full space-y-3">
-                <div class="flex items-center justify-between px-2 relative">
-                    <div class="flex flex-col items-center space-y-1 z-10">
-                        <div id="step1Icon" class="w-7 h-7 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center text-xs shadow-sm transition-all duration-300">
-                            <i class="fa-solid fa-paper-plane"></i>
-                        </div>
-                        <span id="step1Text" class="text-[11px] font-bold text-slate-400 transition-colors">Sent</span>
-                    </div>
-                    <div class="flex-1 h-1 bg-slate-200 mx-1 rounded-full overflow-hidden relative">
-                        <div id="line1Fill" class="absolute left-0 top-0 h-full bg-navyPrimary w-0 transition-all duration-500"></div>
-                    </div>
-                    <div class="flex flex-col items-center space-y-1 z-10">
-                        <div id="step2Icon" class="w-7 h-7 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center text-xs shadow-sm transition-all duration-300">
-                            <i class="fa-solid fa-gears"></i>
-                        </div>
-                        <span id="step2Text" class="text-[11px] font-bold text-slate-400 transition-colors">Processed</span>
-                    </div>
-                    <div class="flex-1 h-1 bg-slate-200 mx-1 rounded-full overflow-hidden relative">
-                        <div id="line2Fill" class="absolute left-0 top-0 h-full bg-emerald-500 w-0 transition-all duration-500"></div>
-                    </div>
-                    <div class="flex flex-col items-center space-y-1 z-10">
-                        <div id="step3Icon" class="w-7 h-7 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center text-xs shadow-sm transition-all duration-300">
-                            <i class="fa-solid fa-check-double"></i>
-                        </div>
-                        <span id="step3Text" class="text-[11px] font-bold text-slate-400 transition-colors">Delivered</span>
-                    </div>
+                <div class="flex-1 h-1 bg-slate-200 mx-1 rounded-full overflow-hidden relative">
+                    <div id="line1Fill" class="absolute left-0 top-0 h-full bg-navyPrimary w-0 transition-all duration-500"></div>
                 </div>
-                <p id="progressSubtitle" class="text-xs text-slate-400 pt-1 font-medium">Initializing secure connection...</p>
+                <div class="flex flex-col items-center space-y-1 z-10">
+                    <div id="step2Icon" class="w-7 h-7 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center text-xs shadow-sm transition-all duration-300">
+                        <i class="fa-solid fa-gears"></i>
+                    </div>
+                    <span id="step2Text" class="text-[11px] font-bold text-slate-400 transition-colors">Processed</span>
+                </div>
+                <div class="flex-1 h-1 bg-slate-200 mx-1 rounded-full overflow-hidden relative">
+                    <div id="line2Fill" class="absolute left-0 top-0 h-full bg-emerald-500 w-0 transition-all duration-500"></div>
+                </div>
+                <div class="flex flex-col items-center space-y-1 z-10">
+                    <div id="step3Icon" class="w-7 h-7 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center text-xs shadow-sm transition-all duration-300">
+                        <i class="fa-solid fa-check-double"></i>
+                    </div>
+                    <span id="step3Text" class="text-[11px] font-bold text-slate-400 transition-colors">Delivered</span>
+                </div>
             </div>
+            <p id="progressSubtitle" class="text-xs text-slate-400 pt-1 font-medium">Initializing secure connection...</p>
         </div>
     </div>
+</div>
 
-    <script>
-        const timeDatalist = document.getElementById('timeOptions');
-        let optionsHTML = '';
-        for (let m = 0; m < 24 * 60; m += 5) { 
-            let totalMinutes = (330 + m) % (24 * 60);
-            let i = Math.floor(totalMinutes / 60);
-            let j = totalMinutes % 60;
-            let hour = i % 12 || 12;
-            let ampm = i < 12 ? 'AM' : 'PM';
-            let min = j < 10 ? '0' + j : j;
-            let displayHour = hour < 10 ? '0' + hour : hour;
-            optionsHTML += `<option value="${displayHour}:${min} ${ampm}">`;
-        }
-        timeDatalist.innerHTML = optionsHTML;
+<script>
+    const timeDatalist = document.getElementById('timeOptions');
+    let optionsHTML = '';
+    for (let m = 0; m < 24 * 60; m += 5) {
+        let totalMinutes = (330 + m) % (24 * 60);
+        let i = Math.floor(totalMinutes / 60);
+        let j = totalMinutes % 60;
+        let hour = i % 12 || 12;
+        let ampm = i < 12 ? 'AM' : 'PM';
+        let min = j < 10 ? '0' + j : j;
+        let displayHour = hour < 10 ? '0' + hour : hour;
+        optionsHTML += `<option value="${displayHour}:${min} ${ampm}">`;
+    }
+    timeDatalist.innerHTML = optionsHTML;
 
-        const bakeryItems = [
-            { id: 'item1', name: 'Egg Salad Wrap', price: 0, emoji: '🥚' },
-            { id: 'item2', name: 'Chicken Salad Wrap', price: 0, emoji: '🍗' },
-            { id: 'item3', name: 'Salad Wrapped', price: 0, emoji: '🥗' },
-            { id: 'item4', name: 'Fresh Sandwich', price: 0, emoji: '🥪' }
-        ];
+    const bakeryItems = [
+        { id: 'item1', name: 'Egg Salad Wrap',     price: 0, emoji: '🥚' },
+        { id: 'item2', name: 'Chicken Salad Wrap', price: 0, emoji: '🍗' },
+        { id: 'item3', name: 'Salad Wrapped',      price: 0, emoji: '🥗' },
+        { id: 'item4', name: 'Fresh Sandwich',     price: 0, emoji: '🥪' }
+    ];
 
-        const menuContainer = document.getElementById('menuContainer');
-        const quantities = {};
+    const menuContainer = document.getElementById('menuContainer');
+    const quantities = {};
 
+    bakeryItems.forEach((item, idx) => {
+        quantities[item.id] = 0;
+        const card = document.createElement('div');
+        card.className = "bg-cardWhite p-3 rounded-xl shadow-sm border border-slate-200/80 flex justify-between items-center menu-card card-enter";
+        card.style.animationDelay = (0.18 + idx * 0.07) + 's';
+        card.innerHTML = `
+            <div class="flex items-center space-x-3 flex-1 pr-2">
+                <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center shrink-0 border border-blue-100 shadow-sm text-base">
+                    <span class="emoji-icon">${item.emoji}</span>
+                </div>
+                <h3 class="font-bold text-sm text-slate-900">${item.name}</h3>
+            </div>
+            <div class="flex items-center space-x-1.5 bg-slate-50 rounded-lg p-1 border border-slate-200">
+                <button type="button" class="qty-btn px-2.5 h-7 flex items-center justify-center text-slate-500 bg-white rounded-md shadow-sm border border-slate-200 btn-press font-bold text-xs" onclick="updateQty('${item.id}', -10, ${item.price})">-10</button>
+                <input type="number" id="qty-${item.id}" value="0" min="0" class="font-black text-navyDark w-10 text-center text-base bg-transparent focus:outline-none" oninput="manualInputQty('${item.id}', this.value, ${item.price})">
+                <button type="button" class="qty-btn px-2.5 h-7 flex items-center justify-center text-slate-500 bg-white rounded-md shadow-sm border border-slate-200 btn-press font-bold text-xs" onclick="updateQty('${item.id}', 10, ${item.price})">+10</button>
+            </div>
+        `;
+        menuContainer.appendChild(card);
+    });
+
+    let totalQty = 0;
+    let totalAmount = 0.00;
+
+    function animateTotal() {
+        const el = document.getElementById('totalQtyDisplay');
+        el.classList.remove('num-flip');
+        void el.offsetWidth;
+        el.classList.add('num-flip');
+        el.innerText = totalQty;
+    }
+
+    window.updateQty = function(id, change, price) {
+        let newQty = Math.max(0, quantities[id] + change);
+        let actualChange = newQty - quantities[id];
+        quantities[id] = newQty;
+        const input = document.getElementById(`qty-${id}`);
+        input.value = newQty;
+        input.classList.remove('qty-pop');
+        void input.offsetWidth;
+        input.classList.add('qty-pop');
+        totalQty += actualChange;
+        totalAmount += (actualChange * price);
+        animateTotal();
+    };
+
+    window.manualInputQty = function(id, val, price) {
+        let parsedVal = Math.max(0, parseInt(val) || 0);
+        let diff = parsedVal - quantities[id];
+        quantities[id] = parsedVal;
+        totalQty += diff;
+        totalAmount += (diff * price);
+        animateTotal();
+    };
+
+    // --- ORDER DATE: DEFAULT TO TOMORROW (TODAY + 1) ---
+    let tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    document.getElementById('orderDate').valueAsDate = tomorrow;
+
+    // --- LOCAL STORAGE: LOAD SAVED PREFERENCES ---
+    if (localStorage.getItem('stb_branch'))     document.getElementById('branch').value     = localStorage.getItem('stb_branch');
+    if (localStorage.getItem('stb_pickupTime')) document.getElementById('pickupTime').value = localStorage.getItem('stb_pickupTime');
+    if (localStorage.getItem('stb_orderedBy'))  document.getElementById('orderedBy').value  = localStorage.getItem('stb_orderedBy');
+
+    // --- LOCAL STORAGE: SAVE PREFERENCES ON CHANGE ---
+    document.getElementById('branch').addEventListener('change',     function() { localStorage.setItem('stb_branch', this.value); });
+    document.getElementById('pickupTime').addEventListener('input',   function() { localStorage.setItem('stb_pickupTime', this.value); });
+    document.getElementById('orderedBy').addEventListener('input',   function() { localStorage.setItem('stb_orderedBy', this.value); });
+
+    const orderForm       = document.getElementById('orderForm');
+    const openConfirmBtn = document.getElementById('openConfirmBtn');
+    const confirmModal  = document.getElementById('confirmModal');
+    const cancelBtn     = document.getElementById('cancelBtn');
+    const confirmYesBtn = document.getElementById('confirmYesBtn');
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    const orderSummaryBox = document.getElementById('orderSummaryBox');
+
+    openConfirmBtn.addEventListener('click', function() {
+        if (totalQty === 0) { alert("Please add at least one item to your order!"); return; }
+        if (!orderForm.checkValidity()) { orderForm.reportValidity(); return; }
+
+        const branch     = document.getElementById('branch').value;
+        const orderDate  = document.getElementById('orderDate').value;
+        const pickupTime = document.getElementById('pickupTime').value;
+        const orderedBy  = document.getElementById('orderedBy').value;
+
+        let summaryHTML = `
+            <div class="border-b border-slate-200 pb-2 space-y-1">
+                <p class="font-bold text-slate-800">📍 ${branch}</p>
+                <p class="text-slate-600">📅 Date: <span class="font-semibold text-slate-800">${orderDate}</span> | ⏰ Time: <span class="font-semibold text-slate-800">${pickupTime}</span></p>
+                <p class="text-slate-600">👤 Staff: <span class="font-semibold text-slate-800">${orderedBy}</span></p>
+            </div>
+            <div class="space-y-1.5 pt-1.5 max-h-36 overflow-y-auto">
+        `;
         bakeryItems.forEach(item => {
-            quantities[item.id] = 0; 
-            const card = document.createElement('div');
-            card.className = "bg-cardWhite p-3 rounded-xl shadow-sm border border-slate-200/80 flex justify-between items-center transition-all";
-            card.innerHTML = `
-                <div class="flex items-center space-x-3 flex-1 pr-2">
-                    <div class="w-8 h-8 rounded-lg bg-blue-50 text-navyPrimary flex items-center justify-center shrink-0 border border-blue-100 shadow-sm text-base">
-                        ${item.emoji}
-                    </div>
-                    <h3 class="font-bold text-sm text-slate-900">${item.name}</h3>
-                </div>
-                <div class="flex items-center space-x-1.5 bg-slate-50 rounded-lg p-1 border border-slate-200">
-                    <button type="button" class="px-2.5 h-7 flex items-center justify-center text-slate-500 bg-white rounded-md shadow-sm border border-slate-200 btn-press font-bold text-xs transition-all" onclick="updateQty('${item.id}', -10, ${item.price})">-10</button>
-                    <input type="number" id="qty-${item.id}" value="0" min="0" class="font-black text-navyDark w-10 text-center text-base bg-transparent focus:outline-none" oninput="manualInputQty('${item.id}', this.value, ${item.price})">
-                    <button type="button" class="px-2.5 h-7 flex items-center justify-center text-slate-500 bg-white rounded-md shadow-sm border border-slate-200 btn-press font-bold text-xs transition-all" onclick="updateQty('${item.id}', 10, ${item.price})">+10</button>
-                </div>
-            `;
-            menuContainer.appendChild(card);
+            let qty = quantities[item.id] || 0;
+            if (qty > 0) {
+                summaryHTML += `
+                    <div class="flex justify-between items-center text-slate-800 font-medium">
+                        <span>${item.emoji} ${item.name}</span>
+                        <span class="font-extrabold text-navyPrimary">x${qty}</span>
+                    </div>`;
+            }
         });
+        summaryHTML += `</div>`;
+        orderSummaryBox.innerHTML = summaryHTML;
+        confirmModal.classList.remove('hidden');
+    });
 
-        let totalQty = 0;
-        let totalAmount = 0.00;
+    cancelBtn.addEventListener('click', () => confirmModal.classList.add('hidden'));
 
-        window.updateQty = function(id, change, price) {
-            let currentQty = quantities[id];
-            let newQty = currentQty + change;
-            if (newQty < 0) newQty = 0; 
-            let actualChange = newQty - currentQty;
-            quantities[id] = newQty;
-            document.getElementById(`qty-${id}`).value = newQty;
-            totalQty += actualChange;
-            totalAmount += (actualChange * price);
-            document.getElementById('totalQtyDisplay').innerText = totalQty;
+    confirmYesBtn.addEventListener('click', function() {
+        confirmModal.classList.add('hidden');
+        loadingOverlay.classList.remove('hidden');
+
+        const mainIconBg     = document.getElementById('mainIconBg');
+        const mainIcon       = document.getElementById('mainIcon');
+        const progressTitle  = document.getElementById('progressTitle');
+        const progressSubtitle = document.getElementById('progressSubtitle');
+        const step1Icon = document.getElementById('step1Icon');
+        const step1Text = document.getElementById('step1Text');
+        const line1Fill = document.getElementById('line1Fill');
+        const step2Icon = document.getElementById('step2Icon');
+        const step2Text = document.getElementById('step2Text');
+        const line2Fill = document.getElementById('line2Fill');
+        const step3Icon = document.getElementById('step3Icon');
+        const step3Text = document.getElementById('step3Text');
+
+        mainIconBg.className = "w-12 h-12 rounded-full bg-blue-50 text-navyPrimary flex items-center justify-center text-xl shadow-md transition-all duration-500 step-pulse";
+        mainIcon.className = "fa-solid fa-cloud-arrow-up";
+        progressTitle.innerText = "PROCESSING ORDER...";
+        progressSubtitle.innerText = "Initializing secure connection...";
+
+        setTimeout(() => {
+            step1Icon.className = "w-7 h-7 rounded-full bg-navyPrimary text-white flex items-center justify-center text-xs shadow-md";
+            step1Text.className = "text-[11px] font-extrabold text-navyPrimary";
+            line1Fill.style.width = "100%";
+            progressSubtitle.innerText = "Dispatching order to server...";
+        }, 300);
+
+        setTimeout(() => {
+            step2Icon.className = "w-7 h-7 rounded-full bg-sky-500 text-white flex items-center justify-center text-xs shadow-sm step-pulse";
+            step2Text.className = "text-[11px] font-extrabold text-sky-600";
+            mainIcon.className = "fa-solid fa-gears";
+            progressSubtitle.innerText = "Syncing with Google Sheets & Telegram...";
+        }, 800);
+
+        const data = {
+            branch:      document.getElementById('branch').value,
+            orderDate:   document.getElementById('orderDate').value,
+            item1: quantities['item1'] || 0,
+            item2: quantities['item2'] || 0,
+            item3: quantities['item3'] || 0,
+            item4: quantities['item4'] || 0,
+            item5: quantities['item5'] || 0,
+            item6: quantities['item6'] || 0,
+            item7: quantities['item7'] || 0,
+            pickupTime:  document.getElementById('pickupTime').value,
+            orderedBy:   document.getElementById('orderedBy').value,
+            totalQty:    totalQty,
+            totalAmount: totalAmount.toFixed(2)
         };
 
-        window.manualInputQty = function(id, val, price) {
-            let parsedVal = parseInt(val);
-            if (isNaN(parsedVal) || parsedVal < 0) parsedVal = 0;
-            let oldQty = quantities[id];
-            let diff = parsedVal - oldQty;
-            quantities[id] = parsedVal;
-            totalQty += diff;
-            totalAmount += (diff * price);
-            document.getElementById('totalQtyDisplay').innerText = totalQty;
-        };
+        const webAppUrl = "https://script.google.com/macros/s/AKfycbzuWq_jBKkT9_pQ08tK0jDypKo-7bgXiIetX1Lx61r6inQM2b30b04i6n1V9jSwW3kYvw/exec";
 
-        let tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        document.getElementById('orderDate').valueAsDate = tomorrow;
-
-        if (localStorage.getItem('stb_branch')) {
-            document.getElementById('branch').value = localStorage.getItem('stb_branch');
-        }
-        if (localStorage.getItem('stb_pickupTime')) {
-            document.getElementById('pickupTime').value = localStorage.getItem('stb_pickupTime');
-        }
-        if (localStorage.getItem('stb_orderedBy')) {
-            document.getElementById('orderedBy').value = localStorage.getItem('stb_orderedBy');
-        }
-
-        document.getElementById('branch').addEventListener('change', function() {
-            localStorage.setItem('stb_branch', this.value);
-        });
-        document.getElementById('pickupTime').addEventListener('input', function() {
-            localStorage.setItem('stb_pickupTime', this.value);
-        });
-        document.getElementById('orderedBy').addEventListener('input', function() {
-            localStorage.setItem('stb_orderedBy', this.value);
-        });
-
-        const orderForm = document.getElementById('orderForm');
-        const openConfirmBtn = document.getElementById('openConfirmBtn');
-        const confirmModal = document.getElementById('confirmModal');
-        const cancelBtn = document.getElementById('cancelBtn');
-        const confirmYesBtn = document.getElementById('confirmYesBtn');
-        const loadingOverlay = document.getElementById('loadingOverlay');
-        const orderSummaryBox = document.getElementById('orderSummaryBox');
-
-        openConfirmBtn.addEventListener('click', function() {
-            if (totalQty === 0) {
-                alert("Please add at least one item to your order!");
-                return;
-            }
-            if (!orderForm.checkValidity()) {
-                orderForm.reportValidity();
-                return;
-            }
-
-            const branch = document.getElementById('branch').value;
-            const orderDate = document.getElementById('orderDate').value;
-            const pickupTime = document.getElementById('pickupTime').value;
-            const orderedBy = document.getElementById('orderedBy').value;
-
-            let summaryHTML = `
-                <div class="border-b border-slate-200 pb-2 space-y-1">
-                    <p class="font-bold text-slate-800">📍 ${branch}</p>
-                    <p class="text-slate-600">📅 Date: <span class="font-semibold text-slate-800">${orderDate}</span> | ⏰ Time: <span class="font-semibold text-slate-800">${pickupTime}</span></p>
-                    <p class="text-slate-600">👤 Staff: <span class="font-semibold text-slate-800">${orderedBy}</span></p>
-                </div>
-                <div class="space-y-1.5 pt-1.5 max-h-36 overflow-y-auto">
-            `;
-
-            bakeryItems.forEach(item => {
-                let qty = quantities[item.id] || 0;
-                if (qty > 0) {
-                    summaryHTML += `
-                        <div class="flex justify-between items-center text-slate-800 font-medium">
-                            <span>${item.emoji} ${item.name}</span>
-                            <span class="font-extrabold text-navyPrimary">x${qty}</span>
-                        </div>
-                    `;
-                }
-            });
-
-            summaryHTML += `</div>`;
-            orderSummaryBox.innerHTML = summaryHTML;
-            confirmModal.classList.remove('hidden');
-        });
-
-        cancelBtn.addEventListener('click', function() {
-            confirmModal.classList.add('hidden');
-        });
-
-        confirmYesBtn.addEventListener('click', function() {
-            confirmModal.classList.add('hidden');
-            loadingOverlay.classList.remove('hidden');
-
-            const mainIconBg = document.getElementById('mainIconBg');
-            const mainIcon = document.getElementById('mainIcon');
-            const progressTitle = document.getElementById('progressTitle');
-            const progressSubtitle = document.getElementById('progressSubtitle');
-            
-            const step1Icon = document.getElementById('step1Icon');
-            const step1Text = document.getElementById('step1Text');
-            const line1Fill = document.getElementById('line1Fill');
-            
-            const step2Icon = document.getElementById('step2Icon');
-            const step2Text = document.getElementById('step2Text');
-            const line2Fill = document.getElementById('line2Fill');
-            
-            const step3Icon = document.getElementById('step3Icon');
-            const step3Text = document.getElementById('step3Text');
-
-            mainIconBg.className = "w-12 h-12 rounded-full bg-blue-50 text-navyPrimary flex items-center justify-center text-xl shadow-md transition-all duration-500 step-pulse";
-            mainIcon.className = "fa-solid fa-cloud-arrow-up";
-            progressTitle.innerText = "PROCESSING ORDER...";
-            progressSubtitle.innerText = "Initializing secure connection...";
-
+        fetch(webAppUrl, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        }).then(() => {
             setTimeout(() => {
-                step1Icon.className = "w-7 h-7 rounded-full bg-navyPrimary text-white flex items-center justify-center text-xs shadow-md";
-                step1Text.className = "text-[11px] font-extrabold text-navyPrimary";
-                line1Fill.style.width = "100%";
-                progressSubtitle.innerText = "Dispatching order to server...";
-            }, 300);
-
-            setTimeout(() => {
-                step2Icon.className = "w-7 h-7 rounded-full bg-sky-500 text-white flex items-center justify-center text-xs shadow-sm step-pulse";
-                step2Text.className = "text-[11px] font-extrabold text-sky-600";
-                mainIcon.className = "fa-solid fa-gears";
-                progressSubtitle.innerText = "Syncing with Google Sheets & Telegram...";
-            }, 800);
-
-            const data = {
-                branch: document.getElementById('branch').value,
-                orderDate: document.getElementById('orderDate').value,
-                item1: quantities['item1'] || 0,
-                item2: quantities['item2'] || 0,
-                item3: quantities['item3'] || 0,
-                item4: quantities['item4'] || 0,
-                item5: quantities['item5'] || 0,
-                item6: quantities['item6'] || 0,
-                item7: quantities['item7'] || 0,
-                pickupTime: document.getElementById('pickupTime').value,
-                orderedBy: document.getElementById('orderedBy').value,
-                totalQty: totalQty,
-                totalAmount: totalAmount.toFixed(2)
-            };
-
-            const webAppUrl = "https://script.google.com/macros/s/AKfycbzuWq_jBKkT9_pQ08tK0jDypKo-7bgXiIetX1Lx61r6inQM2b30b04i6n1V9jSwW3kYvw/exec"; 
-
-            fetch(webAppUrl, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            }).then(() => {
-                setTimeout(() => {
-                    step2Icon.className = "w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs shadow-sm";
-                    step2Text.className = "text-[11px] font-extrabold text-slate-700";
-                    line2Fill.style.width = "100%";
-                    step3Icon.className = "w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs shadow-sm";
-                    step3Text.className = "text-[11px] font-extrabold text-emerald-600";
-                    
-                    mainIconBg.className = "w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xl shadow-md animate-bounce";
-                    mainIcon.className = "fa-solid fa-check";
-                    progressTitle.innerText = "THANK YOU FOR YOUR ORDER!";
-                    progressSubtitle.innerText = "PDF generated & sent to Telegram successfully.";
-
-                    if ("vibrate" in navigator) {
-                        navigator.vibrate([150, 75, 150]);
-                    }
-
-                    setTimeout(() => { 
-                        window.location.reload(); 
-                    }, 3000);
-                }, 1200);
-
-            }).catch(error => {
-                console.error(error);
-                loadingOverlay.classList.add('hidden');
-                alert("Network error. Please try again!");
-            });
+                step2Icon.className = "w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs shadow-sm";
+                step2Text.className = "text-[11px] font-extrabold text-slate-700";
+                line2Fill.style.width = "100%";
+                step3Icon.className = "w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs shadow-sm";
+                step3Text.className = "text-[11px] font-extrabold text-emerald-600";
+                mainIconBg.className = "w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xl shadow-md animate-bounce";
+                mainIcon.className = "fa-solid fa-check";
+                progressTitle.innerText = "THANK YOU FOR YOUR ORDER!";
+                progressSubtitle.innerText = "PDF generated & sent to Telegram successfully.";
+                if ("vibrate" in navigator) navigator.vibrate([150, 75, 150]);
+                setTimeout(() => { window.location.reload(); }, 3000);
+            }, 1200);
+        }).catch(error => {
+            console.error(error);
+            loadingOverlay.classList.add('hidden');
+            alert("Network error. Please try again!");
         });
-    </script>
+    });
+</script>
 </body>
 </html>
