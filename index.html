@@ -247,12 +247,12 @@
         }
         timeDatalist.innerHTML = optionsHTML;
 
-        // Food Menu Items
+        // Food Menu Items with Matched Icons & Navy Theme
         const bakeryItems = [
-            { id: 'item1', name: 'Egg Salad Wrap', price: 0 },
-            { id: 'item2', name: 'Chicken Salad Wrap', price: 0 },
-            { id: 'item3', name: 'Salad Wrapped', price: 0 },
-            { id: 'item4', name: 'Fresh Sandwich', price: 0 }
+            { id: 'item1', name: 'Egg Salad Wrap', price: 0, icon: 'fa-egg' },
+            { id: 'item2', name: 'Chicken Salad Wrap', price: 0, icon: 'fa-drumstick-bite' },
+            { id: 'item3', name: 'Salad Wrapped', price: 0, icon: 'fa-leaf' },
+            { id: 'item4', name: 'Fresh Sandwich', price: 0, icon: 'fa-bread-slice' }
         ];
 
         const menuContainer = document.getElementById('menuContainer');
@@ -265,8 +265,8 @@
             card.className = "bg-cardWhite p-2.5 rounded-xl shadow-sm border border-slate-200/80 flex justify-between items-center transition-all";
             card.innerHTML = `
                 <div class="flex items-center space-x-2.5 flex-1 pr-2">
-                    <div class="w-7 h-7 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center shrink-0 border border-amber-100 shadow-sm">
-                        <i class="fa-solid fa-croissant text-xs"></i>
+                    <div class="w-7 h-7 rounded-lg bg-blue-50 text-navyPrimary flex items-center justify-center shrink-0 border border-blue-100 shadow-sm">
+                        <i class="fa-solid ${item.icon} text-xs"></i>
                     </div>
                     <h3 class="font-bold text-xs text-slate-900">${item.name}</h3>
                 </div>
