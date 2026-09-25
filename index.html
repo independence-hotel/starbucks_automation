@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
     <title>Starbucks Food Order App</title>
     
-    <!-- PWA & Mobile App Meta Tags & Hotel Logo Profile Icon -->
+    <!-- PWA & Mobile App Meta Tags -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -44,7 +44,6 @@
         input[type="number"]::-webkit-inner-spin-button,
         input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 
-        /* ── Ripple ── */
         .btn-press { position: relative; overflow: hidden; }
         .btn-press::after {
             content: '';
@@ -68,7 +67,6 @@
             position: relative;
         }
 
-        /* ── Header shimmer ── */
         @keyframes shimmerSlide {
             0%   { transform: translateX(-120%); }
             100% { transform: translateX(220%); }
@@ -82,21 +80,18 @@
             pointer-events: none;
         }
 
-        /* ── Card entrance ── */
         @keyframes slideUp {
             from { opacity: 0; transform: translateY(18px); }
             to   { opacity: 1; transform: translateY(0); }
         }
         .card-enter { animation: slideUp 0.38s cubic-bezier(0.16,1,0.3,1) forwards; opacity: 0; }
 
-        /* ── Modal fade-scale ── */
         @keyframes fadeScale {
             from { opacity: 0; transform: scale(0.92) translateY(8px); }
             to   { opacity: 1; transform: scale(1) translateY(0); }
         }
         .animate-fade-in { animation: fadeScale 0.28s cubic-bezier(0.16,1,0.3,1) forwards; }
 
-        /* ── Qty counter pulse on change ── */
         @keyframes qtyPop {
             0%   { transform: scale(1); }
             40%  { transform: scale(1.35); color: #1B365D; }
@@ -104,62 +99,124 @@
         }
         .qty-pop { animation: qtyPop 0.22s ease; }
 
-        /* ── Card hover lift ── */
         .menu-card { transition: box-shadow 0.2s ease, transform 0.2s ease; }
         .menu-card:hover { box-shadow: 0 6px 18px rgba(27,54,93,0.1); transform: translateY(-1px); }
 
-        /* ── Sticky footer slide-in ── */
         @keyframes footerIn {
             from { opacity: 0; transform: translateY(20px); }
             to   { opacity: 1; transform: translateY(0); }
         }
         .footer-bar { animation: footerIn 0.5s 0.3s cubic-bezier(0.16,1,0.3,1) both; }
 
-        /* ── Total quantity number flip ── */
         @keyframes numFlip {
             0%   { transform: translateY(-8px); opacity: 0; }
             100% { transform: translateY(0);    opacity: 1; }
         }
         .num-flip { animation: numFlip 0.18s ease forwards; }
 
-        /* ── Place Order button glow ── */
         @keyframes btnGlow {
             0%,100% { box-shadow: 0 4px 14px rgba(27,54,93,0.25); }
             50%     { box-shadow: 0 4px 22px rgba(27,54,93,0.45); }
         }
         #openConfirmBtn { animation: btnGlow 2.4s infinite ease-in-out; }
-        #openConfirmBtn:hover { animation: none; box-shadow: 0 6px 22px rgba(27,54,93,0.4); transform: translateY(-1px); transition: all 0.2s ease; }
 
-        /* ── Step progress pulse ── */
         @keyframes pulseGlow {
             0%,100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(27,54,93,0.4); }
             50%     { transform: scale(1.08); box-shadow: 0 0 15px 4px rgba(27,54,93,0.3); }
         }
         .step-pulse { animation: pulseGlow 1.2s infinite ease-in-out; }
 
-        /* ── Input focus ring ── */
         select:focus, input:focus {
             outline: 2px solid #1B365D;
             outline-offset: 1px;
             transition: outline 0.15s ease;
         }
 
-        /* ── Emoji icon bounce on hover ── */
         .emoji-icon { transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1); display: inline-block; }
         .menu-card:hover .emoji-icon { transform: scale(1.18) rotate(-4deg); }
-
-        /* ── +/- button shimmer on hover ── */
         .qty-btn { transition: background 0.15s ease, transform 0.1s ease; }
         .qty-btn:hover { background: #EEF2FF !important; color: #1B365D; }
     </style>
 </head>
-<body class="font-sans pb-28 text-slate-800 text-sm">
+<body class="font-sans text-slate-800 text-sm">
 
-    <div class="app-container flex flex-col justify-between">
+    <!-- LOGIN SCREEN OVERLAY -->
+    <div id="loginScreen" class="fixed inset-0 bg-slate-900 z-50 flex items-center justify-center p-4">
+        <div class="app-container w-full bg-navyDark flex flex-col justify-between p-6 text-center text-white relative overflow-hidden">
+            <div class="absolute -top-24 -right-24 w-64 h-64 bg-navyPrimary/30 rounded-full blur-3xl pointer-events-none"></div>
+            
+            <div class="pt-8 space-y-4 relative z-10">
+                <div class="bg-white p-2.5 rounded-2xl inline-block shadow-xl border border-slate-700">
+                    <img src="logo.png" alt="Hotel Logo" class="h-16 w-auto mx-auto object-contain" onerror="this.onerror=null; this.src='Logo PNG-white.png';">
+                </div>
+                <div>
+                    <h1 class="text-base font-extrabold tracking-widest uppercase">INDEPENDENCE HOTEL</h1>
+                    <p class="text-slate-400 text-xs mt-1">F&B Staff Authentication Portal</p>
+                </div>
+            </div>
+
+            <div class="space-y-3.5 relative z-10 py-6">
+                <!-- Google Login Button -->
+                <button type="button" onclick="handleLogin('Google')" class="w-full bg-white hover:bg-slate-100 text-slate-800 font-bold py-3.5 px-4 rounded-xl shadow-md transition-all flex items-center justify-center space-x-3 btn-press text-sm">
+                    <i class="fa-brands fa-google text-red-500 text-base"></i>
+                    <span>Continue with Google</span>
+                </button>
+
+                <!-- Phone Number Login Button -->
+                <button type="button" onclick="openPhoneLoginModal()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-3.5 px-4 rounded-xl border border-slate-700 shadow-md transition-all flex items-center justify-center space-x-3 btn-press text-sm">
+                    <i class="fa-solid fa-phone text-emerald-400 text-base"></i>
+                    <span>Continue with Phone Number</span>
+                </button>
+
+                <!-- Apple ID Login Button -->
+                <button type="button" onclick="handleLogin('Apple ID')" class="w-full bg-black hover:bg-slate-900 text-white font-bold py-3.5 px-4 rounded-xl border border-slate-800 shadow-md transition-all flex items-center justify-center space-x-3 btn-press text-sm">
+                    <i class="fa-brands fa-apple text-white text-base"></i>
+                    <span>Sign in with Apple ID</span>
+                </button>
+            </div>
+
+            <div class="text-center relative z-10 pb-4">
+                <p class="text-[11px] text-slate-500">Secure Internal System • @2026 Sihanoukville</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- PHONE NUMBER INPUT MODAL -->
+    <div id="phoneModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-[60] flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl animate-fade-in text-center space-y-4 text-slate-800">
+            <div class="w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto text-xl border border-emerald-100 shadow-sm">
+                <i class="fa-solid fa-phone"></i>
+            </div>
+            <div>
+                <h3 class="font-extrabold text-sm uppercase text-slate-900">Enter Phone Number</h3>
+                <p class="text-xs text-slate-500 mt-1">Please enter your staff phone number to verify</p>
+            </div>
+            <div class="relative">
+                <input type="tel" id="staffPhone" placeholder="e.g. 012 345 678" class="w-full pl-9 pr-3 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:ring-2 focus:ring-navyPrimary">
+                <i class="fa-solid fa-mobile-screen absolute left-3 top-3.5 text-slate-400"></i>
+            </div>
+            <div class="grid grid-cols-2 gap-2.5 pt-1">
+                <button type="button" onclick="closePhoneLoginModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 py-3 rounded-xl font-bold text-sm transition-all btn-press">Cancel</button>
+                <button type="button" onclick="submitPhoneLogin()" class="bg-navyPrimary hover:bg-navyDark text-white py-3 rounded-xl font-bold text-sm shadow-md transition-all btn-press">Verify & Login</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN APP CONTAINER -->
+    <div class="app-container flex flex-col justify-between pb-28">
         <div>
             <!-- Header -->
             <div class="bg-navyPrimary text-center py-4 px-3 shadow-md rounded-b-2xl mb-3 relative overflow-hidden header-shimmer">
-                <div class="bg-white p-1.5 rounded-xl inline-block mb-2 shadow-md border border-slate-200 transition-transform duration-300 hover:scale-105">
+                <div class="flex justify-between items-center px-2 mb-2">
+                    <div class="bg-white/10 px-2.5 py-1 rounded-lg text-white text-[11px] font-semibold flex items-center space-x-1.5 backdrop-blur-sm">
+                        <i class="fa-solid fa-user-shield text-emerald-400 text-xs"></i>
+                        <span id="loggedInUserDisplay">Staff</span>
+                    </div>
+                    <button type="button" onclick="handleLogout()" class="text-slate-300 hover:text-white text-xs font-bold px-2.5 py-1 rounded-lg bg-white/10 hover:bg-red-500/80 transition-all">
+                        <i class="fa-solid fa-right-from-bracket mr-1"></i> Logout
+                    </button>
+                </div>
+                <div class="bg-white p-1.5 rounded-xl inline-block mb-2 shadow-md border border-slate-200">
                     <img src="logo.png" alt="Logo" class="h-14 w-auto mx-auto object-contain" onerror="this.onerror=null; this.src='Logo PNG-white.png';">
                 </div>
                 <h1 class="text-white text-sm font-extrabold tracking-widest uppercase">INDEPENDENCE HOTEL BY DARA</h1>
@@ -167,7 +224,6 @@
             </div>
 
             <form id="orderForm" class="px-3 space-y-3">
-                <!-- Outlet & Schedule Card -->
                 <div class="bg-cardWhite p-3.5 rounded-xl shadow-sm border border-slate-200/80 space-y-2.5 card-enter" style="animation-delay:0.05s">
                     <div class="flex items-center space-x-1.5 border-b border-slate-100 pb-1.5">
                         <i class="fa-solid fa-store text-navyPrimary text-xs"></i>
@@ -178,7 +234,7 @@
                         <div>
                             <label class="text-[11px] text-slate-500 font-bold uppercase tracking-wider mb-0.5 block">SELECT BRANCH *</label>
                             <div class="relative">
-                                <select id="branch" required class="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-1 focus:ring-navyPrimary appearance-none font-semibold text-slate-700 transition-all">
+                                <select id="branch" required class="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm appearance-none font-semibold text-slate-700 transition-all">
                                     <option value="">Select Branch...</option>
                                     <option value="STARBUCKS 1">STARBUCKS 1</option>
                                     <option value="STARBUCKS 2">STARBUCKS 2</option>
@@ -193,14 +249,14 @@
                             <div>
                                 <label class="text-[11px] text-slate-500 font-bold uppercase tracking-wider mb-0.5 block">Order Date *</label>
                                 <div class="relative">
-                                    <input type="date" id="orderDate" required class="w-full pl-7 pr-2 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-1 focus:ring-navyPrimary font-semibold text-slate-700 transition-all">
+                                    <input type="date" id="orderDate" required class="w-full pl-7 pr-2 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 transition-all">
                                     <i class="fa-regular fa-calendar absolute left-2.5 top-2.5 text-slate-400 text-xs"></i>
                                 </div>
                             </div>
                             <div>
                                 <label class="text-[11px] text-slate-500 font-bold uppercase tracking-wider mb-0.5 block">Pickup Time *</label>
                                 <div class="relative">
-                                    <input type="text" id="pickupTime" list="timeOptions" placeholder="e.g. 05:30 AM" required autocomplete="off" class="w-full pl-7 pr-2 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-1 focus:ring-navyPrimary font-semibold text-slate-700 transition-all">
+                                    <input type="text" id="pickupTime" list="timeOptions" placeholder="e.g. 05:30 AM" required autocomplete="off" class="w-full pl-7 pr-2 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 transition-all">
                                     <datalist id="timeOptions"></datalist>
                                     <i class="fa-regular fa-clock absolute left-2.5 top-2.5 text-slate-400 text-xs"></i>
                                 </div>
@@ -210,14 +266,13 @@
                         <div>
                             <label class="text-[11px] text-slate-500 font-bold uppercase tracking-wider mb-0.5 block">Ordered By *</label>
                             <div class="relative">
-                                <input type="text" id="orderedBy" placeholder="Staff Name" required class="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-1 focus:ring-navyPrimary font-semibold text-slate-700 transition-all">
+                                <input type="text" id="orderedBy" placeholder="Staff Name" required class="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 transition-all">
                                 <i class="fa-regular fa-user absolute left-3 top-2.5 text-slate-400 text-xs"></i>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Food Menu Title -->
                 <div class="flex items-center justify-between px-1 pt-1 card-enter" style="animation-delay:0.12s">
                     <div class="flex items-center space-x-1.5">
                         <i class="fa-solid fa-utensils text-navyPrimary text-xs"></i>
@@ -226,12 +281,11 @@
                     <span class="text-[11px] font-bold text-slate-400 uppercase">4 Items</span>
                 </div>
 
-                <!-- Menu List -->
                 <div id="menuContainer" class="space-y-2.5"></div>
             </form>
         </div>
 
-        <div class="text-center mt-6 mb-20">
+        <div class="text-center mt-6 mb-10">
             <p class="text-[11px] text-slate-400 font-light">@2026 Independence Hotel, Sihanoukville</p>
         </div>
     </div>
@@ -266,7 +320,7 @@
             <p class="text-xs text-slate-600 font-medium">Are you sure you want to submit this order?</p>
             <div class="grid grid-cols-2 gap-2.5 pt-1">
                 <button type="button" id="cancelBtn" class="bg-slate-100 hover:bg-slate-200 text-slate-700 py-3 rounded-xl font-bold text-sm transition-all btn-press">Cancel</button>
-                <button type="button" id="confirmYesBtn" class="bg-navyPrimary hover:bg-navyDark text-white py-3 rounded-xl font-bold text-sm shadow-md shadow-navyPrimary/20 transition-all btn-press">Yes, Submit</button>
+                <button type="button" id="confirmYesBtn" class="bg-navyPrimary hover:bg-navyDark text-white py-3 rounded-xl font-bold text-sm shadow-md transition-all btn-press">Yes, Submit</button>
             </div>
         </div>
     </div>
@@ -283,28 +337,28 @@
             <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 w-full space-y-3">
                 <div class="flex items-center justify-between px-2 relative">
                     <div class="flex flex-col items-center space-y-1 z-10">
-                        <div id="step1Icon" class="w-7 h-7 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center text-xs shadow-sm transition-all duration-300">
+                        <div id="step1Icon" class="w-7 h-7 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center text-xs shadow-sm">
                             <i class="fa-solid fa-paper-plane"></i>
                         </div>
-                        <span id="step1Text" class="text-[11px] font-bold text-slate-400 transition-colors">Sent</span>
+                        <span id="step1Text" class="text-[11px] font-bold text-slate-400">Sent</span>
                     </div>
                     <div class="flex-1 h-1 bg-slate-200 mx-1 rounded-full overflow-hidden relative">
                         <div id="line1Fill" class="absolute left-0 top-0 h-full bg-navyPrimary w-0 transition-all duration-500"></div>
                     </div>
                     <div class="flex flex-col items-center space-y-1 z-10">
-                        <div id="step2Icon" class="w-7 h-7 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center text-xs shadow-sm transition-all duration-300">
+                        <div id="step2Icon" class="w-7 h-7 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center text-xs shadow-sm">
                             <i class="fa-solid fa-gears"></i>
                         </div>
-                        <span id="step2Text" class="text-[11px] font-bold text-slate-400 transition-colors">Processed</span>
+                        <span id="step2Text" class="text-[11px] font-bold text-slate-400">Processed</span>
                     </div>
                     <div class="flex-1 h-1 bg-slate-200 mx-1 rounded-full overflow-hidden relative">
                         <div id="line2Fill" class="absolute left-0 top-0 h-full bg-emerald-500 w-0 transition-all duration-500"></div>
                     </div>
                     <div class="flex flex-col items-center space-y-1 z-10">
-                        <div id="step3Icon" class="w-7 h-7 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center text-xs shadow-sm transition-all duration-300">
+                        <div id="step3Icon" class="w-7 h-7 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center text-xs shadow-sm">
                             <i class="fa-solid fa-check-double"></i>
                         </div>
-                        <span id="step3Text" class="text-[11px] font-bold text-slate-400 transition-colors">Delivered</span>
+                        <span id="step3Text" class="text-[11px] font-bold text-slate-400">Delivered</span>
                     </div>
                 </div>
                 <p id="progressSubtitle" class="text-xs text-slate-400 pt-1 font-medium">Initializing secure connection...</p>
@@ -313,6 +367,53 @@
     </div>
 
     <script>
+        // --- AUTHENTICATION & LOGIN LOGIC ---
+        function checkAuth() {
+            const loggedUser = localStorage.getItem('independence_logged_user');
+            if (loggedUser) {
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('loggedInUserDisplay').innerText = loggedUser;
+                document.getElementById('orderedBy').value = loggedUser;
+            } else {
+                document.getElementById('loginScreen').style.display = 'flex';
+            }
+        }
+
+        function handleLogin(provider) {
+            let userName = prompt(`Enter your staff name for ${provider} login:`, "F&B Staff");
+            if (userName && userName.trim() !== "") {
+                localStorage.setItem('independence_logged_user', userName.trim());
+                checkAuth();
+            }
+        }
+
+        function openPhoneLoginModal() {
+            document.getElementById('phoneModal').classList.remove('hidden');
+        }
+
+        function closePhoneLoginModal() {
+            document.getElementById('phoneModal').classList.add('hidden');
+        }
+
+        function submitPhoneLogin() {
+            const phone = document.getElementById('staffPhone').value.trim();
+            if (!phone) { alert("Please enter a valid phone number!"); return; }
+            localStorage.setItem('independence_logged_user', `Phone: ${phone}`);
+            closePhoneLoginModal();
+            checkAuth();
+        }
+
+        function handleLogout() {
+            if (confirm("Are you sure you want to logout?")) {
+                localStorage.removeItem('independence_logged_user');
+                window.location.reload();
+            }
+        }
+
+        // Run auth check on load
+        window.addEventListener('DOMContentLoaded', checkAuth);
+
+        // --- APP LOGIC ---
         const timeDatalist = document.getElementById('timeOptions');
         let optionsHTML = '';
         for (let m = 0; m < 24 * 60; m += 5) {
@@ -398,11 +499,9 @@
 
         if (localStorage.getItem('stb_branch'))     document.getElementById('branch').value     = localStorage.getItem('stb_branch');
         if (localStorage.getItem('stb_pickupTime')) document.getElementById('pickupTime').value = localStorage.getItem('stb_pickupTime');
-        if (localStorage.getItem('stb_orderedBy'))  document.getElementById('orderedBy').value  = localStorage.getItem('stb_orderedBy');
 
         document.getElementById('branch').addEventListener('change',     function() { localStorage.setItem('stb_branch', this.value); });
         document.getElementById('pickupTime').addEventListener('input',   function() { localStorage.setItem('stb_pickupTime', this.value); });
-        document.getElementById('orderedBy').addEventListener('input',   function() { localStorage.setItem('stb_orderedBy', this.value); });
 
         const orderForm      = document.getElementById('orderForm');
         const openConfirmBtn = document.getElementById('openConfirmBtn');
@@ -489,9 +588,6 @@
                 item2: quantities['item2'] || 0,
                 item3: quantities['item3'] || 0,
                 item4: quantities['item4'] || 0,
-                item5: quantities['item5'] || 0,
-                item6: quantities['item6'] || 0,
-                item7: quantities['item7'] || 0,
                 pickupTime:  document.getElementById('pickupTime').value,
                 orderedBy:   document.getElementById('orderedBy').value,
                 totalQty:    totalQty,
