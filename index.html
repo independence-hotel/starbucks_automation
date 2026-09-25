@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
     <title>Starbucks Food Order App</title>
     
-    <!-- PWA & Mobile App Meta Tags -->
+    <!-- PWA & Mobile App Meta Tags & Hotel Logo Profile Icon -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -44,6 +44,7 @@
         input[type="number"]::-webkit-inner-spin-button,
         input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 
+        /* ── Ripple ── */
         .btn-press { position: relative; overflow: hidden; }
         .btn-press::after {
             content: '';
@@ -67,6 +68,7 @@
             position: relative;
         }
 
+        /* ── Header shimmer ── */
         @keyframes shimmerSlide {
             0%   { transform: translateX(-120%); }
             100% { transform: translateX(220%); }
@@ -80,18 +82,21 @@
             pointer-events: none;
         }
 
+        /* ── Card entrance ── */
         @keyframes slideUp {
             from { opacity: 0; transform: translateY(18px); }
             to   { opacity: 1; transform: translateY(0); }
         }
         .card-enter { animation: slideUp 0.38s cubic-bezier(0.16,1,0.3,1) forwards; opacity: 0; }
 
+        /* ── Modal fade-scale ── */
         @keyframes fadeScale {
             from { opacity: 0; transform: scale(0.92) translateY(8px); }
             to   { opacity: 1; transform: scale(1) translateY(0); }
         }
         .animate-fade-in { animation: fadeScale 0.28s cubic-bezier(0.16,1,0.3,1) forwards; }
 
+        /* ── Qty counter pulse on change ── */
         @keyframes qtyPop {
             0%   { transform: scale(1); }
             40%  { transform: scale(1.35); color: #1B365D; }
@@ -99,105 +104,96 @@
         }
         .qty-pop { animation: qtyPop 0.22s ease; }
 
+        /* ── Card hover lift ── */
         .menu-card { transition: box-shadow 0.2s ease, transform 0.2s ease; }
         .menu-card:hover { box-shadow: 0 6px 18px rgba(27,54,93,0.1); transform: translateY(-1px); }
 
+        /* ── Sticky footer slide-in ── */
         @keyframes footerIn {
             from { opacity: 0; transform: translateY(20px); }
             to   { opacity: 1; transform: translateY(0); }
         }
         .footer-bar { animation: footerIn 0.5s 0.3s cubic-bezier(0.16,1,0.3,1) both; }
 
+        /* ── Total quantity number flip ── */
         @keyframes numFlip {
             0%   { transform: translateY(-8px); opacity: 0; }
             100% { transform: translateY(0);    opacity: 1; }
         }
         .num-flip { animation: numFlip 0.18s ease forwards; }
 
+        /* ── Place Order button glow ── */
         @keyframes btnGlow {
             0%,100% { box-shadow: 0 4px 14px rgba(27,54,93,0.25); }
             50%     { box-shadow: 0 4px 22px rgba(27,54,93,0.45); }
         }
         #openConfirmBtn { animation: btnGlow 2.4s infinite ease-in-out; }
+        #openConfirmBtn:hover { animation: none; box-shadow: 0 6px 22px rgba(27,54,93,0.4); transform: translateY(-1px); transition: all 0.2s ease; }
 
+        /* ── Step progress pulse ── */
         @keyframes pulseGlow {
             0%,100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(27,54,93,0.4); }
             50%     { transform: scale(1.08); box-shadow: 0 0 15px 4px rgba(27,54,93,0.3); }
         }
         .step-pulse { animation: pulseGlow 1.2s infinite ease-in-out; }
 
+        /* ── Input focus ring ── */
         select:focus, input:focus {
             outline: 2px solid #1B365D;
             outline-offset: 1px;
             transition: outline 0.15s ease;
         }
 
+        /* ── Emoji icon bounce on hover ── */
         .emoji-icon { transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1); display: inline-block; }
         .menu-card:hover .emoji-icon { transform: scale(1.18) rotate(-4deg); }
+
+        /* ── +/- button shimmer on hover ── */
         .qty-btn { transition: background 0.15s ease, transform 0.1s ease; }
         .qty-btn:hover { background: #EEF2FF !important; color: #1B365D; }
     </style>
 </head>
 <body class="font-sans text-slate-800 text-sm">
 
-    <!-- LOGIN SCREEN OVERLAY -->
-    <div id="loginScreen" class="fixed inset-0 bg-slate-900 z-50 flex items-center justify-center p-4">
-        <div class="app-container w-full bg-navyDark flex flex-col justify-between p-6 text-center text-white relative overflow-hidden">
+    <!-- LOGIN SCREEN (SOP Authentication Portal) -->
+    <div id="loginScreen" class="fixed inset-0 bg-slate-950 z-50 flex items-center justify-center p-4">
+        <div class="app-container w-full bg-navyDark flex flex-col justify-between p-6 text-center text-white relative overflow-hidden shadow-2xl">
             <div class="absolute -top-24 -right-24 w-64 h-64 bg-navyPrimary/30 rounded-full blur-3xl pointer-events-none"></div>
             
-            <div class="pt-8 space-y-4 relative z-10">
+            <div class="pt-6 space-y-3 relative z-10">
                 <div class="bg-white p-2.5 rounded-2xl inline-block shadow-xl border border-slate-700">
-                    <img src="logo.png" alt="Hotel Logo" class="h-16 w-auto mx-auto object-contain" onerror="this.onerror=null; this.src='Logo PNG-white.png';">
+                    <img src="logo.png" alt="Hotel Logo" class="h-14 w-auto mx-auto object-contain" onerror="this.onerror=null; this.src='Logo PNG-white.png';">
                 </div>
                 <div>
                     <h1 class="text-base font-extrabold tracking-widest uppercase">INDEPENDENCE HOTEL</h1>
-                    <p class="text-slate-400 text-xs mt-1">F&B Staff Authentication Portal</p>
+                    <p class="text-slate-400 text-xs mt-0.5 font-medium">F&B Staff Authentication Portal</p>
                 </div>
             </div>
 
-            <div class="space-y-3.5 relative z-10 py-6">
-                <!-- Google Login Button -->
-                <button type="button" onclick="handleLogin('Google')" class="w-full bg-white hover:bg-slate-100 text-slate-800 font-bold py-3.5 px-4 rounded-xl shadow-md transition-all flex items-center justify-center space-x-3 btn-press text-sm">
-                    <i class="fa-brands fa-google text-red-500 text-base"></i>
-                    <span>Continue with Google</span>
-                </button>
-
-                <!-- Phone Number Login Button -->
-                <button type="button" onclick="openPhoneLoginModal()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-3.5 px-4 rounded-xl border border-slate-700 shadow-md transition-all flex items-center justify-center space-x-3 btn-press text-sm">
-                    <i class="fa-solid fa-phone text-emerald-400 text-base"></i>
-                    <span>Continue with Phone Number</span>
-                </button>
-
-                <!-- Apple ID Login Button -->
-                <button type="button" onclick="handleLogin('Apple ID')" class="w-full bg-black hover:bg-slate-900 text-white font-bold py-3.5 px-4 rounded-xl border border-slate-800 shadow-md transition-all flex items-center justify-center space-x-3 btn-press text-sm">
-                    <i class="fa-brands fa-apple text-white text-base"></i>
-                    <span>Sign in with Apple ID</span>
+            <!-- Login Form Card -->
+            <div class="bg-slate-900/90 backdrop-blur-md p-4 rounded-2xl border border-slate-800 space-y-3.5 text-left relative z-10 my-4 shadow-xl">
+                <div>
+                    <label class="text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-1 block">Full Name *</label>
+                    <div class="relative">
+                        <input type="text" id="loginFullName" placeholder="Enter your full name" required class="w-full pl-9 pr-3 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-sm font-semibold text-white focus:ring-2 focus:ring-blue-500 transition-all">
+                        <i class="fa-regular fa-user absolute left-3 top-3.5 text-slate-400 text-xs"></i>
+                    </div>
+                </div>
+                <div>
+                    <label class="text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-1 block">Phone Number *</label>
+                    <div class="relative">
+                        <input type="tel" id="loginPhone" placeholder="Enter your phone number" required class="w-full pl-9 pr-3 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-sm font-semibold text-white focus:ring-2 focus:ring-blue-500 transition-all">
+                        <i class="fa-solid fa-phone absolute left-3 top-3.5 text-slate-400 text-xs"></i>
+                    </div>
+                </div>
+                <button type="button" onclick="submitLogin()" class="w-full bg-navyPrimary hover:bg-blue-600 text-white font-bold py-3 rounded-xl shadow-lg transition-all btn-press text-sm mt-1 flex items-center justify-center space-x-2">
+                    <span>LOGIN TO SYSTEM</span>
+                    <i class="fa-solid fa-arrow-right-to-bracket text-xs"></i>
                 </button>
             </div>
 
-            <div class="text-center relative z-10 pb-4">
+            <div class="text-center relative z-10 pb-2">
                 <p class="text-[11px] text-slate-500">Secure Internal System • @2026 Sihanoukville</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- PHONE NUMBER INPUT MODAL -->
-    <div id="phoneModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-[60] flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl animate-fade-in text-center space-y-4 text-slate-800">
-            <div class="w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto text-xl border border-emerald-100 shadow-sm">
-                <i class="fa-solid fa-phone"></i>
-            </div>
-            <div>
-                <h3 class="font-extrabold text-sm uppercase text-slate-900">Enter Phone Number</h3>
-                <p class="text-xs text-slate-500 mt-1">Please enter your staff phone number to verify</p>
-            </div>
-            <div class="relative">
-                <input type="tel" id="staffPhone" placeholder="e.g. 012 345 678" class="w-full pl-9 pr-3 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:ring-2 focus:ring-navyPrimary">
-                <i class="fa-solid fa-mobile-screen absolute left-3 top-3.5 text-slate-400"></i>
-            </div>
-            <div class="grid grid-cols-2 gap-2.5 pt-1">
-                <button type="button" onclick="closePhoneLoginModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 py-3 rounded-xl font-bold text-sm transition-all btn-press">Cancel</button>
-                <button type="button" onclick="submitPhoneLogin()" class="bg-navyPrimary hover:bg-navyDark text-white py-3 rounded-xl font-bold text-sm shadow-md transition-all btn-press">Verify & Login</button>
             </div>
         </div>
     </div>
@@ -266,7 +262,7 @@
                         <div>
                             <label class="text-[11px] text-slate-500 font-bold uppercase tracking-wider mb-0.5 block">Ordered By *</label>
                             <div class="relative">
-                                <input type="text" id="orderedBy" placeholder="Staff Name" required class="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 transition-all">
+                                <input type="text" id="orderedBy" placeholder="Staff Name" required readonly class="w-full pl-8 pr-3 py-2 bg-slate-100 border border-slate-200 rounded-lg text-sm font-bold text-navyPrimary cursor-not-allowed">
                                 <i class="fa-regular fa-user absolute left-3 top-2.5 text-slate-400 text-xs"></i>
                             </div>
                         </div>
@@ -367,50 +363,45 @@
     </div>
 
     <script>
-        // --- AUTHENTICATION & LOGIN LOGIC ---
+        // --- LOGIN AUTHENTICATION LOGIC ---
         function checkAuth() {
             const loggedUser = localStorage.getItem('independence_logged_user');
             if (loggedUser) {
                 document.getElementById('loginScreen').style.display = 'none';
-                document.getElementById('loggedInUserDisplay').innerText = loggedUser;
+                document.getElementById('loggedInUserDisplay').innerText = loggedUser.split(' ')[0]; // Show first name in header badge
                 document.getElementById('orderedBy').value = loggedUser;
             } else {
                 document.getElementById('loginScreen').style.display = 'flex';
             }
         }
 
-        function handleLogin(provider) {
-            let userName = prompt(`Enter your staff name for ${provider} login:`, "F&B Staff");
-            if (userName && userName.trim() !== "") {
-                localStorage.setItem('independence_logged_user', userName.trim());
-                checkAuth();
+        function submitLogin() {
+            const fullName = document.getElementById('loginFullName').value.trim();
+            const phone = document.getElementById('loginPhone').value.trim();
+
+            if (!fullName) {
+                alert("សូមបញ្ចូលឈ្មោះពេញរបស់អ្នក (Full Name)!");
+                document.getElementById('loginFullName').focus();
+                return;
             }
-        }
+            if (!phone) {
+                alert("សូមបញ្ចូលលេខទូរស័ព្ទរបស់អ្នក (Phone Number)!");
+                document.getElementById('loginPhone').focus();
+                return;
+            }
 
-        function openPhoneLoginModal() {
-            document.getElementById('phoneModal').classList.remove('hidden');
-        }
-
-        function closePhoneLoginModal() {
-            document.getElementById('phoneModal').classList.add('hidden');
-        }
-
-        function submitPhoneLogin() {
-            const phone = document.getElementById('staffPhone').value.trim();
-            if (!phone) { alert("Please enter a valid phone number!"); return; }
-            localStorage.setItem('independence_logged_user', `Phone: ${phone}`);
-            closePhoneLoginModal();
+            const userInfo = `${fullName} (${phone})`;
+            localStorage.setItem('independence_logged_user', userInfo);
             checkAuth();
         }
 
         function handleLogout() {
-            if (confirm("Are you sure you want to logout?")) {
+            if (confirm("តើអ្នកពិតជាចង់ចាកចេញ (Logout) មែនទេ?")) {
                 localStorage.removeItem('independence_logged_user');
                 window.location.reload();
             }
         }
 
-        // Run auth check on load
         window.addEventListener('DOMContentLoaded', checkAuth);
 
         // --- APP LOGIC ---
@@ -598,7 +589,7 @@
 
             fetch(webAppUrl, {
                 method: 'POST',
-                mode: 'no-cors',
+                    mode: 'no-cors',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
             }).then(() => {
