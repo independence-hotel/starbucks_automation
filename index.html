@@ -29,6 +29,7 @@
         input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         .btn-press:active { transform: scale(0.96); transition: transform 0.1s ease; }
         
+        /* Smooth Fade & Scale Animations */
         @keyframes fadeIn {
             from { opacity: 0; transform: scale(0.95); }
             to { opacity: 1; transform: scale(1); }
@@ -37,6 +38,7 @@
             animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
+        /* Main Mobile Container */
         .app-container {
             max-width: 430px;
             margin: 0 auto;
@@ -51,16 +53,20 @@
 
     <div class="app-container flex flex-col justify-between">
         <div>
-            <!-- Header -->
+            <!-- Compact Mobile Header -->
             <div class="bg-navyPrimary text-center py-4 px-3 shadow-md rounded-b-2xl mb-3 relative overflow-hidden">
-                <div class="bg-white p-2 rounded-full inline-block mb-2 shadow-md border border-slate-200">
-                    <i class="fa-solid fa-mug-hot text-navyPrimary text-xl"></i>
+                <!-- Logo -->
+                <div class="bg-white p-1.5 rounded-xl inline-block mb-2 shadow-md border border-slate-200">
+                    <img src="Logo PNG-white.png" alt="Logo" class="h-14 w-auto mx-auto object-contain" onerror="this.onerror=null; this.src='logo.png';">
                 </div>
-                <h1 class="text-white text-xs font-extrabold tracking-widest uppercase">STARBUCKS ORDER TRACKER</h1>
-                <p class="text-slate-300 text-[11px] mt-0.5 font-semibold tracking-wider">DAILY ORDER SYSTEM</p>
+                
+                <h1 class="text-white text-xs font-extrabold tracking-widest uppercase">INDEPENDENCE HOTEL BY DARA</h1>
+                <p class="text-slate-300 text-[12px] mt-0.5 font-semibold tracking-wider">BAKERY ORDER</p>
             </div>
 
             <form id="orderForm" class="px-3 space-y-3">
+                
+                <!-- Compact Order Details Card -->
                 <div class="bg-cardWhite p-3 rounded-xl shadow-sm border border-slate-200/80 space-y-2">
                     <div class="flex items-center space-x-1.5 border-b border-slate-100 pb-1.5">
                         <i class="fa-solid fa-store text-navyPrimary text-[11px]"></i>
@@ -69,6 +75,7 @@
                     
                     <div class="space-y-2">
                         <div>
+                            <!-- Starbucks Branches -->
                             <label class="text-[9px] text-slate-500 font-bold uppercase tracking-wider mb-0.5 block">SELECT BRANCH *</label>
                             <div class="relative">
                                 <select id="branch" required class="w-full pl-7 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:ring-1 focus:ring-navyPrimary appearance-none font-semibold text-slate-700 transition-all">
@@ -93,6 +100,7 @@
                             <div>
                                 <label class="text-[9px] text-slate-500 font-bold uppercase tracking-wider mb-0.5 block">Pickup Time *</label>
                                 <div class="relative">
+                                    <!-- Input with DataList -->
                                     <input type="text" id="pickupTime" list="timeOptions" placeholder="e.g. 05:30 AM" required autocomplete="off" class="w-full pl-6 pr-2 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:ring-1 focus:ring-navyPrimary font-semibold text-slate-700 transition-all">
                                     <datalist id="timeOptions"></datalist>
                                     <i class="fa-regular fa-clock absolute left-2 top-2 text-slate-400 text-[11px]"></i>
@@ -110,23 +118,28 @@
                     </div>
                 </div>
 
+                <!-- Menu Section Title -->
                 <div class="flex items-center justify-between px-1 pt-1">
                     <div class="flex items-center space-x-1.5">
                         <i class="fa-solid fa-utensils text-navyPrimary text-[11px]"></i>
-                        <h2 class="font-bold text-navyPrimary text-[11px] uppercase">Product Menu</h2>
+                        <h2 class="font-bold text-navyPrimary text-[11px] uppercase">Bakery Menu</h2>
                     </div>
+                    <!-- Exactly 4 items for Starbucks -->
                     <span class="text-[9px] font-bold text-slate-400 uppercase">4 Items</span>
                 </div>
 
+                <!-- Menu List Container -->
                 <div id="menuContainer" class="space-y-2"></div>
             </form>
         </div>
 
+        <!-- Footer Copyright -->
         <div class="text-center mt-6 mb-20">
-            <p style="font-size: 9px; color: #94a3b8; font-weight: 300;">@2026 Starbucks Order Tracker</p>
+            <p style="font-size: 9px; color: #94a3b8; font-weight: 300;">@2026 Independence Hotel, Sihanoukville</p>
         </div>
     </div>
 
+    <!-- Sticky Footer Summary -->
     <div class="fixed bottom-0 left-0 w-full bg-transparent p-3 z-20 pointer-events-none">
         <div class="max-w-[430px] mx-auto bg-white/95 backdrop-blur-md border border-slate-200 p-3 shadow-2xl rounded-2xl pointer-events-auto flex items-center justify-between">
             <div>
@@ -140,15 +153,15 @@
         </div>
     </div>
 
-    <!-- Confirmation Modal -->
+    <!-- Confirmation Modal (Yes/Cancel) -->
     <div id="confirmModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-2xl max-w-xs w-full p-5 shadow-2xl animate-fade-in text-center space-y-4 border border-slate-100">
-            <div class="w-12 h-12 rounded-full bg-blue-50 text-navyPrimary flex items-center justify-center mx-auto text-lg border border-blue-100 shadow-sm">
+            <div class="w-12 h-12 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center mx-auto text-lg border border-amber-100 shadow-sm">
                 <i class="fa-solid fa-triangle-exclamation"></i>
             </div>
             <div>
                 <h3 class="font-extrabold text-sm text-slate-900 uppercase">Confirm Order</h3>
-                <p class="text-[11px] text-slate-500 mt-1">Are you sure you want to submit this Starbucks order?</p>
+                <p class="text-[11px] text-slate-500 mt-1">Are you sure you want to submit this bakery order to the kitchen?</p>
             </div>
             <div class="grid grid-cols-2 gap-2 pt-1">
                 <button type="button" id="cancelBtn" class="bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl font-bold text-xs transition-all btn-press">
@@ -161,7 +174,7 @@
         </div>
     </div>
 
-    <!-- Loading Overlay -->
+    <!-- Processing & Success Loading Overlay -->
     <div id="loadingOverlay" class="fixed inset-0 bg-slate-900/70 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-2xl max-w-xs w-full p-6 shadow-2xl animate-fade-in text-center space-y-4 border border-slate-100">
             <div id="loadingSpinner" class="flex flex-col items-center space-y-3">
@@ -180,28 +193,29 @@
     </div>
 
     <script>
+        // Generate Time Options: Every 5 minutes, starting from 05:30 AM for a full 24 hours
         const timeDatalist = document.getElementById('timeOptions');
         let optionsHTML = '';
         for (let m = 0; m < 24 * 60; m += 5) { 
-            let totalMinutes = (330 + m) % (24 * 60);
+            let totalMinutes = (330 + m) % (24 * 60); // 330 minutes = 05:30 AM
             let i = Math.floor(totalMinutes / 60);
             let j = totalMinutes % 60;
 
             let hour = i % 12 || 12;
             let ampm = i < 12 ? 'AM' : 'PM';
-            let min = j < 10 ? '0' + j : j;
+            let min = j < 10 ? '0' + j : j; // Ensure two digits for minutes
             let displayHour = hour < 10 ? '0' + hour : hour;
             
             optionsHTML += `<option value="${displayHour}:${min} ${ampm}">`;
         }
         timeDatalist.innerHTML = optionsHTML;
 
-        // Starbucks Product Items (Column D, E, F, G)
+        // Starbucks Items - Prices set to 0 as calculations are handled via Google Sheet Formulas
         const bakeryItems = [
-            { id: 'item1', name: 'Egg Salad Wrap' },
-            { id: 'item2', name: 'Chicken Salad Wrap' },
-            { id: 'item3', name: 'Salad Wrapped' },
-            { id: 'item4', name: 'Fresh Sandwich' }
+            { id: 'item1', name: 'Egg Salad Wrap', price: 0 },
+            { id: 'item2', name: 'Chicken Salad Wrap', price: 0 },
+            { id: 'item3', name: 'Salad Wrapped', price: 0 },
+            { id: 'item4', name: 'Fresh Sandwich', price: 0 }
         ];
 
         const menuContainer = document.getElementById('menuContainer');
@@ -212,19 +226,20 @@
             
             const card = document.createElement('div');
             card.className = "bg-cardWhite p-2.5 rounded-xl shadow-sm border border-slate-200/80 flex justify-between items-center transition-all";
+            // Retaining the amber style and croissant icon identical to the BROWN layout
             card.innerHTML = `
                 <div class="flex items-center space-x-2.5 flex-1 pr-2">
-                    <div class="w-7 h-7 rounded-lg bg-blue-50 text-navyPrimary flex items-center justify-center shrink-0 border border-blue-100 shadow-sm">
-                        <i class="fa-solid fa-burger text-xs"></i>
+                    <div class="w-7 h-7 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center shrink-0 border border-amber-100 shadow-sm">
+                        <i class="fa-solid fa-croissant text-xs"></i>
                     </div>
                     <h3 class="font-bold text-xs text-slate-900">${item.name}</h3>
                 </div>
                 <div class="flex items-center space-x-1.5 bg-slate-50 rounded-lg p-1 border border-slate-200">
-                    <button type="button" class="w-6 h-6 flex items-center justify-center text-navyPrimary bg-white rounded-md shadow-sm border border-slate-200 btn-press font-bold transition-all" onclick="updateQty('${item.id}', -1)">
+                    <button type="button" class="w-6 h-6 flex items-center justify-center text-navyPrimary bg-white rounded-md shadow-sm border border-slate-200 btn-press font-bold transition-all" onclick="updateQty('${item.id}', -1, ${item.price})">
                         <i class="fa-solid fa-minus text-[9px]"></i>
                     </button>
-                    <input type="number" id="qty-${item.id}" value="0" min="0" class="font-black text-navyDark w-8 text-center text-xs bg-transparent focus:outline-none" oninput="manualInputQty('${item.id}', this.value)">
-                    <button type="button" class="w-6 h-6 flex items-center justify-center text-white bg-navyPrimary rounded-lg shadow-sm btn-press font-bold transition-all" onclick="updateQty('${item.id}', 1)">
+                    <input type="number" id="qty-${item.id}" value="0" min="0" class="font-black text-navyDark w-8 text-center text-xs bg-transparent focus:outline-none" oninput="manualInputQty('${item.id}', this.value, ${item.price})">
+                    <button type="button" class="w-6 h-6 flex items-center justify-center text-white bg-navyPrimary rounded-lg shadow-sm btn-press font-bold transition-all" onclick="updateQty('${item.id}', 1, ${item.price})">
                         <i class="fa-solid fa-plus text-[9px]"></i>
                     </button>
                 </div>
@@ -233,8 +248,9 @@
         });
 
         let totalQty = 0;
+        let totalAmount = 0.00;
 
-        window.updateQty = function(id, change) {
+        window.updateQty = function(id, change, price) {
             let currentQty = quantities[id];
             let newQty = currentQty + change;
             if (newQty < 0) return; 
@@ -243,10 +259,12 @@
             document.getElementById(`qty-${id}`).value = newQty;
 
             totalQty += change;
+            totalAmount += (change * price);
+            
             document.getElementById('totalQtyDisplay').innerText = totalQty;
         };
 
-        window.manualInputQty = function(id, val) {
+        window.manualInputQty = function(id, val, price) {
             let parsedVal = parseInt(val);
             if (isNaN(parsedVal) || parsedVal < 0) parsedVal = 0;
             
@@ -255,11 +273,14 @@
             
             quantities[id] = parsedVal;
             totalQty += diff;
+            totalAmount += (diff * price);
+            
             document.getElementById('totalQtyDisplay').innerText = totalQty;
         };
 
         document.getElementById('orderDate').valueAsDate = new Date();
 
+        // Modal Elements
         const orderForm = document.getElementById('orderForm');
         const openConfirmBtn = document.getElementById('openConfirmBtn');
         const confirmModal = document.getElementById('confirmModal');
@@ -269,9 +290,10 @@
         const loadingSpinner = document.getElementById('loadingSpinner');
         const successState = document.getElementById('successState');
 
+        // Open Confirmation Modal
         openConfirmBtn.addEventListener('click', function() {
             if (totalQty === 0) {
-                alert("Please add at least one item to your order!");
+                alert("Please add at least one bakery item to your order!");
                 return;
             }
             if (!orderForm.checkValidity()) {
@@ -281,10 +303,12 @@
             confirmModal.classList.remove('hidden');
         });
 
+        // Close Confirmation Modal
         cancelBtn.addEventListener('click', function() {
             confirmModal.classList.add('hidden');
         });
 
+        // Confirm & Submit
         confirmYesBtn.addEventListener('click', function() {
             confirmModal.classList.add('hidden');
             loadingOverlay.classList.remove('hidden');
@@ -298,14 +322,15 @@
                 item2: quantities['item2'] || 0,
                 item3: quantities['item3'] || 0,
                 item4: quantities['item4'] || 0,
-                item5: quantities['item5'] || 0,
-                item6: quantities['item6'] || 0,
-                item7: quantities['item7'] || 0,
+                item5: 0, // Padded with 0s for Backend structure (Google Sheet Columns)
+                item6: 0, 
+                item7: 0, 
                 pickupTime: document.getElementById('pickupTime').value,
-                orderedBy: document.getElementById('orderedBy').value
+                orderedBy: document.getElementById('orderedBy').value,
+                totalQty: totalQty,
+                totalAmount: totalAmount.toFixed(2)
             };
 
-            // ✅ URL ត្រូវបានដាក់បញ្ចូលរួចរាល់
             const webAppUrl = "https://script.google.com/macros/s/AKfycbzuWq_jBKkT9_pQ08tK0jDypKo-7bgXiIetX1Lx61r6inQM2b30b04i6n1V9jSwW3kYvw/exec"; 
 
             fetch(webAppUrl, {
