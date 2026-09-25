@@ -46,12 +46,20 @@
             position: relative;
         }
 
-        /* Progress Steps Animation */
-        @keyframes pulseStep {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.1); opacity: 0.8; }
+        /* Modern Glowing & Pulse Animations */
+        @keyframes pulseGlow {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(27, 54, 93, 0.4); }
+            50% { transform: scale(1.08); box-shadow: 0 0 15px 4px rgba(27, 54, 93, 0.3); }
         }
-        .step-active { animation: pulseStep 1.5s infinite; }
+        .step-pulse { animation: pulseGlow 1.2s infinite ease-in-out; }
+
+        @keyframes lineGrow {
+            from { width: 0%; }
+            to { width: 100%; }
+        }
+        .animate-line {
+            animation: lineGrow 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
     </style>
 </head>
 <body class="font-sans pb-28 text-slate-800 text-xs">
@@ -173,59 +181,58 @@
         </div>
     </div>
 
-    <!-- Processing & Success Loading Overlay with UX Animation (Sent ➔ Processed ➔ Delivered)[cite: 8] -->
+    <!-- Modern Dynamic UX/UI Step-by-Step Progress Modal (Sent ➔ Processed ➔ Delivered) -->
     <div id="loadingOverlay" class="fixed inset-0 bg-slate-900/70 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl animate-fade-in text-center space-y-5 border border-slate-100">
             
-            <!-- Loading Spinner State -->
-            <div id="loadingSpinner" class="flex flex-col items-center space-y-3">
-                <div class="w-12 h-12 rounded-full border-4 border-navyPrimary/20 border-t-navyPrimary animate-spin"></div>
-                <p class="font-extrabold text-xs text-slate-800 uppercase tracking-wider">Processing Order...</p>
-                <p class="text-[10px] text-slate-400">Syncing with Google Sheets & Telegram...</p>
+            <!-- Main Header Icon & Title -->
+            <div class="flex flex-col items-center space-y-2">
+                <div id="mainIconBg" class="w-12 h-12 rounded-full bg-blue-50 text-navyPrimary flex items-center justify-center text-xl shadow-md transition-all duration-500 step-pulse">
+                    <i id="mainIcon" class="fa-solid fa-cloud-arrow-up"></i>
+                </div>
+                <h3 id="progressTitle" class="font-extrabold text-xs text-slate-900 uppercase tracking-wider">Processing Order...</h3>
             </div>
 
-            <!-- Success UX Animation State (Sent ➔ Processed ➔ Delivered)[cite: 8] -->
-            <div id="successState" class="hidden flex flex-col items-center space-y-4">
-                <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-lg shadow-md mb-1">
-                    <i class="fa-solid fa-check"></i>
-                </div>
-                <p class="font-extrabold text-xs text-emerald-600 uppercase tracking-wider">Order Successfully Completed!</p>
-                
-                <!-- Progress Tracker Bar UI[cite: 8] -->
-                <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 w-full space-y-2">
-                    <div class="flex items-center justify-between px-2">
-                        <!-- Step 1: Sent -->
-                        <div class="flex flex-col items-center space-y-1">
-                            <div class="w-7 h-7 rounded-full bg-navyPrimary text-white flex items-center justify-center text-[10px] shadow-sm">
-                                <i class="fa-solid fa-paper-plane"></i>
-                            </div>
-                            <span class="text-[9px] font-bold text-slate-700">Sent</span>
+            <!-- Dynamic Progress Tracker Bar (Sent ➔ Processed ➔ Delivered) -->
+            <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 w-full space-y-3">
+                <div class="flex items-center justify-between px-2 relative">
+                    
+                    <!-- Step 1: Sent -->
+                    <div class="flex flex-col items-center space-y-1 z-10">
+                        <div id="step1Icon" class="w-7 h-7 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center text-[10px] shadow-sm transition-all duration-300">
+                            <i class="fa-solid fa-paper-plane"></i>
                         </div>
-                        
-                        <!-- Line 1 -->
-                        <div class="flex-1 h-0.5 bg-emerald-500 mx-1"></div>
-
-                        <!-- Step 2: Processed -->
-                        <div class="flex flex-col items-center space-y-1">
-                            <div class="w-7 h-7 rounded-full bg-sky-500 text-white flex items-center justify-center text-[10px] shadow-sm step-active">
-                                <i class="fa-solid fa-cloud-arrow-up"></i>
-                            </div>
-                            <span class="text-[9px] font-bold text-slate-700">Processed</span>
-                        </div>
-
-                        <!-- Line 2 -->
-                        <div class="flex-1 h-0.5 bg-emerald-500 mx-1"></div>
-
-                        <!-- Step 3: Delivered -->
-                        <div class="flex flex-col items-center space-y-1">
-                            <div class="w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] shadow-sm">
-                                <i class="fa-solid fa-check-double"></i>
-                            </div>
-                            <span class="text-[9px] font-bold text-slate-700">Delivered</span>
-                        </div>
+                        <span id="step1Text" class="text-[9px] font-bold text-slate-400 transition-colors">Sent</span>
                     </div>
-                    <p class="text-[9px] text-slate-400 pt-1">PDF generated and sent to Telegram.</p>
+                    
+                    <!-- Line 1 -->
+                    <div class="flex-1 h-1 bg-slate-200 mx-1 rounded-full overflow-hidden relative">
+                        <div id="line1Fill" class="absolute left-0 top-0 h-full bg-navyPrimary w-0 transition-all duration-500"></div>
+                    </div>
+
+                    <!-- Step 2: Processed -->
+                    <div class="flex flex-col items-center space-y-1 z-10">
+                        <div id="step2Icon" class="w-7 h-7 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center text-[10px] shadow-sm transition-all duration-300">
+                            <i class="fa-solid fa-gears"></i>
+                        </div>
+                        <span id="step2Text" class="text-[9px] font-bold text-slate-400 transition-colors">Processed</span>
+                    </div>
+
+                    <!-- Line 2 -->
+                    <div class="flex-1 h-1 bg-slate-200 mx-1 rounded-full overflow-hidden relative">
+                        <div id="line2Fill" class="absolute left-0 top-0 h-full bg-emerald-500 w-0 transition-all duration-500"></div>
+                    </div>
+
+                    <!-- Step 3: Delivered -->
+                    <div class="flex flex-col items-center space-y-1 z-10">
+                        <div id="step3Icon" class="w-7 h-7 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center text-[10px] shadow-sm transition-all duration-300">
+                            <i class="fa-solid fa-check-double"></i>
+                        </div>
+                        <span id="step3Text" class="text-[9px] font-bold text-slate-400 transition-colors">Delivered</span>
+                    </div>
+
                 </div>
+                <p id="progressSubtitle" class="text-[10px] text-slate-400 pt-1 font-medium">Initializing secure connection...</p>
             </div>
 
         </div>
@@ -325,8 +332,6 @@
         const cancelBtn = document.getElementById('cancelBtn');
         const confirmYesBtn = document.getElementById('confirmYesBtn');
         const loadingOverlay = document.getElementById('loadingOverlay');
-        const loadingSpinner = document.getElementById('loadingSpinner');
-        const successState = document.getElementById('successState');
 
         openConfirmBtn.addEventListener('click', function() {
             if (totalQty === 0) {
@@ -344,11 +349,43 @@
             confirmModal.classList.add('hidden');
         });
 
+        // Dynamic Sequential Progress Animation Sequence
         confirmYesBtn.addEventListener('click', function() {
             confirmModal.classList.add('hidden');
             loadingOverlay.classList.remove('hidden');
-            loadingSpinner.classList.remove('hidden');
-            successState.classList.add('hidden');
+
+            // Reset UI states
+            const mainIconBg = document.getElementById('mainIconBg');
+            const mainIcon = document.getElementById('mainIcon');
+            const progressTitle = document.getElementById('progressTitle');
+            const progressSubtitle = document.getElementById('progressSubtitle');
+            
+            const step1Icon = document.getElementById('step1Icon');
+            const step1Text = document.getElementById('step1Text');
+            const line1Fill = document.getElementById('line1Fill');
+            
+            const step2Icon = document.getElementById('step2Icon');
+            const step2Text = document.getElementById('step2Text');
+            const line2Fill = document.getElementById('line2Fill');
+            
+            const step3Icon = document.getElementById('step3Icon');
+            const step3Text = document.getElementById('step3Text');
+
+            // --- STAGE 1: SENT ---
+            setTimeout(() => {
+                step1Icon.className = "w-7 h-7 rounded-full bg-navyPrimary text-white flex items-center justify-center text-[10px] shadow-md";
+                step1Text.className = "text-[9px] font-extrabold text-navyPrimary";
+                line1Fill.style.width = "100%";
+                progressSubtitle.innerText = "Dispatching order to server...";
+            }, 300);
+
+            // --- STAGE 2: PROCESSED ---
+            setTimeout(() => {
+                step2Icon.className = "w-7 h-7 rounded-full bg-sky-500 text-white flex items-center justify-center text-[10px] shadow-md step-pulse";
+                step2Text.className = "text-[9px] font-extrabold text-sky-600";
+                mainIcon.className = "fa-solid fa-cloud-arrow-up";
+                progressSubtitle.innerText = "Syncing with Google Sheets & Telegram...";
+            }, 800);
 
             const data = {
                 branch: document.getElementById('branch').value,
@@ -374,17 +411,32 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
             }).then(() => {
-                loadingSpinner.classList.add('hidden');
-                successState.classList.remove('hidden');
-                
-                // 📳 Phone Vibration Trigger (ញ័រទូរស័ព្ទពេលជោគជ័យ)
-                if ("vibrate" in navigator) {
-                    navigator.vibrate([150, 75, 150]);
-                }
+                // --- STAGE 3: DELIVERED (SUCCESS) ---
+                setTimeout(() => {
+                    step2Icon.className = "w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] shadow-sm";
+                    step2Text.className = "text-[9px] font-extrabold text-slate-700";
+                    
+                    line2Fill.style.width = "100%";
+                    
+                    step3Icon.className = "w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] shadow-md animate-bounce";
+                    step3Text.className = "text-[9px] font-extrabold text-emerald-600";
+                    
+                    mainIconBg.className = "w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xl shadow-md";
+                    mainIcon.className = "fa-solid fa-check";
+                    
+                    progressTitle.innerText = "ORDER SUCCESSFULLY COMPLETED!";
+                    progressSubtitle.innerText = "PDF generated & sent to Telegram successfully.";
 
-                setTimeout(() => { 
-                    window.location.reload(); 
-                }, 2500);
+                    // 📳 Phone Vibration Trigger
+                    if ("vibrate" in navigator) {
+                        navigator.vibrate([150, 75, 150]);
+                    }
+
+                    setTimeout(() => { 
+                        window.location.reload(); 
+                    }, 2000);
+                }, 1200);
+
             }).catch(error => {
                 console.error(error);
                 loadingOverlay.classList.add('hidden');
