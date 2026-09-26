@@ -134,21 +134,24 @@
                 <p class="text-slate-300 text-xs mt-0.5 font-semibold tracking-wider">FOOD ORDER</p>
             </div>
 
-            <!-- CLOUD SYNC 60-DAY ORDER HISTORY SECTION -->
+            <!-- CLOUD SYNC 60-DAY ORDER HISTORY SECTION WITH LIVE SYNC BUTTON -->
             <div class="px-3 mb-3">
                 <div class="bg-sky-50 border border-sky-200 p-2.5 rounded-xl shadow-sm">
-                    <div class="flex justify-between items-center cursor-pointer select-none" onclick="toggleHistoryList()">
-                        <span class="text-[11px] font-extrabold text-navyPrimary uppercase tracking-tight flex items-center shrink-0">
+                    <div class="flex justify-between items-center cursor-pointer select-none">
+                        <span class="text-[11px] font-extrabold text-navyPrimary uppercase tracking-tight flex items-center shrink-0" onclick="toggleHistoryList()">
                             <i class="fa-solid fa-cloud-arrow-down text-sky-500 mr-1 text-xs"></i> Cloud History (60D)
                         </span>
                         <div class="flex items-center space-x-1.5">
+                            <!-- LIVE SYNC / REFRESH BUTTON -->
+                            <button type="button" onclick="fetchCloudHistory(event)" class="text-[9px] text-white font-bold bg-sky-600 px-1.5 py-0.5 rounded hover:bg-sky-700 whitespace-nowrap shadow-xs" title="Sync with Cloud"><i class="fa-solid fa-rotate mr-0.5"></i> Sync</button>
+                            <!-- EXPORT BUTTON -->
                             <button type="button" onclick="openExportModal(event)" class="text-[9px] text-sky-700 font-bold bg-sky-200 px-1.5 py-0.5 rounded hover:bg-sky-300 whitespace-nowrap" title="Export Report"><i class="fa-solid fa-file-arrow-down mr-0.5"></i> Export</button>
                             <button type="button" onclick="clearDoNo(event)" id="newOrderModeBtn" class="hidden text-[9px] text-emerald-700 font-bold bg-emerald-100 px-1.5 py-0.5 rounded hover:bg-emerald-200 whitespace-nowrap">New</button>
-                            <span id="historyCountBadge" class="bg-sky-200 text-navyPrimary text-[9px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">0 ord</span>
-                            <i id="historyChevron" class="fa-solid fa-chevron-down text-[10px] text-navyPrimary transition-transform duration-300"></i>
+                            <span id="historyCountBadge" class="bg-sky-200 text-navyPrimary text-[9px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap" onclick="toggleHistoryList()">0 ord</span>
+                            <i id="historyChevron" class="fa-solid fa-chevron-down text-[10px] text-navyPrimary transition-transform duration-300" onclick="toggleHistoryList()"></i>
                         </div>
                     </div>
-                    <!-- Hidden by default, toggled via button click -->
+                    <!-- Hidden by default, toggled via chevron/title click -->
                     <div id="historyListContainer" class="space-y-1.5 max-h-48 overflow-y-auto text-xs mt-2 hidden">
                         <p class="text-slate-400 text-center py-2 italic text-[11px]">Loading cloud history...</p>
                     </div>
@@ -463,7 +466,6 @@
             }
 
             if (type === 'sheet') {
-                // Export to Real Excel (.xlsx) using SheetJS with consistent formatting
                 let excelData = filtered.map(row => ({
                     "DO No": row.doNo,
                     "Branch": row.branch,
@@ -485,23 +487,23 @@
                 showAlert("ទាញយកឯកសារ Excel (.xlsx) បានដោយជោគជ័យ!", "EXPORT SUCCESS");
 
             } else if (type === 'pdf') {
-                // Print / Save to PDF matching the exact requested photo theme style
-                let printWindow = window.open('', '', 'height=800,width=1000');
+                let printWindow = window.open('', '', 'height=900,width=1100');
                 let html = `
                     <html>
                     <head>
                         <title>INDEPENDENCE HOTEL BY DARA - F&B REPORT</title>
                         <style>
-                            body { font-family: 'Plus Jakarta Sans', Arial, sans-serif; padding: 25px; color: #1e293b; background: #fff; }
-                            .header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #1B365D; padding-bottom: 12px; }
-                            h2 { color: #1B365D; margin: 0 0 6px 0; font-size: 18px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; }
-                            p { font-size: 11px; color: #475569; margin: 0; font-weight: 600; }
-                            table { width: 100%; border-collapse: collapse; font-size: 10px; margin-top: 15px; }
-                            th, td { border: 1px solid #cbd5e1; padding: 7px 8px; text-align: left; }
-                            th { background-color: #1B365D; color: white; font-weight: 700; text-transform: uppercase; font-size: 9.5px; letter-spacing: 0.3px; }
-                            tr:nth-child(even) { background-color: #f8fafc; }
+                            @page { size: landscape; margin: 15mm; }
+                            body { font-family: 'Plus Jakarta Sans', Arial, sans-serif; padding: 20px; color: #1e293b; background: #fff; }
+                            .header { text-align: center; margin-bottom: 25px; border-bottom: 3px solid #1B365D; padding-bottom: 12px; }
+                            h2 { color: #1B365D; margin: 0 0 6px 0; font-size: 20px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; }
+                            p { font-size: 12px; color: #475569; margin: 0; font-weight: 600; }
+                            table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 15px; }
+                            th, td { border: 1px solid #cbd5e1; padding: 9px 10px; text-align: left; }
+                            th { background-color: #1B365D !important; color: white !important; font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: 0.3px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                            tr:nth-child(even) { background-color: #f8fafc !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
                             td { font-weight: 500; color: #1e293b; }
-                            .footer { margin-top: 25px; display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; color: #0f172a; border-top: 2px solid #e2e8f0; padding-top: 12px; }
+                            .footer { margin-top: 30px; display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; color: #0f172a; border-top: 2px solid #e2e8f0; padding-top: 15px; }
                         </style>
                     </head>
                     <body>
@@ -563,7 +565,7 @@
             }
         }
 
-        // --- COLLAPSIBLE HISTORY TOGGLE ---
+        // --- COLLAPSIBLE HISTORY TOGGLE & LIVE CLOUD SYNC ---
         let isHistoryOpen = false;
         function toggleHistoryList() {
             const container = document.getElementById('historyListContainer');
@@ -572,6 +574,7 @@
             if (isHistoryOpen) {
                 container.classList.remove('hidden');
                 chevron.classList.add('rotate-180');
+                fetchCloudHistory(); // Auto sync with cloud when opened
             } else {
                 container.classList.add('hidden');
                 chevron.classList.remove('rotate-180');
@@ -586,7 +589,7 @@
                 const fullNameOnly = loggedUser.split(' (')[0];
                 document.getElementById('loggedInUserDisplay').innerText = fullNameOnly; 
                 document.getElementById('orderedBy').value = loggedUser;
-                fetchCloudHistory(); // Fetch 60-day history from Server
+                fetchCloudHistory(); // Fetch latest cloud history on startup
             } else {
                 document.getElementById('loginScreen').style.display = 'flex';
             }
@@ -643,27 +646,33 @@
             return `DO-${storeCode}-${dateStr}-${seqStr}`;
         }
 
-        // --- CLOUD SYNC 60-DAY HISTORY & 24H EDIT LIMIT ---
+        // --- ALWAYS REAL-TIME SYNC WITH CLOUD ---
         const SIXTY_DAYS = 60 * 24 * 60 * 60 * 1000;
         const ONE_DAY = 24 * 60 * 60 * 1000;
 
-        function fetchCloudHistory() {
+        function fetchCloudHistory(e) {
+            if (e) e.stopPropagation();
             const container = document.getElementById('historyListContainer');
-            container.innerHTML = `<p class="text-slate-400 text-center py-2 italic text-[11px]"><i class="fa-solid fa-spinner fa-spin mr-1"></i> Syncing 60-day history...</p>`;
+            container.innerHTML = `<p class="text-sky-600 text-center py-2 italic text-[11px]"><i class="fa-solid fa-spinner fa-spin mr-1"></i> Syncing live with Cloud...</p>`;
+            container.classList.remove('hidden');
+            isHistoryOpen = true;
+            document.getElementById('historyChevron').classList.add('rotate-180');
 
-            fetch(WEB_APP_URL)
+            fetch(WEB_APP_URL + "?t=" + new Date().getTime()) // Prevent caching
                 .then(response => response.json())
                 .then(result => {
-                    if (result && result.status === 'success' && result.history) {
+                    if (result && result.status === 'success' && Array.isArray(result.history)) {
                         localStorage.setItem('stb_order_history', JSON.stringify(result.history));
                         renderOrderHistory();
+                        if (e) showAlert("Sync with Cloud successfully!", "LIVE SYNC");
                     } else {
-                        renderOrderHistory(); // Fallback to local cache
+                        renderOrderHistory();
                     }
                 })
                 .catch(err => {
-                    console.error("Cloud sync failed, using local cache:", err);
-                    renderOrderHistory(); // Fallback to local cache if offline
+                    console.error("Cloud sync failed:", err);
+                    renderOrderHistory();
+                    if (e) showAlert("Sync failed. Check internet connection!", "ERROR");
                 });
         }
 
@@ -692,7 +701,7 @@
             localStorage.setItem('stb_order_history', JSON.stringify(history));
 
             if (history.length === 0) {
-                container.innerHTML = `<p class="text-slate-400 text-center py-2 italic text-[11px]">No orders in the last 60 days.</p>`;
+                container.innerHTML = `<p class="text-slate-400 text-center py-2 italic text-[11px]">No orders found in Cloud.</p>`;
                 badge.innerText = `0 ord`;
                 return;
             }
