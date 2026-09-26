@@ -241,9 +241,15 @@
                 </button>
 
                 <!-- UPDATE ORDER BUTTON -->
-                <button type="button" id="updateOrderBtn" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-3 rounded-xl text-xs font-extrabold transition-all flex items-center space-x-1.5 btn-press shadow-md hidden">
-                    <span>UPDATE ORDER</span>
+                <button type="button" id="updateOrderBtn" class="bg-amber-600 hover:bg-amber-700 text-white px-3.5 py-3 rounded-xl text-xs font-extrabold transition-all flex items-center space-x-1.5 btn-press shadow-md hidden">
+                    <span>UPDATE</span>
                     <i class="fa-solid fa-pen-to-square text-[10px]"></i>
+                </button>
+
+                <!-- FOOTER SWITCH TO NEW ORDER BUTTON -->
+                <button type="button" id="footerNewOrderBtn" onclick="clearDoNo()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-3 rounded-xl text-xs font-extrabold transition-all flex items-center space-x-1 btn-press shadow-md hidden">
+                    <i class="fa-solid fa-plus text-[10px]"></i>
+                    <span>NEW</span>
                 </button>
             </div>
         </div>
@@ -497,7 +503,6 @@
                     updateBadgeHTML = `<span class="text-red-600 font-extrabold text-[10px] block mt-0.5"><i class="fa-solid fa-triangle-exclamation mr-1"></i>Update: V${ord.updateVersion} (${ord.updateTime || ''})</span>`;
                 }
 
-                // Check if within 24 hours to allow editing
                 const isWithin24Hours = (now - ord.timestamp) <= ONE_DAY;
                 let editBtnHTML = '';
                 if (isWithin24Hours) {
@@ -531,7 +536,6 @@
             if (!history[index]) return;
             const ord = history[index];
 
-            // Double check 24h limit on click
             if ((new Date().getTime() - ord.timestamp) > ONE_DAY) {
                 showAlert("This order is older than 24 hours and cannot be edited!", "LOCKED ORDER");
                 return;
@@ -552,6 +556,7 @@
 
             document.getElementById('placeOrderBtn').classList.add('hidden');
             document.getElementById('updateOrderBtn').classList.remove('hidden');
+            document.getElementById('footerNewOrderBtn').classList.remove('hidden');
             document.getElementById('newOrderModeBtn').classList.remove('hidden');
 
             showAlert(`Loaded DO: ${ord.doNo} for updating. Make changes and click UPDATE ORDER!`, "ORDER LOADED");
@@ -562,6 +567,7 @@
             document.getElementById('doNoInput').value = '';
             document.getElementById('placeOrderBtn').classList.remove('hidden');
             document.getElementById('updateOrderBtn').classList.add('hidden');
+            document.getElementById('footerNewOrderBtn').classList.add('hidden');
             document.getElementById('newOrderModeBtn').classList.add('hidden');
             showAlert("Switched back to New Order mode.", "NEW ORDER");
         };
@@ -820,21 +826,33 @@
                 document.getElementById('doNoInput').value = inputDoNo;
             }
 
+            let existingHistory = JSON.parse(localStorage.getItem('stb_order_history') || '[]');
+            let prevRecord = existingHistory.find(item => item.doNo === inputDoNo);
+            let currentVer = 1;
+            if (action === 'update') {
+                currentVer = prevRecord && prevRecord.updateVersion ? prevRecord.updateVersion + 1 : 2;
+            }
+            const nowObj = new Date();
+            const timeFormatted = nowObj.toLocaleDateString() + ' ' + nowObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const updateTimeVal = action === 'update' ? timeFormatted : (prevRecord ? prevRecord.updateTime : '');
+
             const data = {
-                doNo:        inputDoNo,
-                branch:      currentBranch,
-                orderDate:   currentOrderDate,
-                item1:       quantities['item1'] || 0,
-                item2:       quantities['item2'] || 0,
-                item3:       quantities['item3'] || 0,
-                item4:       quantities['item4'] || 0,
-                item5:       0,
-                item6:       0,
-                item7:       0,
-                pickupTime:  currentPickupTime,
-                orderedBy:   document.getElementById('orderedBy').value,
-                totalQty:    totalQty,
-                totalAmount: totalAmount.toFixed(2)
+                doNo:          inputDoNo,
+                branch:        currentBranch,
+                orderDate:     currentOrderDate,
+                item1:         quantities['item1'] || 0,
+                item2:         quantities['item2'] || 0,
+                item3:         quantities['item3'] || 0,
+                item4:         quantities['item4'] || 0,
+                item5:         0,
+                item6:         0,
+                item7:         0,
+                pickupTime:    currentPickupTime,
+                orderedBy:     document.getElementById('orderedBy').value,
+                totalQty:      totalQty,
+                totalAmount:   totalAmount.toFixed(2),
+                updateVersion: currentVer,
+                updateTime:    updateTimeVal
             };
 
             const webAppUrl = "https://script.google.com/macros/s/AKfycbzuWq_jBKkT9_pQ08tK0jDypKo-7bgXiIetX1Lx61r6inQM2b30b04i6n1V9jSwW3kYvw/exec";
@@ -861,15 +879,6 @@
                     progressSubtitle.innerText = "PDF generated & sent to Telegram successfully.";
                     progressSubtitle.className = "text-xs text-emerald-600 pt-2 font-semibold";
                     
-                    let existingHistory = JSON.parse(localStorage.getItem('stb_order_history') || '[]');
-                    let prevRecord = existingHistory.find(item => item.doNo === inputDoNo);
-                    let currentVer = 1;
-                    if (action === 'update') {
-                        currentVer = prevRecord && prevRecord.updateVersion ? prevRecord.updateVersion + 1 : 2;
-                    }
-                    const nowObj = new Date();
-                    const timeFormatted = nowObj.toLocaleDateString() + ' ' + nowObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
                     const historyItem = {
                         doNo: inputDoNo,
                         branch: currentBranch,
@@ -881,9 +890,9 @@
                         item4: quantities['item4'] || 0,
                         totalQty: totalQty,
                         totalAmount: totalAmount.toFixed(2),
-                        timestamp: prevRecord ? prevRecord.timestamp : new Date().getTime(), // Keep original creation timestamp for 24h check
+                        timestamp: prevRecord ? prevRecord.timestamp : new Date().getTime(),
                         updateVersion: currentVer,
-                        updateTime: action === 'update' ? timeFormatted : (prevRecord ? prevRecord.updateTime : null)
+                        updateTime: updateTimeVal
                     };
                     saveOrderToHistory(historyItem);
 
