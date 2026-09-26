@@ -132,22 +132,22 @@
                 <p class="text-slate-300 text-xs mt-0.5 font-semibold tracking-wider">FOOD ORDER</p>
             </div>
 
-            <!-- CLOUD SYNC 60-DAY ORDER HISTORY SECTION -->
+            <!-- CLOUD SYNC 60-DAY ORDER HISTORY SECTION (REDUCED FONT & COMPACT LAYOUT) -->
             <div class="px-3 mb-3">
-                <div class="bg-sky-50 border border-sky-200 p-3 rounded-xl shadow-sm">
+                <div class="bg-sky-50 border border-sky-200 p-2.5 rounded-xl shadow-sm">
                     <div class="flex justify-between items-center cursor-pointer select-none" onclick="toggleHistoryList()">
-                        <span class="text-xs font-extrabold text-navyPrimary uppercase tracking-wider flex items-center">
-                            <i class="fa-solid fa-cloud-arrow-down text-sky-500 mr-1.5"></i> Cloud Sync History (60 Days)
+                        <span class="text-[11px] font-extrabold text-navyPrimary uppercase tracking-tight flex items-center shrink-0">
+                            <i class="fa-solid fa-cloud-arrow-down text-sky-500 mr-1 text-xs"></i> Cloud History (60D)
                         </span>
-                        <div class="flex items-center space-x-2">
-                            <button type="button" onclick="clearDoNo(event)" id="newOrderModeBtn" class="hidden text-[10px] text-emerald-600 font-bold bg-emerald-100 px-2 py-0.5 rounded hover:bg-emerald-200">Switch to New</button>
-                            <span id="historyCountBadge" class="bg-sky-200 text-navyPrimary text-[10px] font-bold px-2 py-0.5 rounded-full">0 orders</span>
-                            <i id="historyChevron" class="fa-solid fa-chevron-down text-xs text-navyPrimary transition-transform duration-300"></i>
+                        <div class="flex items-center space-x-1.5">
+                            <button type="button" onclick="clearDoNo(event)" id="newOrderModeBtn" class="hidden text-[9px] text-emerald-700 font-bold bg-emerald-100 px-1.5 py-0.5 rounded hover:bg-emerald-200 whitespace-nowrap">New</button>
+                            <span id="historyCountBadge" class="bg-sky-200 text-navyPrimary text-[9px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">0 ord</span>
+                            <i id="historyChevron" class="fa-solid fa-chevron-down text-[10px] text-navyPrimary transition-transform duration-300"></i>
                         </div>
                     </div>
                     <!-- Hidden by default, toggled via button click -->
-                    <div id="historyListContainer" class="space-y-1.5 max-h-48 overflow-y-auto text-xs mt-2.5 hidden">
-                        <p class="text-slate-400 text-center py-2 italic">Loading cloud history...</p>
+                    <div id="historyListContainer" class="space-y-1.5 max-h-48 overflow-y-auto text-xs mt-2 hidden">
+                        <p class="text-slate-400 text-center py-2 italic text-[11px]">Loading cloud history...</p>
                     </div>
                 </div>
             </div>
@@ -470,7 +470,7 @@
 
         function fetchCloudHistory() {
             const container = document.getElementById('historyListContainer');
-            container.innerHTML = `<p class="text-slate-400 text-center py-2 italic"><i class="fa-solid fa-spinner fa-spin mr-1"></i> Syncing 60-day history from cloud...</p>`;
+            container.innerHTML = `<p class="text-slate-400 text-center py-2 italic text-[11px]"><i class="fa-solid fa-spinner fa-spin mr-1"></i> Syncing 60-day history...</p>`;
 
             fetch(WEB_APP_URL)
                 .then(response => response.json())
@@ -514,17 +514,17 @@
             localStorage.setItem('stb_order_history', JSON.stringify(history));
 
             if (history.length === 0) {
-                container.innerHTML = `<p class="text-slate-400 text-center py-2 italic">No orders in the last 60 days.</p>`;
-                badge.innerText = `0 orders`;
+                container.innerHTML = `<p class="text-slate-400 text-center py-2 italic text-[11px]">No orders in the last 60 days.</p>`;
+                badge.innerText = `0 ord`;
                 return;
             }
 
-            badge.innerText = `${history.length} order(s)`;
+            badge.innerText = `${history.length} ord`;
             let html = '';
             history.forEach((ord, index) => {
                 let updateBadgeHTML = '';
                 if (ord.updateVersion && ord.updateVersion > 1) {
-                    updateBadgeHTML = `<span class="text-red-600 font-extrabold text-[10px] block mt-0.5"><i class="fa-solid fa-triangle-exclamation mr-1"></i>Update: V${ord.updateVersion} (${ord.updateTime || ''})</span>`;
+                    updateBadgeHTML = `<span class="text-red-600 font-extrabold text-[9px] block mt-0.5"><i class="fa-solid fa-triangle-exclamation mr-1"></i>Update: V${ord.updateVersion} (${ord.updateTime || ''})</span>`;
                 }
 
                 const itemTimestamp = ord.timestamp || now;
@@ -532,21 +532,21 @@
                 let editBtnHTML = '';
                 if (isWithin24Hours) {
                     editBtnHTML = `
-                        <button type="button" onclick="loadOrderToForm(${index})" class="bg-amber-600 hover:bg-amber-700 text-white px-2.5 py-1.5 rounded text-[10px] font-bold btn-press shadow-xs">
-                            <i class="fa-solid fa-pen-to-square mr-1"></i> Edit
+                        <button type="button" onclick="loadOrderToForm(${index})" class="bg-amber-600 hover:bg-amber-700 text-white px-2 py-1 rounded text-[9px] font-bold btn-press shadow-xs whitespace-nowrap">
+                            <i class="fa-solid fa-pen-to-square mr-0.5"></i> Edit
                         </button>
                     `;
                 } else {
                     editBtnHTML = `
-                        <span class="text-[10px] text-slate-400 font-semibold italic bg-slate-100 px-2 py-1 rounded">Locked (&gt;24h)</span>
+                        <span class="text-[9px] text-slate-400 font-semibold italic bg-slate-100 px-1.5 py-1 rounded whitespace-nowrap">Locked(&gt;24h)</span>
                     `;
                 }
 
                 html += `
-                    <div class="bg-white p-2.5 rounded-lg border border-sky-100 flex justify-between items-center shadow-xs">
+                    <div class="bg-white p-2 rounded-lg border border-sky-100 flex justify-between items-center shadow-xs text-[11px]">
                         <div>
-                            <p class="font-extrabold text-navyPrimary">${ord.doNo} <span class="text-[10px] text-slate-500 font-normal">(${ord.branch})</span></p>
-                            <p class="text-[10px] text-slate-500">Date: ${ord.orderDate} | Qty: <span class="font-bold text-sky-600">${ord.totalQty}</span></p>
+                            <p class="font-extrabold text-navyPrimary">${ord.doNo} <span class="text-[9px] text-slate-500 font-normal">(${ord.branch})</span></p>
+                            <p class="text-[9px] text-slate-500">Date: ${ord.orderDate} | Qty: <span class="font-bold text-sky-600">${ord.totalQty}</span></p>
                             ${updateBadgeHTML}
                         </div>
                         <div>${editBtnHTML}</div>
