@@ -205,7 +205,28 @@
                 <p class="text-slate-300 text-xs mt-0.5 font-semibold tracking-wider">F&B - SMART ORDER PORTAL</p>
             </div>
 
+            <!-- 24H ORDER HISTORY SECTION -->
+            <div class="px-3 mb-3">
+                <div class="bg-sky-50 border border-sky-200 p-3 rounded-xl shadow-sm">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-xs font-extrabold text-navyPrimary uppercase tracking-wider flex items-center">
+                            <i class="fa-solid fa-clock-rotate-left text-sky-500 mr-1.5"></i> 24H Order History & Edit
+                        </span>
+                        <div class="flex items-center space-x-2">
+                            <button type="button" onclick="clearDoNo()" id="newOrderModeBtn" class="hidden text-[10px] text-emerald-600 font-bold bg-emerald-100 px-2 py-0.5 rounded hover:bg-emerald-200">Switch to New</button>
+                            <span id="historyCountBadge" class="bg-sky-200 text-navyPrimary text-[10px] font-bold px-2 py-0.5 rounded-full">0 orders</span>
+                        </div>
+                    </div>
+                    <div id="historyListContainer" class="space-y-1.5 max-h-36 overflow-y-auto text-xs">
+                        <p class="text-slate-400 text-center py-2 italic">No recent orders in the last 24 hours.</p>
+                    </div>
+                </div>
+            </div>
+
             <form id="orderForm" class="px-3 space-y-3">
+                <!-- Hidden DO Number Field for system tracking automatically -->
+                <input type="hidden" id="doNoInput" value="">
+
                 <div class="bg-cardWhite p-3.5 rounded-xl shadow-sm border border-slate-200/80 space-y-2.5 card-enter" style="animation-delay:0.05s">
                     <div class="flex items-center space-x-1.5 border-b border-slate-100 pb-1.5">
                         <i class="fa-solid fa-store text-navyPrimary text-xs"></i>
@@ -213,15 +234,6 @@
                     </div>
 
                     <div class="space-y-2.5">
-                        <!-- DO Number Field for 24h Update/Overwrite -->
-                        <div>
-                            <label class="text-[11px] text-slate-500 font-bold uppercase tracking-wider mb-0.5 block">DO Number (For Update Only - Optional)</label>
-                            <div class="relative">
-                                <input type="text" id="doNoInput" placeholder="Leave blank for new order, or enter DO No. to update" class="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 transition-all">
-                                <i class="fa-solid fa-ticket absolute left-3 top-2.5 text-slate-400 text-xs"></i>
-                            </div>
-                        </div>
-
                         <div>
                             <label class="text-[11px] text-slate-500 font-bold uppercase tracking-wider mb-0.5 block">SELECT BRANCH *</label>
                             <div class="relative">
@@ -281,7 +293,7 @@
         </div>
     </div>
 
-    <!-- Sticky Footer -->
+    <!-- Sticky Footer with Separate Buttons -->
     <div class="fixed bottom-0 left-0 w-full bg-transparent p-3 z-20 pointer-events-none">
         <div class="max-w-[430px] mx-auto bg-white/95 backdrop-blur-md border border-slate-200 p-3.5 shadow-2xl rounded-2xl pointer-events-auto flex items-center justify-between footer-bar">
             <div>
@@ -291,28 +303,38 @@
                     <span class="text-xs font-semibold text-slate-500">units</span>
                 </p>
             </div>
-            <button type="button" id="openConfirmBtn" class="bg-navyPrimary hover:bg-navyDark text-white px-5 py-3 rounded-xl text-sm font-bold transition-all flex items-center space-x-2 btn-press shadow-[0_4px_14px_rgba(27,54,93,0.3)] hover:shadow-[0_6px_20px_rgba(27,54,93,0.5)]">
-                <span>PLACE / UPDATE ORDER</span>
-                <i class="fa-solid fa-paper-plane text-xs"></i>
-            </button>
+            
+            <div class="flex items-center space-x-2">
+                <!-- PLACE ORDER BUTTON (For New Order) -->
+                <button type="button" id="placeOrderBtn" class="bg-navyPrimary hover:bg-navyDark text-white px-4 py-3 rounded-xl text-xs font-extrabold transition-all flex items-center space-x-1.5 btn-press shadow-md">
+                    <span>PLACE ORDER</span>
+                    <i class="fa-solid fa-paper-plane text-[10px]"></i>
+                </button>
+
+                <!-- UPDATE ORDER BUTTON (For Update Only - Hidden by default until an order is selected for editing) -->
+                <button type="button" id="updateOrderBtn" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-3 rounded-xl text-xs font-extrabold transition-all flex items-center space-x-1.5 btn-press shadow-md hidden">
+                    <span>UPDATE ORDER</span>
+                    <i class="fa-solid fa-pen-to-square text-[10px]"></i>
+                </button>
+            </div>
         </div>
     </div>
 
-    <!-- Confirm Modal with Navy & Light Blue Slide to Confirm -->
+    <!-- Confirm Modal -->
     <div id="confirmModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl animate-fade-in text-center space-y-4 border border-slate-100">
-            <div class="w-12 h-12 rounded-full bg-sky-50 text-sky-500 flex items-center justify-center mx-auto text-xl border-2 border-sky-200 shadow-md step-pulse">
-                <i class="fa-solid fa-clipboard-check"></i>
+            <div id="modalIconBox" class="w-12 h-12 rounded-full bg-sky-50 text-sky-500 flex items-center justify-center mx-auto text-xl border-2 border-sky-200 shadow-md step-pulse">
+                <i id="modalIcon" class="fa-solid fa-clipboard-check"></i>
             </div>
             <div>
-                <h3 class="font-extrabold text-sm text-navyPrimary uppercase tracking-wider">CONFIRM ORDER</h3>
+                <h3 id="modalTitle" class="font-extrabold text-sm text-navyPrimary uppercase tracking-wider">CONFIRM ORDER</h3>
             </div>
             <div id="orderSummaryBox" class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-left space-y-2 text-xs shadow-inner"></div>
             
             <div class="space-y-2.5 pt-2">
                 <div id="slideTrack" class="relative bg-slate-50 slide-track-glow h-14 rounded-xl overflow-hidden flex items-center px-1 select-none">
                     <div id="slideFill" class="absolute left-0 top-0 bottom-0 bg-sky-400/25 w-0 pointer-events-none transition-all"></div>
-                    <span class="absolute inset-0 flex items-center justify-center text-xs font-extrabold uppercase tracking-widest pointer-events-none slide-text-shimmer">
+                    <span id="slideText" class="absolute inset-0 flex items-center justify-center text-xs font-extrabold uppercase tracking-widest pointer-events-none slide-text-shimmer">
                         Slide to Confirm &rarr;
                     </span>
                     <div id="slideThumb" class="absolute left-1 top-1 bottom-1 w-12 bg-navyPrimary hover:bg-navyDark rounded-lg flex items-center justify-center text-white cursor-grab active:cursor-grabbing z-10 transition-transform shadow-[0_0_10px_rgba(56,189,248,0.6)]">
@@ -375,6 +397,7 @@
                 const fullNameOnly = loggedUser.split(' (')[0];
                 document.getElementById('loggedInUserDisplay').innerText = fullNameOnly; 
                 document.getElementById('orderedBy').value = loggedUser;
+                renderOrderHistory();
             } else {
                 document.getElementById('loginScreen').style.display = 'flex';
             }
@@ -408,6 +431,88 @@
         }
 
         window.addEventListener('DOMContentLoaded', checkAuth);
+
+        // --- 24H ORDER HISTORY LOGIC ---
+        function saveOrderToHistory(orderData) {
+            let history = JSON.parse(localStorage.getItem('stb_order_history') || '[]');
+            const now = new Date().getTime();
+            history = history.filter(item => now - item.timestamp < 86400000);
+            
+            const existingIndex = history.findIndex(item => item.doNo && item.doNo === orderData.doNo);
+            if (existingIndex !== -1) {
+                history[existingIndex] = orderData;
+            } else {
+                history.unshift(orderData);
+            }
+            localStorage.setItem('stb_order_history', JSON.stringify(history));
+            renderOrderHistory();
+        }
+
+        function renderOrderHistory() {
+            const container = document.getElementById('historyListContainer');
+            const badge = document.getElementById('historyCountBadge');
+            let history = JSON.parse(localStorage.getItem('stb_order_history') || '[]');
+            const now = new Date().getTime();
+            history = history.filter(item => now - item.timestamp < 86400000);
+            localStorage.setItem('stb_order_history', JSON.stringify(history));
+
+            if (history.length === 0) {
+                container.innerHTML = `<p class="text-slate-400 text-center py-2 italic">No recent orders in the last 24 hours.</p>`;
+                badge.innerText = `0 orders`;
+                return;
+            }
+
+            badge.innerText = `${history.length} order(s)`;
+            let html = '';
+            history.forEach((ord, index) => {
+                html += `
+                    <div class="bg-white p-2 rounded-lg border border-sky-100 flex justify-between items-center shadow-xs">
+                        <div>
+                            <p class="font-extrabold text-navyPrimary">${ord.doNo} <span class="text-[10px] text-slate-500 font-normal">(${ord.branch})</span></p>
+                            <p class="text-[10px] text-slate-500">Date: ${ord.orderDate} | Qty: <span class="font-bold text-sky-600">${ord.totalQty}</span></p>
+                        </div>
+                        <button type="button" onclick="loadOrderToForm(${index})" class="bg-amber-600 hover:bg-amber-700 text-white px-2.5 py-1 rounded text-[10px] font-bold btn-press">
+                            <i class="fa-solid fa-pen-to-square mr-1"></i> Edit
+                        </button>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        window.loadOrderToForm = function(index) {
+            let history = JSON.parse(localStorage.getItem('stb_order_history') || '[]');
+            if (!history[index]) return;
+            const ord = history[index];
+
+            document.getElementById('doNoInput').value = ord.doNo || '';
+            document.getElementById('branch').value = ord.branch || '';
+            document.getElementById('orderDate').value = ord.orderDate || '';
+            document.getElementById('pickupTime').value = ord.pickupTime || '';
+
+            bakeryItems.forEach(item => {
+                quantities[item.id] = ord[item.id] || 0;
+                document.getElementById(`qty-${item.id}`).value = quantities[item.id];
+            });
+            totalQty = ord.totalQty || 0;
+            totalAmount = parseFloat(ord.totalAmount) || 0;
+            animateTotal();
+
+            // Switch buttons and show New mode button
+            document.getElementById('placeOrderBtn').classList.add('hidden');
+            document.getElementById('updateOrderBtn').classList.remove('hidden');
+            document.getElementById('newOrderModeBtn').classList.remove('hidden');
+
+            alert(`Loaded DO: ${ord.doNo} for updating. Make changes and click UPDATE ORDER!`);
+        };
+
+        window.clearDoNo = function() {
+            document.getElementById('doNoInput').value = '';
+            document.getElementById('placeOrderBtn').classList.remove('hidden');
+            document.getElementById('updateOrderBtn').classList.add('hidden');
+            document.getElementById('newOrderModeBtn').classList.add('hidden');
+            alert("Switched back to New Order mode.");
+        };
 
         // --- APP LOGIC ---
         const timeDatalist = document.getElementById('timeOptions');
@@ -499,26 +604,32 @@
         document.getElementById('branch').addEventListener('change',     function() { localStorage.setItem('stb_branch', this.value); });
         document.getElementById('pickupTime').addEventListener('input',   function() { localStorage.setItem('stb_pickupTime', this.value); });
 
-        const orderForm      = document.getElementById('orderForm');
-        const openConfirmBtn = document.getElementById('openConfirmBtn');
-        const confirmModal   = document.getElementById('confirmModal');
-        const cancelBtn      = document.getElementById('cancelBtn');
-        const loadingOverlay = document.getElementById('loadingOverlay');
+        const orderForm       = document.getElementById('orderForm');
+        const placeOrderBtn   = document.getElementById('placeOrderBtn');
+        const updateOrderBtn  = document.getElementById('updateOrderBtn');
+        const confirmModal    = document.getElementById('confirmModal');
+        const cancelBtn       = document.getElementById('cancelBtn');
+        const loadingOverlay  = document.getElementById('loadingOverlay');
         const orderSummaryBox = document.getElementById('orderSummaryBox');
 
-        openConfirmBtn.addEventListener('click', function() {
+        let currentActionType = 'new';
+
+        function triggerConfirm(action) {
             if (totalQty === 0) { alert("Please add at least one item to your order!"); return; }
             if (!orderForm.checkValidity()) { orderForm.reportValidity(); return; }
 
+            currentActionType = action;
             const branch     = document.getElementById('branch').value;
             const orderDate  = document.getElementById('orderDate').value;
             const pickupTime = document.getElementById('pickupTime').value;
             const orderedBy  = document.getElementById('orderedBy').value;
             const doNo       = document.getElementById('doNoInput').value.trim();
 
+            document.getElementById('modalTitle').innerText = action === 'update' ? 'CONFIRM ORDER UPDATE' : 'CONFIRM NEW ORDER';
+            
             let summaryHTML = `
                 <div class="border-b border-slate-200 pb-2.5 space-y-1.5">
-                    <p class="font-bold text-slate-800 text-sm">📍 ${branch} ${doNo ? `<span class="text-xs text-red-500">(Update: ${doNo})</span>` : ''}</p>
+                    <p class="font-bold text-slate-800 text-sm">📍 ${branch} ${doNo ? `<span class="text-xs text-amber-600 font-bold">(DO: ${doNo})</span>` : ''}</p>
                     <p class="text-slate-600">📅 Date: <span class="font-bold text-slate-800">${orderDate}</span> | ⏰ Time: <span class="font-bold text-slate-800">${pickupTime}</span></p>
                     <p class="text-slate-600">👤 Ordered by: <span class="font-bold text-slate-800">${orderedBy}</span></p>
                 </div>
@@ -537,8 +648,10 @@
             summaryHTML += `</div>`;
             orderSummaryBox.innerHTML = summaryHTML;
             confirmModal.classList.remove('hidden');
-        });
+        }
 
+        placeOrderBtn.addEventListener('click', () => triggerConfirm('new'));
+        updateOrderBtn.addEventListener('click', () => triggerConfirm('update'));
         cancelBtn.addEventListener('click', () => confirmModal.classList.add('hidden'));
 
         // --- SLIDE TO CONFIRM LOGIC ---
@@ -606,14 +719,14 @@
                 setTimeout(() => {
                     confirmModal.classList.add('hidden');
                     resetSlider();
-                    executeOrderSubmission();
+                    executeOrderSubmission(currentActionType);
                 }, 250);
             } else {
                 resetSlider();
             }
         }
 
-        function executeOrderSubmission() {
+        function executeOrderSubmission(action) {
             loadingOverlay.classList.remove('hidden');
 
             const progressTitle = document.getElementById('progressTitle');
@@ -628,7 +741,7 @@
             document.getElementById('line1Fill').style.width = "0%";
             document.getElementById('line2Fill').style.width = "0%";
             
-            progressTitle.innerText = "PROCESSING ORDER...";
+            progressTitle.innerText = action === 'update' ? "UPDATING ORDER..." : "PROCESSING ORDER...";
             progressSubtitle.innerText = "Initializing secure connection...";
 
             setTimeout(() => {
@@ -645,10 +758,19 @@
                 progressSubtitle.innerText = "Syncing with Google Sheets & Telegram...";
             }, 900);
 
+            let inputDoNo = document.getElementById('doNoInput').value.trim();
+            if (action === 'new') {
+                inputDoNo = ''; 
+            }
+
+            const currentBranch = document.getElementById('branch').value;
+            const currentOrderDate = document.getElementById('orderDate').value;
+            const currentPickupTime = document.getElementById('pickupTime').value;
+
             const data = {
-                doNo:        document.getElementById('doNoInput').value.trim(),
-                branch:      document.getElementById('branch').value,
-                orderDate:   document.getElementById('orderDate').value,
+                doNo:        inputDoNo,
+                branch:      currentBranch,
+                orderDate:   currentOrderDate,
                 item1:       quantities['item1'] || 0,
                 item2:       quantities['item2'] || 0,
                 item3:       quantities['item3'] || 0,
@@ -656,7 +778,7 @@
                 item5:       0,
                 item6:       0,
                 item7:       0,
-                pickupTime:  document.getElementById('pickupTime').value,
+                pickupTime:  currentPickupTime,
                 orderedBy:   document.getElementById('orderedBy').value,
                 totalQty:    totalQty,
                 totalAmount: totalAmount.toFixed(2)
@@ -681,11 +803,28 @@
                     mainIconBg.className = "w-14 h-14 rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center text-2xl border-2 border-emerald-200 shadow-lg animate-bounce";
                     document.getElementById('mainIcon').className = "fa-solid fa-check";
                     
-                    progressTitle.innerText = "THANK YOU FOR YOUR ORDER!";
+                    progressTitle.innerText = action === 'update' ? "ORDER UPDATED SUCCESSFULLY!" : "THANK YOU FOR YOUR ORDER!";
                     progressTitle.className = "font-extrabold text-sm text-emerald-600 uppercase tracking-wider";
                     progressSubtitle.innerText = "PDF generated & sent to Telegram successfully.";
                     progressSubtitle.className = "text-xs text-emerald-600 pt-2 font-semibold";
                     
+                    if (action === 'new') {
+                        const historyItem = {
+                            doNo: `DO-STB-${Math.floor(Math.random()*90000 + 10000)}`,
+                            branch: currentBranch,
+                            orderDate: currentOrderDate,
+                            pickupTime: currentPickupTime,
+                            item1: quantities['item1'] || 0,
+                            item2: quantities['item2'] || 0,
+                            item3: quantities['item3'] || 0,
+                            item4: quantities['item4'] || 0,
+                            totalQty: totalQty,
+                            totalAmount: totalAmount.toFixed(2),
+                            timestamp: new Date().getTime()
+                        };
+                        saveOrderToHistory(historyItem);
+                    }
+
                     if ("vibrate" in navigator) navigator.vibrate([150, 75, 150]);
                     setTimeout(() => { window.location.reload(); }, 3500);
                 }, 1200);
