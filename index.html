@@ -129,15 +129,10 @@
             animation: slideShimmer 3s linear infinite;
         }
 
-        /* Green Glowing Border for Slide Track */
         .slide-track-glow {
-            border: 2px solid rgba(16, 185, 129, 0.5);
+            border: 2px solid #10B981;
             box-shadow: 0 0 12px rgba(16, 185, 129, 0.25), inset 0 2px 4px rgba(0,0,0,0.04);
             transition: all 0.3s ease;
-        }
-        .slide-track-glow:hover {
-            border-color: rgba(16, 185, 129, 0.8);
-            box-shadow: 0 0 18px rgba(16, 185, 129, 0.4), inset 0 2px 4px rgba(0,0,0,0.04);
         }
     </style>
 </head>
@@ -290,7 +285,7 @@
         </div>
     </div>
 
-    <!-- Confirm Modal with Green-Themed Slide to Confirm -->
+    <!-- Confirm Modal with Green Theme Slide to Confirm -->
     <div id="confirmModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl animate-fade-in text-center space-y-4 border border-slate-100">
             <div class="w-11 h-11 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto text-lg border border-emerald-100 shadow-sm step-pulse">
@@ -301,15 +296,13 @@
             </div>
             <div id="orderSummaryBox" class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-left space-y-2 text-xs"></div>
             
-            <!-- Slide to Confirm Container (Green Theme Stroke & Fill) -->
+            <!-- Slide to Confirm Container (Green Theme) -->
             <div class="space-y-2 pt-1">
-                <div id="slideTrack" class="relative bg-slate-50 slide-track-glow h-13 rounded-xl overflow-hidden flex items-center px-1 select-none">
-                    <!-- Green Fill Progress -->
+                <div id="slideTrack" class="relative bg-slate-50 slide-track-glow h-14 rounded-xl overflow-hidden flex items-center px-1 select-none">
                     <div id="slideFill" class="absolute left-0 top-0 bottom-0 bg-emerald-500/20 w-0 pointer-events-none transition-all"></div>
                     <span class="absolute inset-0 flex items-center justify-center text-xs font-extrabold uppercase tracking-wider pointer-events-none slide-text-shimmer">
                         Slide to Confirm &rarr;
                     </span>
-                    <!-- Green Slider Thumb -->
                     <div id="slideThumb" class="absolute left-1 top-1 bottom-1 w-12 bg-emerald-500 hover:bg-emerald-600 rounded-lg flex items-center justify-center text-white shadow-md cursor-grab active:cursor-grabbing z-10 transition-transform">
                         <i class="fa-solid fa-angles-right text-xs"></i>
                     </div>
@@ -367,7 +360,8 @@
             const loggedUser = localStorage.getItem('starbucks_logged_user');
             if (loggedUser) {
                 document.getElementById('loginScreen').style.display = 'none';
-                document.getElementById('loggedInUserDisplay').innerText = loggedUser.split(' ')[0]; 
+                const fullNameOnly = loggedUser.split(' (')[0];
+                document.getElementById('loggedInUserDisplay').innerText = fullNameOnly; 
                 document.getElementById('orderedBy').value = loggedUser;
             } else {
                 document.getElementById('loginScreen').style.display = 'flex';
@@ -534,7 +528,7 @@
 
         cancelBtn.addEventListener('click', () => confirmModal.classList.add('hidden'));
 
-        // --- SLIDE TO CONFIRM LOGIC (GREEN THEME) ---
+        // --- SLIDE TO CONFIRM LOGIC (CROSS-BROWSER SAFE) ---
         const slideTrack = document.getElementById('slideTrack');
         const slideThumb = document.getElementById('slideThumb');
         const slideFill = document.getElementById('slideFill');
@@ -582,8 +576,16 @@
         function stopDrag() {
             if (!isDragging) return;
             isDragging = false;
-            let matrix = new WebKitCSSMatrix(window.getComputedStyle(slideThumb).transform);
-            let currentX = matrix.m41;
+            
+            let transformVal = window.getComputedStyle(slideThumb).transform;
+            let currentX = 0;
+            if (transformVal && transformVal !== 'none') {
+                let matrixMatch = transformVal.match(/matrix.*\(([-0-9., ]+)\)/);
+                if (matrixMatch) {
+                    let values = matrixMatch[1].split(',').map(v => parseFloat(v.trim()));
+                    currentX = values.length === 6 ? values[4] : (values.length === 16 ? values[12] : 0);
+                }
+            }
 
             if (currentX >= trackWidth * 0.75) {
                 slideThumb.style.transform = `translateX(${trackWidth}px)`;
