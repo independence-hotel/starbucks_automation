@@ -15,6 +15,8 @@
     <link rel="shortcut icon" href="logo.png">
 
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- SheetJS for real Excel Export (.xlsx) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script>
@@ -252,7 +254,7 @@
             <div class="grid grid-cols-2 gap-2.5 pt-2">
                 <button type="button" onclick="exportData('sheet')" class="bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-xl font-bold text-xs transition-all btn-press shadow-md flex items-center justify-center space-x-1">
                     <i class="fa-solid fa-file-excel text-xs"></i>
-                    <span>Export Sheet</span>
+                    <span>Export Excel</span>
                 </button>
                 <button type="button" onclick="exportData('pdf')" class="bg-navyPrimary hover:bg-navyDark text-white py-2.5 rounded-xl font-bold text-xs transition-all btn-press shadow-md flex items-center justify-center space-x-1">
                     <i class="fa-solid fa-file-pdf text-xs"></i>
@@ -461,44 +463,52 @@
             }
 
             if (type === 'sheet') {
-                // Export to CSV (Openable in Excel / Google Sheets)
-                let csvContent = "data:text/csv;charset=utf-8,DO No,Branch,Order Date,Pickup Time,Ordered By,Egg Salad Wrap,Chicken Salad Wrap,Salad Wrapped,Fresh Sandwich,Total Qty,Total Amount,Update Ver\r\n";
-                filtered.forEach(row => {
-                    let staffName = row.orderedBy || localStorage.getItem('starbucks_logged_user') || 'Unknown';
-                    csvContent += `"${row.doNo}","${row.branch}","${row.orderDate}","${row.pickupTime}","${staffName}",${row.item1},${row.item2},${row.item3},${row.item4},${row.totalQty},${row.totalAmount},${row.updateVersion || 1}\r\n`;
-                });
-                const encodedUri = encodeURI(csvContent);
-                const link = document.createElement("a");
-                link.setAttribute("href", encodedUri);
-                link.setAttribute("download", `Starbucks_Report_${branchVal}_${startDate}_to_${endDate}.csv`);
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+                // Export to Real Excel (.xlsx) using SheetJS
+                let excelData = filtered.map(row => ({
+                    "DO No": row.doNo,
+                    "Branch": row.branch,
+                    "Order Date": row.orderDate,
+                    "Pickup Time": row.pickupTime,
+                    "Ordered By": row.orderedBy || localStorage.getItem('starbucks_logged_user') || 'Unknown',
+                    "Egg Wrap": row.item1 || 0,
+                    "Chicken Wrap": row.item2 || 0,
+                    "Salad": row.item3 || 0,
+                    "Sandwich": row.item4 || 0,
+                    "Total Qty": row.totalQty || 0,
+                    "Total Amount ($)": row.totalAmount || 0,
+                    "Update Version": row.updateVersion || 1
+                }));
+
+                const worksheet = XLSX.utils.json_to_sheet(excelData);
+                const workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, "F&B Report");
+                XLSX.writeFile(workbook, `Starbucks_Report_${branchVal}_${startDate}_to_${endDate}.xlsx`);
                 closeExportModal();
-                showAlert("ទាញយកឯកសារ Sheet (CSV) បានដោយជោគជ័យ!", "EXPORT SUCCESS");
+                showAlert("ទាញយកឯកសារ Excel (.xlsx) បានដោយជោគជ័យ!", "EXPORT SUCCESS");
+
             } else if (type === 'pdf') {
-                // Compatible PDF Print View
-                let printWindow = window.open('', '', 'height=700,width=900');
+                // Print / Save to PDF matching the exact requested photo theme
+                let printWindow = window.open('', '', 'height=800,width=1000');
                 let html = `
                     <html>
                     <head>
-                        <title>Order Report (${startDate} to ${endDate})</title>
+                        <title>INDEPENDENCE HOTEL BY DARA - F&B REPORT</title>
                         <style>
-                            body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; padding: 20px; color: #1e293b; }
-                            .header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #1B365D; padding-bottom: 10px; }
-                            h2 { color: #1B365D; margin: 0; font-size: 18px; text-transform: uppercase; }
-                            p { font-size: 11px; color: #64748b; margin: 4px 0; }
-                            table { width: 100%; border-collapse: collapse; font-size: 10px; margin-top: 10px; }
-                            th, td { border: 1px solid #cbd5e1; padding: 6px 8px; text-align: left; }
-                            th { background-color: #1B365D; color: white; font-weight: bold; }
+                            body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; padding: 25px; color: #1e293b; background: #fff; }
+                            .header { text-align: center; margin-bottom: 25px; border-bottom: 3px solid #1B365D; padding-bottom: 12px; }
+                            h2 { color: #1B365D; margin: 0 0 6px 0; font-size: 20px; font-weight: 800; letter-spacing: 0.5px; }
+                            p { font-size: 12px; color: #475569; margin: 0; font-weight: 600; }
+                            table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 15px; }
+                            th, td { border: 1px solid #cbd5e1; padding: 8px 10px; text-align: left; }
+                            th { background-color: #1B365D; color: white; font-weight: 700; text-transform: uppercase; font-size: 10px; }
                             tr:nth-child(even) { background-color: #f8fafc; }
-                            .footer { margin-top: 20px; display: flex; justify-content: space-between; font-size: 11px; font-weight: bold; }
+                            .footer { margin-top: 25px; display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; color: #0f172a; border-top: 2px solid #e2e8f0; padding-top: 12px; }
                         </style>
                     </head>
                     <body>
                         <div class="header">
                             <h2>INDEPENDENCE HOTEL BY DARA - F&B REPORT</h2>
-                            <p>Branch: <b>${branchVal}</b> | Date Range: <b>${startDate}</b> to <b>${endDate}</b></p>
+                            <p>Branch: ${branchVal} &nbsp;|&nbsp; Date Range: ${startDate} to ${endDate}</p>
                         </div>
                         <table>
                             <thead>
@@ -528,11 +538,11 @@
                             <td>${row.orderDate}</td>
                             <td>${row.pickupTime}</td>
                             <td>${staff}</td>
-                            <td>${row.item1}</td>
-                            <td>${row.item2}</td>
-                            <td>${row.item3}</td>
-                            <td>${row.item4}</td>
-                            <td><b>${row.totalQty}</b></td>
+                            <td>${row.item1 || 0}</td>
+                            <td>${row.item2 || 0}</td>
+                            <td>${row.item3 || 0}</td>
+                            <td>${row.item4 || 0}</td>
+                            <td><b>${row.totalQty || 0}</b></td>
                         </tr>
                     `;
                 });
@@ -549,7 +559,7 @@
                 printWindow.document.write(html);
                 printWindow.document.close();
                 printWindow.focus();
-                setTimeout(() => { printWindow.print(); }, 500);
+                setTimeout(() => { printWindow.print(); }, 600);
                 closeExportModal();
             }
         }
