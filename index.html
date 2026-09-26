@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
     <title>Starbucks Food Order App</title>
     
-    <!-- PWA & Mobile App Meta Tags & Hotel Logo Profile Icon -->
+    <!-- PWA & Mobile App Meta Tags -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -44,20 +44,8 @@
         input[type="number"]::-webkit-inner-spin-button,
         input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 
-        /* ── Ripple ── */
         .btn-press { position: relative; overflow: hidden; }
-        .btn-press::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(circle, rgba(255,255,255,0.35) 0%, transparent 70%);
-            transform: scale(0);
-            opacity: 0;
-            border-radius: inherit;
-            pointer-events: none;
-        }
-        .btn-press:active::after { transform: scale(2.5); opacity: 1; transition: transform 0.25s ease, opacity 0.25s ease; }
-        .btn-press:active { transform: scale(0.95); transition: transform 0.12s cubic-bezier(.4,0,.2,1); }
+        .btn-press:active { transform: scale(0.95); transition: transform 0.12s ease; }
 
         .app-container {
             max-width: 430px;
@@ -68,7 +56,6 @@
             position: relative;
         }
 
-        /* ── Header shimmer ── */
         @keyframes shimmerSlide {
             0%   { transform: translateX(-120%); }
             100% { transform: translateX(220%); }
@@ -82,21 +69,18 @@
             pointer-events: none;
         }
 
-        /* ── Card entrance ── */
         @keyframes slideUp {
             from { opacity: 0; transform: translateY(18px); }
             to   { opacity: 1; transform: translateY(0); }
         }
         .card-enter { animation: slideUp 0.38s cubic-bezier(0.16,1,0.3,1) forwards; opacity: 0; }
 
-        /* ── Modal fade-scale ── */
         @keyframes fadeScale {
             from { opacity: 0; transform: scale(0.92) translateY(8px); }
             to   { opacity: 1; transform: scale(1) translateY(0); }
         }
         .animate-fade-in { animation: fadeScale 0.28s cubic-bezier(0.16,1,0.3,1) forwards; }
 
-        /* ── Qty counter pulse on change ── */
         @keyframes qtyPop {
             0%   { transform: scale(1); }
             40%  { transform: scale(1.35); color: #1B365D; }
@@ -104,74 +88,64 @@
         }
         .qty-pop { animation: qtyPop 0.22s ease; }
 
-        /* ── Card hover lift ── */
         .menu-card { transition: box-shadow 0.2s ease, transform 0.2s ease; }
         .menu-card:hover { box-shadow: 0 6px 18px rgba(27,54,93,0.1); transform: translateY(-1px); }
 
-        /* ── Sticky footer slide-in ── */
         @keyframes footerIn {
             from { opacity: 0; transform: translateY(20px); }
             to   { opacity: 1; transform: translateY(0); }
         }
         .footer-bar { animation: footerIn 0.5s 0.3s cubic-bezier(0.16,1,0.3,1) both; }
 
-        /* ── Total quantity number flip ── */
         @keyframes numFlip {
             0%   { transform: translateY(-8px); opacity: 0; }
             100% { transform: translateY(0);    opacity: 1; }
         }
         .num-flip { animation: numFlip 0.18s ease forwards; }
 
-        /* ── Place Order button glow ── */
         @keyframes btnGlow {
             0%,100% { box-shadow: 0 4px 14px rgba(27,54,93,0.25); }
             50%     { box-shadow: 0 4px 22px rgba(27,54,93,0.45); }
         }
         #openConfirmBtn { animation: btnGlow 2.4s infinite ease-in-out; }
-        #openConfirmBtn:hover { animation: none; box-shadow: 0 6px 22px rgba(27,54,93,0.4); transform: translateY(-1px); transition: all 0.2s ease; }
 
-        /* ── Step progress pulse ── */
         @keyframes pulseGlow {
             0%,100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(27,54,93,0.4); }
             50%     { transform: scale(1.08); box-shadow: 0 0 15px 4px rgba(27,54,93,0.3); }
         }
         .step-pulse { animation: pulseGlow 1.2s infinite ease-in-out; }
 
-        /* ── Input focus ring ── */
-        select:focus, input:focus {
-            outline: 2px solid #1B365D;
-            outline-offset: 1px;
-            transition: outline 0.15s ease;
+        @keyframes slideShimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
         }
-
-        /* ── Emoji icon bounce on hover ── */
-        .emoji-icon { transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1); display: inline-block; }
-        .menu-card:hover .emoji-icon { transform: scale(1.18) rotate(-4deg); }
-
-        /* ── +/- button shimmer on hover ── */
-        .qty-btn { transition: background 0.15s ease, transform 0.1s ease; }
-        .qty-btn:hover { background: #EEF2FF !important; color: #1B365D; }
+        .slide-text-shimmer {
+            background: linear-gradient(90deg, #64748b 0%, #1B365D 50%, #64748b 100%);
+            background-size: 200% auto;
+            color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: slideShimmer 3s linear infinite;
+        }
     </style>
 </head>
 <body class="font-sans text-slate-800 text-sm">
 
-    <!-- LOGIN SCREEN (White & Dark Blue Theme) -->
+    <!-- LOGIN SCREEN -->
     <div id="loginScreen" class="fixed inset-0 bg-navyDark z-50 flex items-center justify-center p-4">
         <div class="app-container w-full bg-slate-50 flex flex-col justify-between p-6 text-center text-slate-800 relative overflow-hidden shadow-2xl">
-            <!-- Decorative Dark Blue Header Banner -->
             <div class="bg-navyPrimary text-white -mx-6 -mt-6 p-6 rounded-b-3xl shadow-md relative overflow-hidden header-shimmer">
                 <div class="bg-white p-2 rounded-xl inline-block mb-2 shadow-md border border-slate-200">
                     <img src="logo.png" alt="Hotel Logo" class="h-14 w-auto mx-auto object-contain" onerror="this.onerror=null; this.src='Logo PNG-white.png';">
                 </div>
                 <h1 class="text-sm font-extrabold tracking-widest uppercase">INDEPENDENCE HOTEL</h1>
-                <p class="text-slate-300 text-xs mt-0.5 font-medium">USER PROFILE</p>
+                <p class="text-slate-300 text-xs mt-0.5 font-medium">Starbucks Staff Portal</p>
             </div>
 
-            <!-- Login Form Card (White Theme) -->
             <div class="bg-white p-5 rounded-2xl border border-slate-200/80 space-y-3.5 text-left relative z-10 my-auto shadow-lg card-enter">
                 <div class="flex items-center space-x-2 border-b border-slate-100 pb-2">
                     <i class="fa-solid fa-lock text-navyPrimary text-xs"></i>
-                    <h3 class="font-bold text-navyPrimary text-xs uppercase tracking-wider">User Login</h3>
+                    <h3 class="font-bold text-navyPrimary text-xs uppercase tracking-wider">Staff Login</h3>
                 </div>
                 <div>
                     <label class="text-[11px] text-slate-500 font-bold uppercase tracking-wider mb-1 block">Full Name *</label>
@@ -304,20 +278,30 @@
         </div>
     </div>
 
-    <!-- Confirm Modal -->
+    <!-- Confirm Modal with Slide to Confirm -->
     <div id="confirmModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl animate-fade-in text-center space-y-3.5 border border-slate-100">
-            <div class="w-11 h-11 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center mx-auto text-lg border border-amber-100 shadow-sm">
-                <i class="fa-solid fa-triangle-exclamation"></i>
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl animate-fade-in text-center space-y-4 border border-slate-100">
+            <div class="w-11 h-11 rounded-full bg-blue-50 text-navyPrimary flex items-center justify-center mx-auto text-lg border border-blue-100 shadow-sm">
+                <i class="fa-solid fa-clipboard-check"></i>
             </div>
             <div>
                 <h3 class="font-extrabold text-sm text-slate-900 uppercase">CONFIRM ORDER</h3>
             </div>
             <div id="orderSummaryBox" class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-left space-y-2 text-xs"></div>
-            <p class="text-xs text-slate-600 font-medium">Are you sure you want to submit this order?</p>
-            <div class="grid grid-cols-2 gap-2.5 pt-1">
-                <button type="button" id="cancelBtn" class="bg-slate-100 hover:bg-slate-200 text-slate-700 py-3 rounded-xl font-bold text-sm transition-all btn-press">Cancel</button>
-                <button type="button" id="confirmYesBtn" class="bg-navyPrimary hover:bg-navyDark text-white py-3 rounded-xl font-bold text-sm shadow-md transition-all btn-press">Yes, Submit</button>
+            
+            <!-- Slide to Confirm Container -->
+            <div class="space-y-2 pt-1">
+                <div id="slideTrack" class="relative bg-slate-100 border border-slate-200 h-12 rounded-xl overflow-hidden flex items-center px-1 select-none shadow-inner">
+                    <div id="slideFill" class="absolute left-0 top-0 bottom-0 bg-navyPrimary/15 w-0 pointer-events-none transition-all"></div>
+                    <span class="absolute inset-0 flex items-center justify-center text-xs font-extrabold uppercase tracking-wider pointer-events-none slide-text-shimmer">
+                        Slide to Confirm &rarr;
+                    </span>
+                    <div id="slideThumb" class="absolute left-1 top-1 bottom-1 w-11 bg-navyPrimary rounded-lg flex items-center justify-center text-white shadow-md cursor-grab active:cursor-grabbing z-10 transition-transform">
+                        <i class="fa-solid fa-angles-right text-xs"></i>
+                    </div>
+                </div>
+                
+                <button type="button" id="cancelBtn" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 py-2.5 rounded-xl font-bold text-xs transition-all btn-press">Cancel</button>
             </div>
         </div>
     </div>
@@ -499,7 +483,6 @@
         const openConfirmBtn = document.getElementById('openConfirmBtn');
         const confirmModal   = document.getElementById('confirmModal');
         const cancelBtn      = document.getElementById('cancelBtn');
-        const confirmYesBtn  = document.getElementById('confirmYesBtn');
         const loadingOverlay = document.getElementById('loadingOverlay');
         const orderSummaryBox = document.getElementById('orderSummaryBox');
 
@@ -516,7 +499,7 @@
                 <div class="border-b border-slate-200 pb-2 space-y-1">
                     <p class="font-bold text-slate-800">📍 ${branch}</p>
                     <p class="text-slate-600">📅 Date: <span class="font-semibold text-slate-800">${orderDate}</span> | ⏰ Time: <span class="font-semibold text-slate-800">${pickupTime}</span></p>
-                    <p class="text-slate-600">👤 Staff: <span class="font-semibold text-slate-800">${orderedBy}</span></p>
+                    <p class="text-slate-600">👤 Ordered by: <span class="font-semibold text-slate-800">${orderedBy}</span></p>
                 </div>
                 <div class="space-y-1.5 pt-1.5 max-h-36 overflow-y-auto">
             `;
@@ -537,13 +520,76 @@
 
         cancelBtn.addEventListener('click', () => confirmModal.classList.add('hidden'));
 
-        confirmYesBtn.addEventListener('click', function() {
-            confirmModal.classList.add('hidden');
+        // --- SLIDE TO CONFIRM LOGIC ---
+        const slideTrack = document.getElementById('slideTrack');
+        const slideThumb = document.getElementById('slideThumb');
+        const slideFill = document.getElementById('slideFill');
+        let isDragging = false;
+        let startX = 0;
+        let trackWidth = 0;
+
+        function resetSlider() {
+            slideThumb.style.transform = `translateX(0px)`;
+            slideFill.style.width = `0px`;
+            slideThumb.style.transition = `transform 0.25s ease`;
+            slideFill.style.transition = `width 0.25s ease`;
+        }
+
+        const getClientX = (e) => e.touches ? e.touches[0].clientX : e.clientX;
+
+        slideThumb.addEventListener('mousedown', startDrag);
+        slideThumb.addEventListener('touchstart', startDrag, {passive: true});
+
+        function startDrag(e) {
+            isDragging = true;
+            startX = getClientX(e);
+            trackWidth = slideTrack.clientWidth - slideThumb.clientWidth - 8;
+            slideThumb.style.transition = 'none';
+            slideFill.style.transition = 'none';
+        }
+
+        window.addEventListener('mousemove', onDrag);
+        window.addEventListener('touchmove', onDrag, {passive: true});
+
+        function onDrag(e) {
+            if (!isDragging) return;
+            let currentX = getClientX(e);
+            let diff = currentX - startX;
+            if (diff < 0) diff = 0;
+            if (diff > trackWidth) diff = trackWidth;
+            
+            slideThumb.style.transform = `translateX(${diff}px)`;
+            slideFill.style.width = `${diff + slideThumb.clientWidth}px`;
+        }
+
+        window.addEventListener('mouseup', stopDrag);
+        window.addEventListener('touchend', stopDrag);
+
+        function stopDrag() {
+            if (!isDragging) return;
+            isDragging = false;
+            let matrix = new WebKitCSSMatrix(window.getComputedStyle(slideThumb).transform);
+            let currentX = matrix.m41;
+
+            if (currentX >= trackWidth * 0.75) {
+                slideThumb.style.transform = `translateX(${trackWidth}px)`;
+                slideFill.style.width = `100%`;
+                setTimeout(() => {
+                    confirmModal.classList.add('hidden');
+                    resetSlider();
+                    executeOrderSubmission();
+                }, 200);
+            } else {
+                resetSlider();
+            }
+        }
+
+        function executeOrderSubmission() {
             loadingOverlay.classList.remove('hidden');
 
-            const mainIconBg      = document.getElementById('mainIconBg');
-            const mainIcon        = document.getElementById('mainIcon');
-            const progressTitle   = document.getElementById('progressTitle');
+            const mainIconBg = document.getElementById('mainIconBg');
+            const mainIcon = document.getElementById('mainIcon');
+            const progressTitle = document.getElementById('progressTitle');
             const progressSubtitle = document.getElementById('progressSubtitle');
             const step1Icon = document.getElementById('step1Icon');
             const step1Text = document.getElementById('step1Text');
@@ -612,7 +658,7 @@
                 loadingOverlay.classList.add('hidden');
                 alert("Network error. Please try again!");
             });
-        });
+        }
     </script>
 </body>
 </html>
