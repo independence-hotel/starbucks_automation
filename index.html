@@ -223,14 +223,23 @@
         </div>
     </div>
 
-    <!-- EXPORT REPORT MODAL -->
+    <!-- EXPORT REPORT MODAL WITH BRANCH & DATE RANGE -->
     <div id="exportModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl animate-fade-in text-left space-y-4 border border-slate-100">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl animate-fade-in text-left space-y-3.5 border border-slate-100">
             <div class="flex justify-between items-center border-b border-slate-100 pb-2">
                 <h3 class="font-extrabold text-sm text-navyPrimary uppercase tracking-wider"><i class="fa-solid fa-file-excel text-emerald-600 mr-1.5"></i> Export Report</h3>
                 <button type="button" onclick="closeExportModal()" class="text-slate-400 hover:text-slate-600 font-bold"><i class="fa-solid fa-xmark text-sm"></i></button>
             </div>
             <div class="space-y-3 text-xs">
+                <div>
+                    <label class="font-bold text-slate-600 block mb-1">Select Branch (Store) *</label>
+                    <select id="exportBranch" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg font-semibold text-slate-700">
+                        <option value="ALL">ALL BRANCHES</option>
+                        <option value="STARBUCKS 1">STARBUCKS 1</option>
+                        <option value="STARBUCKS 2">STARBUCKS 2</option>
+                        <option value="STARBUCKS 3">STARBUCKS 3</option>
+                    </select>
+                </div>
                 <div>
                     <label class="font-bold text-slate-600 block mb-1">Start Date *</label>
                     <input type="date" id="exportStartDate" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg font-semibold text-slate-700">
@@ -418,7 +427,6 @@
         // --- EXPORT MODAL LOGIC ---
         function openExportModal(e) {
             if (e) e.stopPropagation();
-            // Set default date range to current month
             const now = new Date();
             const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
             const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
@@ -432,6 +440,7 @@
         }
 
         function exportData(type) {
+            const branchVal = document.getElementById('exportBranch').value;
             const startDate = document.getElementById('exportStartDate').value;
             const endDate = document.getElementById('exportEndDate').value;
             if (!startDate || !endDate) {
@@ -440,10 +449,14 @@
             }
 
             let history = JSON.parse(localStorage.getItem('stb_order_history') || '[]');
-            let filtered = history.filter(item => item.orderDate >= startDate && item.orderDate <= endDate);
+            let filtered = history.filter(item => {
+                let matchBranch = (branchVal === 'ALL' || item.branch === branchVal);
+                let matchDate = (item.orderDate >= startDate && item.orderDate <= endDate);
+                return matchBranch && matchDate;
+            });
 
             if (filtered.length === 0) {
-                showAlert("ពុំមានទិន្នន័យបញ្ជាទិញក្នុងចន្លោះកាលបរិច្ឆេទនេះទេ!", "NO DATA");
+                showAlert("ពុំមានទិន្នន័យបញ្ជាទិញតាមលក្ខខណ្ឌនេះទេ!", "NO DATA");
                 return;
             }
 
@@ -451,37 +464,42 @@
                 // Export to CSV (Openable in Excel / Google Sheets)
                 let csvContent = "data:text/csv;charset=utf-8,DO No,Branch,Order Date,Pickup Time,Ordered By,Egg Salad Wrap,Chicken Salad Wrap,Salad Wrapped,Fresh Sandwich,Total Qty,Total Amount,Update Ver\r\n";
                 filtered.forEach(row => {
-                    csvContent += `"${row.doNo}","${row.branch}","${row.orderDate}","${row.pickupTime}","${row.orderedBy}",${row.item1},${row.item2},${row.item3},${row.item4},${row.totalQty},${row.totalAmount},${row.updateVersion || 1}\r\n`;
+                    let staffName = row.orderedBy || localStorage.getItem('starbucks_logged_user') || 'Unknown';
+                    csvContent += `"${row.doNo}","${row.branch}","${row.orderDate}","${row.pickupTime}","${staffName}",${row.item1},${row.item2},${row.item3},${row.item4},${row.totalQty},${row.totalAmount},${row.updateVersion || 1}\r\n`;
                 });
                 const encodedUri = encodeURI(csvContent);
                 const link = document.createElement("a");
                 link.setAttribute("href", encodedUri);
-                link.setAttribute("download", `Starbucks_Order_Report_${startDate}_to_${endDate}.csv`);
+                link.setAttribute("download", `Starbucks_Report_${branchVal}_${startDate}_to_${endDate}.csv`);
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
                 closeExportModal();
                 showAlert("ទាញយកឯកសារ Sheet (CSV) បានដោយជោគជ័យ!", "EXPORT SUCCESS");
             } else if (type === 'pdf') {
-                // Export to PDF via Print View
-                let printWindow = window.open('', '', 'height=600,width=800');
+                // Compatible PDF Print View
+                let printWindow = window.open('', '', 'height=700,width=900');
                 let html = `
                     <html>
                     <head>
                         <title>Order Report (${startDate} to ${endDate})</title>
                         <style>
-                            body { font-family: sans-serif; padding: 20px; color: #333; }
-                            h2 { text-align: center; color: #1B365D; margin-bottom: 5px; }
-                            p { text-align: center; font-size: 12px; color: #666; margin-bottom: 20px; }
-                            table { width: 100%; border-collapse: collapse; font-size: 11px; }
-                            th, td { border: 1px solid #cbd5e1; padding: 8px; text-align: left; }
-                            th { background-color: #1B365D; color: white; }
-                            .total-row { font-weight: bold; background-color: #f1f5f9; }
+                            body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; padding: 20px; color: #1e293b; }
+                            .header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #1B365D; padding-bottom: 10px; }
+                            h2 { color: #1B365D; margin: 0; font-size: 18px; text-transform: uppercase; }
+                            p { font-size: 11px; color: #64748b; margin: 4px 0; }
+                            table { width: 100%; border-collapse: collapse; font-size: 10px; margin-top: 10px; }
+                            th, td { border: 1px solid #cbd5e1; padding: 6px 8px; text-align: left; }
+                            th { background-color: #1B365D; color: white; font-weight: bold; }
+                            tr:nth-child(even) { background-color: #f8fafc; }
+                            .footer { margin-top: 20px; display: flex; justify-content: space-between; font-size: 11px; font-weight: bold; }
                         </style>
                     </head>
                     <body>
-                        <h2>INDEPENDENCE HOTEL BY DARA - F&B REPORT</h2>
-                        <p>Date Range: ${startDate} to ${endDate}</p>
+                        <div class="header">
+                            <h2>INDEPENDENCE HOTEL BY DARA - F&B REPORT</h2>
+                            <p>Branch: <b>${branchVal}</b> | Date Range: <b>${startDate}</b> to <b>${endDate}</b></p>
+                        </div>
                         <table>
                             <thead>
                                 <tr>
@@ -489,9 +507,12 @@
                                     <th>Branch</th>
                                     <th>Date</th>
                                     <th>Time</th>
-                                    <th>Staff</th>
+                                    <th>Ordered By</th>
+                                    <th>Egg Wrap</th>
+                                    <th>Chicken Wrap</th>
+                                    <th>Salad</th>
+                                    <th>Sandwich</th>
                                     <th>Total Qty</th>
-                                    <th>Amount</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -499,22 +520,29 @@
                 let grandTotalQty = 0;
                 filtered.forEach(row => {
                     grandTotalQty += Number(row.totalQty);
+                    let staff = row.orderedBy || localStorage.getItem('starbucks_logged_user') || 'Unknown';
                     html += `
                         <tr>
-                            <td>${row.doNo}</td>
+                            <td><b>${row.doNo}</b></td>
                             <td>${row.branch}</td>
                             <td>${row.orderDate}</td>
                             <td>${row.pickupTime}</td>
-                            <td>${row.orderedBy}</td>
+                            <td>${staff}</td>
+                            <td>${row.item1}</td>
+                            <td>${row.item2}</td>
+                            <td>${row.item3}</td>
+                            <td>${row.item4}</td>
                             <td><b>${row.totalQty}</b></td>
-                            <td>$${row.totalAmount}</td>
                         </tr>
                     `;
                 });
                 html += `
                             </tbody>
                         </table>
-                        <p style="text-align: right; margin-top: 15px; font-weight: bold;">Grand Total Quantity: ${grandTotalQty} units</p>
+                        <div class="footer">
+                            <span>Total Orders: ${filtered.length} records</span>
+                            <span>Grand Total Quantity: ${grandTotalQty} units</span>
+                        </div>
                     </body>
                     </html>
                 `;
@@ -651,7 +679,6 @@
             let history = JSON.parse(localStorage.getItem('stb_order_history') || '[]');
             const now = new Date().getTime();
             
-            // Filter strictly within 60 days
             history = history.filter(item => now - (item.timestamp || now) < SIXTY_DAYS);
             localStorage.setItem('stb_order_history', JSON.stringify(history));
 
@@ -988,6 +1015,10 @@
             const currentBranch = document.getElementById('branch').value;
             const currentOrderDate = document.getElementById('orderDate').value;
             const currentPickupTime = document.getElementById('pickupTime').value;
+            let currentOrderedBy = document.getElementById('orderedBy').value.trim();
+            if (!currentOrderedBy) {
+                currentOrderedBy = localStorage.getItem('starbucks_logged_user') || 'Staff';
+            }
 
             if (action === 'new' || !inputDoNo) {
                 inputDoNo = generateClientDO(currentBranch, currentOrderDate);
@@ -1017,7 +1048,7 @@
                 item6:         0,
                 item7:         0,
                 pickupTime:    currentPickupTime,
-                orderedBy:     document.getElementById('orderedBy').value,
+                orderedBy:     currentOrderedBy,
                 totalQty:      totalQty,
                 totalAmount:   totalAmount.toFixed(2),
                 updateVersion: currentVer,
@@ -1052,6 +1083,7 @@
                         branch: currentBranch,
                         orderDate: currentOrderDate,
                         pickupTime: currentPickupTime,
+                        orderedBy: currentOrderedBy,
                         item1: quantities['item1'] || 0,
                         item2: quantities['item2'] || 0,
                         item3: quantities['item3'] || 0,
