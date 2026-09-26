@@ -27,7 +27,8 @@
                         navyPrimary: '#1B365D',
                         navyDark: '#0A192F',
                         bgSoft: '#F1F5F9',
-                        cardWhite: '#FFFFFF'
+                        cardWhite: '#FFFFFF',
+                        emeraldAccent: '#10B981'
                     }
                 }
             }
@@ -110,8 +111,8 @@
         #openConfirmBtn { animation: btnGlow 2.4s infinite ease-in-out; }
 
         @keyframes pulseGlow {
-            0%,100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(27,54,93,0.4); }
-            50%     { transform: scale(1.08); box-shadow: 0 0 15px 4px rgba(27,54,93,0.3); }
+            0%,100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(16,185,129,0.4); }
+            50%     { transform: scale(1.08); box-shadow: 0 0 15px 4px rgba(16,185,129,0.3); }
         }
         .step-pulse { animation: pulseGlow 1.2s infinite ease-in-out; }
 
@@ -120,12 +121,23 @@
             100% { background-position: 200% 0; }
         }
         .slide-text-shimmer {
-            background: linear-gradient(90deg, #64748b 0%, #1B365D 50%, #64748b 100%);
+            background: linear-gradient(90deg, #64748b 0%, #10B981 50%, #64748b 100%);
             background-size: 200% auto;
             color: transparent;
             -webkit-background-clip: text;
             background-clip: text;
             animation: slideShimmer 3s linear infinite;
+        }
+
+        /* Green Glowing Border for Slide Track */
+        .slide-track-glow {
+            border: 2px solid rgba(16, 185, 129, 0.5);
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.25), inset 0 2px 4px rgba(0,0,0,0.04);
+            transition: all 0.3s ease;
+        }
+        .slide-track-glow:hover {
+            border-color: rgba(16, 185, 129, 0.8);
+            box-shadow: 0 0 18px rgba(16, 185, 129, 0.4), inset 0 2px 4px rgba(0,0,0,0.04);
         }
     </style>
 </head>
@@ -278,10 +290,10 @@
         </div>
     </div>
 
-    <!-- Confirm Modal with Slide to Confirm -->
+    <!-- Confirm Modal with Green-Themed Slide to Confirm -->
     <div id="confirmModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl animate-fade-in text-center space-y-4 border border-slate-100">
-            <div class="w-11 h-11 rounded-full bg-blue-50 text-navyPrimary flex items-center justify-center mx-auto text-lg border border-blue-100 shadow-sm">
+            <div class="w-11 h-11 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto text-lg border border-emerald-100 shadow-sm step-pulse">
                 <i class="fa-solid fa-clipboard-check"></i>
             </div>
             <div>
@@ -289,14 +301,16 @@
             </div>
             <div id="orderSummaryBox" class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-left space-y-2 text-xs"></div>
             
-            <!-- Slide to Confirm Container -->
+            <!-- Slide to Confirm Container (Green Theme Stroke & Fill) -->
             <div class="space-y-2 pt-1">
-                <div id="slideTrack" class="relative bg-slate-100 border border-slate-200 h-12 rounded-xl overflow-hidden flex items-center px-1 select-none shadow-inner">
-                    <div id="slideFill" class="absolute left-0 top-0 bottom-0 bg-navyPrimary/15 w-0 pointer-events-none transition-all"></div>
+                <div id="slideTrack" class="relative bg-slate-50 slide-track-glow h-13 rounded-xl overflow-hidden flex items-center px-1 select-none">
+                    <!-- Green Fill Progress -->
+                    <div id="slideFill" class="absolute left-0 top-0 bottom-0 bg-emerald-500/20 w-0 pointer-events-none transition-all"></div>
                     <span class="absolute inset-0 flex items-center justify-center text-xs font-extrabold uppercase tracking-wider pointer-events-none slide-text-shimmer">
                         Slide to Confirm &rarr;
                     </span>
-                    <div id="slideThumb" class="absolute left-1 top-1 bottom-1 w-11 bg-navyPrimary rounded-lg flex items-center justify-center text-white shadow-md cursor-grab active:cursor-grabbing z-10 transition-transform">
+                    <!-- Green Slider Thumb -->
+                    <div id="slideThumb" class="absolute left-1 top-1 bottom-1 w-12 bg-emerald-500 hover:bg-emerald-600 rounded-lg flex items-center justify-center text-white shadow-md cursor-grab active:cursor-grabbing z-10 transition-transform">
                         <i class="fa-solid fa-angles-right text-xs"></i>
                     </div>
                 </div>
@@ -310,7 +324,7 @@
     <div id="loadingOverlay" class="fixed inset-0 bg-slate-900/70 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl animate-fade-in text-center space-y-5 border border-slate-100">
             <div class="flex flex-col items-center space-y-2">
-                <div id="mainIconBg" class="w-12 h-12 rounded-full bg-blue-50 text-navyPrimary flex items-center justify-center text-xl shadow-md transition-all duration-500 step-pulse">
+                <div id="mainIconBg" class="w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl shadow-md transition-all duration-500 step-pulse">
                     <i id="mainIcon" class="fa-solid fa-cloud-arrow-up"></i>
                 </div>
                 <h3 id="progressTitle" class="font-extrabold text-sm text-slate-900 uppercase tracking-wider">Processing Order...</h3>
@@ -324,7 +338,7 @@
                         <span id="step1Text" class="text-[11px] font-bold text-slate-400">Sent</span>
                     </div>
                     <div class="flex-1 h-1 bg-slate-200 mx-1 rounded-full overflow-hidden relative">
-                        <div id="line1Fill" class="absolute left-0 top-0 h-full bg-navyPrimary w-0 transition-all duration-500"></div>
+                        <div id="line1Fill" class="absolute left-0 top-0 h-full bg-emerald-500 w-0 transition-all duration-500"></div>
                     </div>
                     <div class="flex flex-col items-center space-y-1 z-10">
                         <div id="step2Icon" class="w-7 h-7 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center text-xs shadow-sm">
@@ -520,7 +534,7 @@
 
         cancelBtn.addEventListener('click', () => confirmModal.classList.add('hidden'));
 
-        // --- SLIDE TO CONFIRM LOGIC ---
+        // --- SLIDE TO CONFIRM LOGIC (GREEN THEME) ---
         const slideTrack = document.getElementById('slideTrack');
         const slideThumb = document.getElementById('slideThumb');
         const slideFill = document.getElementById('slideFill');
@@ -600,21 +614,21 @@
             const step3Icon = document.getElementById('step3Icon');
             const step3Text = document.getElementById('step3Text');
 
-            mainIconBg.className = "w-12 h-12 rounded-full bg-blue-50 text-navyPrimary flex items-center justify-center text-xl shadow-md transition-all duration-500 step-pulse";
+            mainIconBg.className = "w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl shadow-md transition-all duration-500 step-pulse";
             mainIcon.className = "fa-solid fa-cloud-arrow-up";
             progressTitle.innerText = "PROCESSING ORDER...";
             progressSubtitle.innerText = "Initializing secure connection...";
 
             setTimeout(() => {
-                step1Icon.className = "w-7 h-7 rounded-full bg-navyPrimary text-white flex items-center justify-center text-xs shadow-md";
-                step1Text.className = "text-[11px] font-extrabold text-navyPrimary";
+                step1Icon.className = "w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs shadow-md";
+                step1Text.className = "text-[11px] font-extrabold text-emerald-600";
                 line1Fill.style.width = "100%";
                 progressSubtitle.innerText = "Dispatching order to server...";
             }, 300);
 
             setTimeout(() => {
-                step2Icon.className = "w-7 h-7 rounded-full bg-sky-500 text-white flex items-center justify-center text-xs shadow-sm step-pulse";
-                step2Text.className = "text-[11px] font-extrabold text-sky-600";
+                step2Icon.className = "w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs shadow-sm step-pulse";
+                step2Text.className = "text-[11px] font-extrabold text-emerald-600";
                 mainIcon.className = "fa-solid fa-gears";
                 progressSubtitle.innerText = "Syncing with Google Sheets & Telegram...";
             }, 800);
