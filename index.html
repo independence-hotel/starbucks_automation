@@ -132,20 +132,22 @@
                 <p class="text-slate-300 text-xs mt-0.5 font-semibold tracking-wider">FOOD ORDER</p>
             </div>
 
-            <!-- 24H ORDER HISTORY SECTION -->
+            <!-- COLLAPSIBLE 30-DAY ORDER HISTORY SECTION -->
             <div class="px-3 mb-3">
                 <div class="bg-sky-50 border border-sky-200 p-3 rounded-xl shadow-sm">
-                    <div class="flex justify-between items-center mb-2">
+                    <div class="flex justify-between items-center cursor-pointer select-none" onclick="toggleHistoryList()">
                         <span class="text-xs font-extrabold text-navyPrimary uppercase tracking-wider flex items-center">
-                            <i class="fa-solid fa-clock-rotate-left text-sky-500 mr-1.5"></i> 24H Order History & Edit
+                            <i class="fa-solid fa-clock-rotate-left text-sky-500 mr-1.5"></i> Order History (30 Days)
                         </span>
                         <div class="flex items-center space-x-2">
-                            <button type="button" onclick="clearDoNo()" id="newOrderModeBtn" class="hidden text-[10px] text-emerald-600 font-bold bg-emerald-100 px-2 py-0.5 rounded hover:bg-emerald-200">Switch to New</button>
+                            <button type="button" onclick="clearDoNo(event)" id="newOrderModeBtn" class="hidden text-[10px] text-emerald-600 font-bold bg-emerald-100 px-2 py-0.5 rounded hover:bg-emerald-200">Switch to New</button>
                             <span id="historyCountBadge" class="bg-sky-200 text-navyPrimary text-[10px] font-bold px-2 py-0.5 rounded-full">0 orders</span>
+                            <i id="historyChevron" class="fa-solid fa-chevron-down text-xs text-navyPrimary transition-transform duration-300"></i>
                         </div>
                     </div>
-                    <div id="historyListContainer" class="space-y-1.5 max-h-36 overflow-y-auto text-xs">
-                        <p class="text-slate-400 text-center py-2 italic">No recent orders in the last 24 hours.</p>
+                    <!-- Hidden by default, toggled via button click -->
+                    <div id="historyListContainer" class="space-y-1.5 max-h-48 overflow-y-auto text-xs mt-2.5 hidden">
+                        <p class="text-slate-400 text-center py-2 italic">No recent orders in the last 30 days.</p>
                     </div>
                 </div>
             </div>
@@ -288,7 +290,7 @@
         </div>
     </div>
 
-    <!-- CUSTOM STYLISH CONFIRM MODAL (REPLACES BROWSER CONFIRM) -->
+    <!-- CUSTOM STYLISH CONFIRM MODAL -->
     <div id="customConfirmModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl animate-fade-in text-center space-y-4 border border-slate-100">
             <div class="w-12 h-12 rounded-full bg-amber-50 text-amber-500 flex items-center justify-center mx-auto text-xl border-2 border-amber-200 shadow-md">
@@ -374,6 +376,21 @@
             confirmCallback = null;
         });
 
+        // --- COLLAPSIBLE HISTORY TOGGLE ---
+        let isHistoryOpen = false;
+        function toggleHistoryList() {
+            const container = document.getElementById('historyListContainer');
+            const chevron = document.getElementById('historyChevron');
+            isHistoryOpen = !isHistoryOpen;
+            if (isHistoryOpen) {
+                container.classList.remove('hidden');
+                chevron.classList.add('rotate-180');
+            } else {
+                container.classList.add('hidden');
+                chevron.classList.remove('rotate-180');
+            }
+        }
+
         // --- LOGIN AUTHENTICATION LOGIC ---
         function checkAuth() {
             const loggedUser = localStorage.getItem('starbucks_logged_user');
@@ -439,11 +456,14 @@
             return `DO-${storeCode}-${dateStr}-${seqStr}`;
         }
 
-        // --- 24H ORDER HISTORY LOGIC ---
+        // --- 30-DAY ORDER HISTORY LOGIC (24H EDIT LIMIT) ---
+        const ONE_MONTH = 30 * 24 * 60 * 60 * 1000;
+        const ONE_DAY = 24 * 60 * 60 * 1000;
+
         function saveOrderToHistory(orderData) {
             let history = JSON.parse(localStorage.getItem('stb_order_history') || '[]');
             const now = new Date().getTime();
-            history = history.filter(item => now - item.timestamp < 86400000);
+            history = history.filter(item => now - item.timestamp < ONE_MONTH);
             
             const existingIndex = history.findIndex(item => item.doNo && item.doNo === orderData.doNo);
             if (existingIndex !== -1) {
@@ -460,11 +480,11 @@
             const badge = document.getElementById('historyCountBadge');
             let history = JSON.parse(localStorage.getItem('stb_order_history') || '[]');
             const now = new Date().getTime();
-            history = history.filter(item => now - item.timestamp < 86400000);
+            history = history.filter(item => now - item.timestamp < ONE_MONTH);
             localStorage.setItem('stb_order_history', JSON.stringify(history));
 
             if (history.length === 0) {
-                container.innerHTML = `<p class="text-slate-400 text-center py-2 italic">No recent orders in the last 24 hours.</p>`;
+                container.innerHTML = `<p class="text-slate-400 text-center py-2 italic">No orders in the last 30 days.</p>`;
                 badge.innerText = `0 orders`;
                 return;
             }
@@ -472,15 +492,34 @@
             badge.innerText = `${history.length} order(s)`;
             let html = '';
             history.forEach((ord, index) => {
+                let updateBadgeHTML = '';
+                if (ord.updateVersion && ord.updateVersion > 1) {
+                    updateBadgeHTML = `<span class="text-red-600 font-extrabold text-[10px] block mt-0.5"><i class="fa-solid fa-triangle-exclamation mr-1"></i>Update: V${ord.updateVersion} (${ord.updateTime || ''})</span>`;
+                }
+
+                // Check if within 24 hours to allow editing
+                const isWithin24Hours = (now - ord.timestamp) <= ONE_DAY;
+                let editBtnHTML = '';
+                if (isWithin24Hours) {
+                    editBtnHTML = `
+                        <button type="button" onclick="loadOrderToForm(${index})" class="bg-amber-600 hover:bg-amber-700 text-white px-2.5 py-1.5 rounded text-[10px] font-bold btn-press shadow-xs">
+                            <i class="fa-solid fa-pen-to-square mr-1"></i> Edit
+                        </button>
+                    `;
+                } else {
+                    editBtnHTML = `
+                        <span class="text-[10px] text-slate-400 font-semibold italic bg-slate-100 px-2 py-1 rounded">Locked (&gt;24h)</span>
+                    `;
+                }
+
                 html += `
-                    <div class="bg-white p-2 rounded-lg border border-sky-100 flex justify-between items-center shadow-xs">
+                    <div class="bg-white p-2.5 rounded-lg border border-sky-100 flex justify-between items-center shadow-xs">
                         <div>
                             <p class="font-extrabold text-navyPrimary">${ord.doNo} <span class="text-[10px] text-slate-500 font-normal">(${ord.branch})</span></p>
                             <p class="text-[10px] text-slate-500">Date: ${ord.orderDate} | Qty: <span class="font-bold text-sky-600">${ord.totalQty}</span></p>
+                            ${updateBadgeHTML}
                         </div>
-                        <button type="button" onclick="loadOrderToForm(${index})" class="bg-amber-600 hover:bg-amber-700 text-white px-2.5 py-1 rounded text-[10px] font-bold btn-press">
-                            <i class="fa-solid fa-pen-to-square mr-1"></i> Edit
-                        </button>
+                        <div>${editBtnHTML}</div>
                     </div>
                 `;
             });
@@ -491,6 +530,12 @@
             let history = JSON.parse(localStorage.getItem('stb_order_history') || '[]');
             if (!history[index]) return;
             const ord = history[index];
+
+            // Double check 24h limit on click
+            if ((new Date().getTime() - ord.timestamp) > ONE_DAY) {
+                showAlert("This order is older than 24 hours and cannot be edited!", "LOCKED ORDER");
+                return;
+            }
 
             document.getElementById('doNoInput').value = ord.doNo || '';
             document.getElementById('branch').value = ord.branch || '';
@@ -512,7 +557,8 @@
             showAlert(`Loaded DO: ${ord.doNo} for updating. Make changes and click UPDATE ORDER!`, "ORDER LOADED");
         };
 
-        window.clearDoNo = function() {
+        window.clearDoNo = function(e) {
+            if (e) e.stopPropagation();
             document.getElementById('doNoInput').value = '';
             document.getElementById('placeOrderBtn').classList.remove('hidden');
             document.getElementById('updateOrderBtn').classList.add('hidden');
@@ -815,6 +861,15 @@
                     progressSubtitle.innerText = "PDF generated & sent to Telegram successfully.";
                     progressSubtitle.className = "text-xs text-emerald-600 pt-2 font-semibold";
                     
+                    let existingHistory = JSON.parse(localStorage.getItem('stb_order_history') || '[]');
+                    let prevRecord = existingHistory.find(item => item.doNo === inputDoNo);
+                    let currentVer = 1;
+                    if (action === 'update') {
+                        currentVer = prevRecord && prevRecord.updateVersion ? prevRecord.updateVersion + 1 : 2;
+                    }
+                    const nowObj = new Date();
+                    const timeFormatted = nowObj.toLocaleDateString() + ' ' + nowObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
                     const historyItem = {
                         doNo: inputDoNo,
                         branch: currentBranch,
@@ -826,7 +881,9 @@
                         item4: quantities['item4'] || 0,
                         totalQty: totalQty,
                         totalAmount: totalAmount.toFixed(2),
-                        timestamp: new Date().getTime()
+                        timestamp: prevRecord ? prevRecord.timestamp : new Date().getTime(), // Keep original creation timestamp for 24h check
+                        updateVersion: currentVer,
+                        updateTime: action === 'update' ? timeFormatted : (prevRecord ? prevRecord.updateTime : null)
                     };
                     saveOrderToHistory(historyItem);
 
