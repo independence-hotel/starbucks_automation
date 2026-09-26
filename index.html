@@ -274,6 +274,37 @@
         </div>
     </div>
 
+    <!-- CUSTOM STYLISH ALERT MODAL -->
+    <div id="customAlertModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl animate-fade-in text-center space-y-4 border border-slate-100">
+            <div class="w-12 h-12 rounded-full bg-sky-50 text-sky-500 flex items-center justify-center mx-auto text-xl border-2 border-sky-200 shadow-md">
+                <i class="fa-solid fa-circle-exclamation"></i>
+            </div>
+            <div>
+                <h3 id="alertTitle" class="font-extrabold text-sm text-navyPrimary uppercase tracking-wider">NOTIFICATION</h3>
+                <p id="alertMessage" class="text-xs text-slate-600 mt-2 font-semibold leading-relaxed"></p>
+            </div>
+            <button type="button" onclick="closeCustomAlert()" class="w-full bg-navyPrimary hover:bg-navyDark text-white py-3 rounded-xl font-bold text-xs transition-all btn-press shadow-md">OK</button>
+        </div>
+    </div>
+
+    <!-- CUSTOM STYLISH CONFIRM MODAL (REPLACES BROWSER CONFIRM) -->
+    <div id="customConfirmModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl animate-fade-in text-center space-y-4 border border-slate-100">
+            <div class="w-12 h-12 rounded-full bg-amber-50 text-amber-500 flex items-center justify-center mx-auto text-xl border-2 border-amber-200 shadow-md">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <div>
+                <h3 id="confirmTitle" class="font-extrabold text-sm text-navyPrimary uppercase tracking-wider">CONFIRMATION</h3>
+                <p id="confirmMessage" class="text-xs text-slate-600 mt-2 font-semibold leading-relaxed"></p>
+            </div>
+            <div class="grid grid-cols-2 gap-2.5 pt-2">
+                <button type="button" id="confirmCancelBtn" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 py-3 rounded-xl font-bold text-xs transition-all btn-press">Cancel</button>
+                <button type="button" id="confirmOkBtn" class="w-full bg-navyPrimary hover:bg-navyDark text-white py-3 rounded-xl font-bold text-xs transition-all btn-press shadow-md">Confirm</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Loading Overlay -->
     <div id="loadingOverlay" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl animate-fade-in text-center space-y-5 border border-slate-100">
@@ -316,6 +347,33 @@
     </div>
 
     <script>
+        // --- CUSTOM ALERT & CONFIRM HELPERS ---
+        function showAlert(message, title = "NOTIFICATION") {
+            document.getElementById('alertTitle').innerText = title;
+            document.getElementById('alertMessage').innerText = message;
+            document.getElementById('customAlertModal').classList.remove('hidden');
+        }
+        function closeCustomAlert() {
+            document.getElementById('customAlertModal').classList.add('hidden');
+        }
+
+        let confirmCallback = null;
+        function showConfirm(message, onConfirm, title = "CONFIRMATION") {
+            document.getElementById('confirmTitle').innerText = title;
+            document.getElementById('confirmMessage').innerText = message;
+            confirmCallback = onConfirm;
+            document.getElementById('customConfirmModal').classList.remove('hidden');
+        }
+        document.getElementById('confirmCancelBtn').addEventListener('click', () => {
+            document.getElementById('customConfirmModal').classList.add('hidden');
+            confirmCallback = null;
+        });
+        document.getElementById('confirmOkBtn').addEventListener('click', () => {
+            document.getElementById('customConfirmModal').classList.add('hidden');
+            if (confirmCallback) confirmCallback();
+            confirmCallback = null;
+        });
+
         // --- LOGIN AUTHENTICATION LOGIC ---
         function checkAuth() {
             const loggedUser = localStorage.getItem('starbucks_logged_user');
@@ -335,12 +393,12 @@
             const phone = document.getElementById('loginPhone').value.trim();
 
             if (!fullName) {
-                alert("សូមបញ្ចូលឈ្មោះពេញរបស់អ្នក (Full Name)!");
+                showAlert("សូមបញ្ចូលឈ្មោះពេញរបស់អ្នក (Full Name)!", "REQUIRED FIELD");
                 document.getElementById('loginFullName').focus();
                 return;
             }
             if (!phone) {
-                alert("សូមបញ្ចូលលេខទូរស័ព្ទរបស់អ្នក (Phone Number)!");
+                showAlert("សូមបញ្ចូលលេខទូរស័ព្ទរបស់អ្នក (Phone Number)!", "REQUIRED FIELD");
                 document.getElementById('loginPhone').focus();
                 return;
             }
@@ -351,15 +409,15 @@
         }
 
         function handleLogout() {
-            if (confirm("តើអ្នកពិតជាចង់ចាកចេញ (Logout) មែនទេ?")) {
+            showConfirm("តើអ្នកពិតជាចង់ចាកចេញ (Logout) មែនទេ?", () => {
                 localStorage.removeItem('starbucks_logged_user');
                 window.location.reload();
-            }
+            }, "CONFIRM LOGOUT");
         }
 
         window.addEventListener('DOMContentLoaded', checkAuth);
 
-        // --- CLIENT DO GENERATOR MATCHING EXACT SHEET FORMAT ---
+        // --- CLIENT DO GENERATOR ---
         function generateClientDO(branchName, orderDateStr) {
             const dateObj = orderDateStr ? new Date(orderDateStr) : new Date();
             const year = dateObj.getFullYear();
@@ -451,7 +509,7 @@
             document.getElementById('updateOrderBtn').classList.remove('hidden');
             document.getElementById('newOrderModeBtn').classList.remove('hidden');
 
-            alert(`Loaded DO: ${ord.doNo} for updating. Make changes and click UPDATE ORDER!`);
+            showAlert(`Loaded DO: ${ord.doNo} for updating. Make changes and click UPDATE ORDER!`, "ORDER LOADED");
         };
 
         window.clearDoNo = function() {
@@ -459,7 +517,7 @@
             document.getElementById('placeOrderBtn').classList.remove('hidden');
             document.getElementById('updateOrderBtn').classList.add('hidden');
             document.getElementById('newOrderModeBtn').classList.add('hidden');
-            alert("Switched back to New Order mode.");
+            showAlert("Switched back to New Order mode.", "NEW ORDER");
         };
 
         // --- APP LOGIC ---
@@ -563,7 +621,7 @@
         let currentActionType = 'new';
 
         function triggerConfirm(action) {
-            if (totalQty === 0) { alert("Please add at least one item to your order!"); return; }
+            if (totalQty === 0) { showAlert("Please add at least one item to your order!", "EMPTY ORDER"); return; }
             if (!orderForm.checkValidity()) { orderForm.reportValidity(); return; }
 
             currentActionType = action;
@@ -750,7 +808,7 @@
                     
                     const mainIconBg = document.getElementById('mainIconBg');
                     mainIconBg.className = "w-14 h-14 rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center text-2xl border-2 border-emerald-200 shadow-lg animate-bounce";
-                    document.getElementById('mainIcon').className = "fa-check";
+                    document.getElementById('mainIcon').className = "fa-solid fa-check";
                     
                     progressTitle.innerText = action === 'update' ? "ORDER UPDATED SUCCESSFULLY!" : "THANK YOU FOR YOUR ORDER!";
                     progressTitle.className = "font-extrabold text-sm text-emerald-600 uppercase tracking-wider";
@@ -778,7 +836,7 @@
             }).catch(error => {
                 console.error(error);
                 loadingOverlay.classList.add('hidden');
-                alert("Network error. Please try again!");
+                showAlert("Network error. Please try again!", "CONNECTION ERROR");
             });
         }
     </script>
