@@ -132,12 +132,12 @@
                 <p class="text-slate-300 text-xs mt-0.5 font-semibold tracking-wider">FOOD ORDER</p>
             </div>
 
-            <!-- COLLAPSIBLE 30-DAY ORDER HISTORY SECTION -->
+            <!-- CLOUD SYNC 60-DAY ORDER HISTORY SECTION -->
             <div class="px-3 mb-3">
                 <div class="bg-sky-50 border border-sky-200 p-3 rounded-xl shadow-sm">
                     <div class="flex justify-between items-center cursor-pointer select-none" onclick="toggleHistoryList()">
                         <span class="text-xs font-extrabold text-navyPrimary uppercase tracking-wider flex items-center">
-                            <i class="fa-solid fa-clock-rotate-left text-sky-500 mr-1.5"></i> Order History (30 Days)
+                            <i class="fa-solid fa-cloud-arrow-down text-sky-500 mr-1.5"></i> Cloud Sync History (60 Days)
                         </span>
                         <div class="flex items-center space-x-2">
                             <button type="button" onclick="clearDoNo(event)" id="newOrderModeBtn" class="hidden text-[10px] text-emerald-600 font-bold bg-emerald-100 px-2 py-0.5 rounded hover:bg-emerald-200">Switch to New</button>
@@ -147,7 +147,7 @@
                     </div>
                     <!-- Hidden by default, toggled via button click -->
                     <div id="historyListContainer" class="space-y-1.5 max-h-48 overflow-y-auto text-xs mt-2.5 hidden">
-                        <p class="text-slate-400 text-center py-2 italic">No recent orders in the last 30 days.</p>
+                        <p class="text-slate-400 text-center py-2 italic">Loading cloud history...</p>
                     </div>
                 </div>
             </div>
@@ -355,6 +355,8 @@
     </div>
 
     <script>
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzuWq_jBKkT9_pQ08tK0jDypKo-7bgXiIetX1Lx61r6inQM2b30b04i6n1V9jSwW3kYvw/exec";
+
         // --- CUSTOM ALERT & CONFIRM HELPERS ---
         function showAlert(message, title = "NOTIFICATION") {
             document.getElementById('alertTitle').innerText = title;
@@ -405,7 +407,7 @@
                 const fullNameOnly = loggedUser.split(' (')[0];
                 document.getElementById('loggedInUserDisplay').innerText = fullNameOnly; 
                 document.getElementById('orderedBy').value = loggedUser;
-                renderOrderHistory();
+                fetchCloudHistory(); // Fetch 60-day history from Server
             } else {
                 document.getElementById('loginScreen').style.display = 'flex';
             }
@@ -462,14 +464,34 @@
             return `DO-${storeCode}-${dateStr}-${seqStr}`;
         }
 
-        // --- 30-DAY ORDER HISTORY LOGIC (24H EDIT LIMIT) ---
-        const ONE_MONTH = 30 * 24 * 60 * 60 * 1000;
+        // --- CLOUD SYNC 60-DAY HISTORY & 24H EDIT LIMIT ---
+        const SIXTY_DAYS = 60 * 24 * 60 * 60 * 1000;
         const ONE_DAY = 24 * 60 * 60 * 1000;
+
+        function fetchCloudHistory() {
+            const container = document.getElementById('historyListContainer');
+            container.innerHTML = `<p class="text-slate-400 text-center py-2 italic"><i class="fa-solid fa-spinner fa-spin mr-1"></i> Syncing 60-day history from cloud...</p>`;
+
+            fetch(WEB_APP_URL)
+                .then(response => response.json())
+                .then(result => {
+                    if (result && result.status === 'success' && result.history) {
+                        localStorage.setItem('stb_order_history', JSON.stringify(result.history));
+                        renderOrderHistory();
+                    } else {
+                        renderOrderHistory(); // Fallback to local cache
+                    }
+                })
+                .catch(err => {
+                    console.error("Cloud sync failed, using local cache:", err);
+                    renderOrderHistory(); // Fallback to local cache if offline
+                });
+        }
 
         function saveOrderToHistory(orderData) {
             let history = JSON.parse(localStorage.getItem('stb_order_history') || '[]');
             const now = new Date().getTime();
-            history = history.filter(item => now - item.timestamp < ONE_MONTH);
+            history = history.filter(item => now - (item.timestamp || now) < SIXTY_DAYS);
             
             const existingIndex = history.findIndex(item => item.doNo && item.doNo === orderData.doNo);
             if (existingIndex !== -1) {
@@ -486,11 +508,13 @@
             const badge = document.getElementById('historyCountBadge');
             let history = JSON.parse(localStorage.getItem('stb_order_history') || '[]');
             const now = new Date().getTime();
-            history = history.filter(item => now - item.timestamp < ONE_MONTH);
+            
+            // Filter strictly within 60 days
+            history = history.filter(item => now - (item.timestamp || now) < SIXTY_DAYS);
             localStorage.setItem('stb_order_history', JSON.stringify(history));
 
             if (history.length === 0) {
-                container.innerHTML = `<p class="text-slate-400 text-center py-2 italic">No orders in the last 30 days.</p>`;
+                container.innerHTML = `<p class="text-slate-400 text-center py-2 italic">No orders in the last 60 days.</p>`;
                 badge.innerText = `0 orders`;
                 return;
             }
@@ -503,7 +527,8 @@
                     updateBadgeHTML = `<span class="text-red-600 font-extrabold text-[10px] block mt-0.5"><i class="fa-solid fa-triangle-exclamation mr-1"></i>Update: V${ord.updateVersion} (${ord.updateTime || ''})</span>`;
                 }
 
-                const isWithin24Hours = (now - ord.timestamp) <= ONE_DAY;
+                const itemTimestamp = ord.timestamp || now;
+                const isWithin24Hours = (now - itemTimestamp) <= ONE_DAY;
                 let editBtnHTML = '';
                 if (isWithin24Hours) {
                     editBtnHTML = `
@@ -535,8 +560,9 @@
             let history = JSON.parse(localStorage.getItem('stb_order_history') || '[]');
             if (!history[index]) return;
             const ord = history[index];
+            const itemTimestamp = ord.timestamp || new Date().getTime();
 
-            if ((new Date().getTime() - ord.timestamp) > ONE_DAY) {
+            if ((new Date().getTime() - itemTimestamp) > ONE_DAY) {
                 showAlert("This order is older than 24 hours and cannot be edited!", "LOCKED ORDER");
                 return;
             }
@@ -835,6 +861,7 @@
             const nowObj = new Date();
             const timeFormatted = nowObj.toLocaleDateString() + ' ' + nowObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             const updateTimeVal = action === 'update' ? timeFormatted : (prevRecord ? prevRecord.updateTime : '');
+            const creationTimestamp = prevRecord && prevRecord.timestamp ? prevRecord.timestamp : new Date().getTime();
 
             const data = {
                 doNo:          inputDoNo,
@@ -852,12 +879,11 @@
                 totalQty:      totalQty,
                 totalAmount:   totalAmount.toFixed(2),
                 updateVersion: currentVer,
-                updateTime:    updateTimeVal
+                updateTime:    updateTimeVal,
+                timestamp:     creationTimestamp
             };
 
-            const webAppUrl = "https://script.google.com/macros/s/AKfycbzuWq_jBKkT9_pQ08tK0jDypKo-7bgXiIetX1Lx61r6inQM2b30b04i6n1V9jSwW3kYvw/exec";
-
-            fetch(webAppUrl, {
+            fetch(WEB_APP_URL, {
                 method: 'POST',
                 mode: 'no-cors',
                 headers: { 'Content-Type': 'application/json' },
@@ -890,7 +916,7 @@
                         item4: quantities['item4'] || 0,
                         totalQty: totalQty,
                         totalAmount: totalAmount.toFixed(2),
-                        timestamp: prevRecord ? prevRecord.timestamp : new Date().getTime(),
+                        timestamp: creationTimestamp,
                         updateVersion: currentVer,
                         updateTime: updateTimeVal
                     };
