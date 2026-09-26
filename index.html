@@ -132,7 +132,7 @@
                 <p class="text-slate-300 text-xs mt-0.5 font-semibold tracking-wider">FOOD ORDER</p>
             </div>
 
-            <!-- CLOUD SYNC 60-DAY ORDER HISTORY SECTION (REDUCED FONT & COMPACT LAYOUT) -->
+            <!-- CLOUD SYNC 60-DAY ORDER HISTORY SECTION -->
             <div class="px-3 mb-3">
                 <div class="bg-sky-50 border border-sky-200 p-2.5 rounded-xl shadow-sm">
                     <div class="flex justify-between items-center cursor-pointer select-none" onclick="toggleHistoryList()">
@@ -140,6 +140,7 @@
                             <i class="fa-solid fa-cloud-arrow-down text-sky-500 mr-1 text-xs"></i> Cloud History (60D)
                         </span>
                         <div class="flex items-center space-x-1.5">
+                            <button type="button" onclick="openExportModal(event)" class="text-[9px] text-sky-700 font-bold bg-sky-200 px-1.5 py-0.5 rounded hover:bg-sky-300 whitespace-nowrap" title="Export Report"><i class="fa-solid fa-file-arrow-down mr-0.5"></i> Export</button>
                             <button type="button" onclick="clearDoNo(event)" id="newOrderModeBtn" class="hidden text-[9px] text-emerald-700 font-bold bg-emerald-100 px-1.5 py-0.5 rounded hover:bg-emerald-200 whitespace-nowrap">New</button>
                             <span id="historyCountBadge" class="bg-sky-200 text-navyPrimary text-[9px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">0 ord</span>
                             <i id="historyChevron" class="fa-solid fa-chevron-down text-[10px] text-navyPrimary transition-transform duration-300"></i>
@@ -219,6 +220,36 @@
 
         <div class="text-center mt-6 mb-10">
             <p class="text-[11px] text-slate-400 font-light">&copy; 2026 Independence Hotel, Sihanoukville</p>
+        </div>
+    </div>
+
+    <!-- EXPORT REPORT MODAL -->
+    <div id="exportModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl animate-fade-in text-left space-y-4 border border-slate-100">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+                <h3 class="font-extrabold text-sm text-navyPrimary uppercase tracking-wider"><i class="fa-solid fa-file-excel text-emerald-600 mr-1.5"></i> Export Report</h3>
+                <button type="button" onclick="closeExportModal()" class="text-slate-400 hover:text-slate-600 font-bold"><i class="fa-solid fa-xmark text-sm"></i></button>
+            </div>
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="font-bold text-slate-600 block mb-1">Start Date *</label>
+                    <input type="date" id="exportStartDate" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg font-semibold text-slate-700">
+                </div>
+                <div>
+                    <label class="font-bold text-slate-600 block mb-1">End Date *</label>
+                    <input type="date" id="exportEndDate" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg font-semibold text-slate-700">
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-2.5 pt-2">
+                <button type="button" onclick="exportData('sheet')" class="bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-xl font-bold text-xs transition-all btn-press shadow-md flex items-center justify-center space-x-1">
+                    <i class="fa-solid fa-file-excel text-xs"></i>
+                    <span>Export Sheet</span>
+                </button>
+                <button type="button" onclick="exportData('pdf')" class="bg-navyPrimary hover:bg-navyDark text-white py-2.5 rounded-xl font-bold text-xs transition-all btn-press shadow-md flex items-center justify-center space-x-1">
+                    <i class="fa-solid fa-file-pdf text-xs"></i>
+                    <span>Export PDF</span>
+                </button>
+            </div>
         </div>
     </div>
 
@@ -383,6 +414,117 @@
             if (confirmCallback) confirmCallback();
             confirmCallback = null;
         });
+
+        // --- EXPORT MODAL LOGIC ---
+        function openExportModal(e) {
+            if (e) e.stopPropagation();
+            // Set default date range to current month
+            const now = new Date();
+            const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+            const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+            
+            document.getElementById('exportStartDate').value = firstDay.toISOString().split('T')[0];
+            document.getElementById('exportEndDate').value = lastDay.toISOString().split('T')[0];
+            document.getElementById('exportModal').classList.remove('hidden');
+        }
+        function closeExportModal() {
+            document.getElementById('exportModal').classList.add('hidden');
+        }
+
+        function exportData(type) {
+            const startDate = document.getElementById('exportStartDate').value;
+            const endDate = document.getElementById('exportEndDate').value;
+            if (!startDate || !endDate) {
+                showAlert("សូមជ្រើសរើសកាលបរិច្ឆេទ Start Date និង End Date!", "REQUIRED");
+                return;
+            }
+
+            let history = JSON.parse(localStorage.getItem('stb_order_history') || '[]');
+            let filtered = history.filter(item => item.orderDate >= startDate && item.orderDate <= endDate);
+
+            if (filtered.length === 0) {
+                showAlert("ពុំមានទិន្នន័យបញ្ជាទិញក្នុងចន្លោះកាលបរិច្ឆេទនេះទេ!", "NO DATA");
+                return;
+            }
+
+            if (type === 'sheet') {
+                // Export to CSV (Openable in Excel / Google Sheets)
+                let csvContent = "data:text/csv;charset=utf-8,DO No,Branch,Order Date,Pickup Time,Ordered By,Egg Salad Wrap,Chicken Salad Wrap,Salad Wrapped,Fresh Sandwich,Total Qty,Total Amount,Update Ver\r\n";
+                filtered.forEach(row => {
+                    csvContent += `"${row.doNo}","${row.branch}","${row.orderDate}","${row.pickupTime}","${row.orderedBy}",${row.item1},${row.item2},${row.item3},${row.item4},${row.totalQty},${row.totalAmount},${row.updateVersion || 1}\r\n`;
+                });
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", `Starbucks_Order_Report_${startDate}_to_${endDate}.csv`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                closeExportModal();
+                showAlert("ទាញយកឯកសារ Sheet (CSV) បានដោយជោគជ័យ!", "EXPORT SUCCESS");
+            } else if (type === 'pdf') {
+                // Export to PDF via Print View
+                let printWindow = window.open('', '', 'height=600,width=800');
+                let html = `
+                    <html>
+                    <head>
+                        <title>Order Report (${startDate} to ${endDate})</title>
+                        <style>
+                            body { font-family: sans-serif; padding: 20px; color: #333; }
+                            h2 { text-align: center; color: #1B365D; margin-bottom: 5px; }
+                            p { text-align: center; font-size: 12px; color: #666; margin-bottom: 20px; }
+                            table { width: 100%; border-collapse: collapse; font-size: 11px; }
+                            th, td { border: 1px solid #cbd5e1; padding: 8px; text-align: left; }
+                            th { background-color: #1B365D; color: white; }
+                            .total-row { font-weight: bold; background-color: #f1f5f9; }
+                        </style>
+                    </head>
+                    <body>
+                        <h2>INDEPENDENCE HOTEL BY DARA - F&B REPORT</h2>
+                        <p>Date Range: ${startDate} to ${endDate}</p>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>DO No</th>
+                                    <th>Branch</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Staff</th>
+                                    <th>Total Qty</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+                let grandTotalQty = 0;
+                filtered.forEach(row => {
+                    grandTotalQty += Number(row.totalQty);
+                    html += `
+                        <tr>
+                            <td>${row.doNo}</td>
+                            <td>${row.branch}</td>
+                            <td>${row.orderDate}</td>
+                            <td>${row.pickupTime}</td>
+                            <td>${row.orderedBy}</td>
+                            <td><b>${row.totalQty}</b></td>
+                            <td>$${row.totalAmount}</td>
+                        </tr>
+                    `;
+                });
+                html += `
+                            </tbody>
+                        </table>
+                        <p style="text-align: right; margin-top: 15px; font-weight: bold;">Grand Total Quantity: ${grandTotalQty} units</p>
+                    </body>
+                    </html>
+                `;
+                printWindow.document.write(html);
+                printWindow.document.close();
+                printWindow.focus();
+                setTimeout(() => { printWindow.print(); }, 500);
+                closeExportModal();
+            }
+        }
 
         // --- COLLAPSIBLE HISTORY TOGGLE ---
         let isHistoryOpen = false;
