@@ -442,43 +442,53 @@
 
 <!-- ═══════════════════════════ LOADING OVERLAY ═══════════════════════════ -->
 <div id="loadingOverlay" class="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
-  <div class="modal-card bg-white rounded-2xl w-full max-w-[340px] shadow-2xl overflow-hidden border border-slate-100">
-    <div class="bg-gradient-to-r from-navyDark to-navyPrimary h-1.5 w-full"></div>
-    <div class="p-6 text-center space-y-4">
-      <div id="mainIconBg" class="w-16 h-16 rounded-full icon-ring-blue flex items-center justify-center mx-auto text-2xl shadow-md step-pulse">
-        <i id="mainIcon" class="fa-solid fa-cloud-arrow-up"></i>
+  <div class="modal-card bg-white rounded-3xl w-full max-w-[360px] shadow-2xl overflow-hidden border border-slate-100">
+    <div class="px-7 pt-8 pb-7 text-center space-y-5">
+
+      <!-- Title + subtitle -->
+      <div>
+        <h3 id="progTitle" class="font-extrabold text-[17px] text-navyPrimary uppercase tracking-wide leading-tight">PROCESSING REQUEST</h3>
+        <p id="progSub" class="text-slate-400 text-[13px] font-medium mt-1.5">Initializing secure connection...</p>
       </div>
-      <h3 id="progTitle" class="font-extrabold text-sm text-navyPrimary uppercase tracking-wider">Processing Order...</h3>
-      <!-- Step progress -->
-      <div class="bg-slate-50 rounded-xl border border-slate-200 p-4 shadow-inner space-y-3">
-        <div class="flex items-center justify-between px-1 relative">
-          <div class="flex flex-col items-center space-y-1.5 z-10">
-            <div id="s1" class="w-9 h-9 rounded-full bg-slate-200 text-slate-400 flex items-center justify-center text-xs shadow-sm transition-all duration-400">
-              <i class="fa-solid fa-paper-plane"></i>
-            </div>
-            <span id="s1t" class="text-[10px] font-bold text-slate-400 whitespace-nowrap">Sent</span>
-          </div>
-          <div class="flex-1 h-[3px] bg-slate-200 mx-1.5 rounded-full overflow-hidden mt-[-14px] relative">
-            <div id="line1" class="absolute left-0 top-0 h-full bg-gradient-to-r from-sky-400 to-blue-500 w-0 transition-all duration-600 rounded-full"></div>
-          </div>
-          <div class="flex flex-col items-center space-y-1.5 z-10">
-            <div id="s2" class="w-9 h-9 rounded-full bg-slate-200 text-slate-400 flex items-center justify-center text-xs shadow-sm transition-all duration-400">
-              <i class="fa-solid fa-gears"></i>
-            </div>
-            <span id="s2t" class="text-[10px] font-bold text-slate-400 whitespace-nowrap">Processed</span>
-          </div>
-          <div class="flex-1 h-[3px] bg-slate-200 mx-1.5 rounded-full overflow-hidden mt-[-14px] relative">
-            <div id="line2" class="absolute left-0 top-0 h-full bg-gradient-to-r from-sky-400 to-emerald-400 w-0 transition-all duration-600 rounded-full"></div>
-          </div>
-          <div class="flex flex-col items-center space-y-1.5 z-10">
-            <div id="s3" class="w-9 h-9 rounded-full bg-slate-200 text-slate-400 flex items-center justify-center text-xs shadow-sm transition-all duration-400">
-              <i class="fa-solid fa-check-double"></i>
-            </div>
-            <span id="s3t" class="text-[10px] font-bold text-slate-400 whitespace-nowrap">Completed</span>
-          </div>
+
+      <!-- Step row — matches sample photo exactly -->
+      <div class="relative flex items-start justify-between px-2 pt-2 pb-1">
+
+        <!-- Arrow connector left: gray → blue depending on step -->
+        <!-- Line 1 -->
+        <div class="absolute left-[calc(16.6%+20px)] right-[calc(50%+20px)] top-[22px] h-[3px] bg-slate-200 rounded-full overflow-hidden z-0">
+          <div id="line1" class="h-full w-0 rounded-full transition-all duration-700 ease-in-out" style="background:linear-gradient(90deg,#22C55E,#22C55E)"></div>
         </div>
-        <p id="progSub" class="text-[11px] text-sky-600 font-semibold pt-1">Initializing secure connection...</p>
+        <!-- Line 2 -->
+        <div class="absolute left-[calc(50%+20px)] right-[calc(16.6%+20px)] top-[22px] h-[3px] bg-slate-200 rounded-full overflow-hidden z-0">
+          <div id="line2" class="h-full w-0 rounded-full transition-all duration-700 ease-in-out" style="background:linear-gradient(90deg,#38BDF8,#22C55E)"></div>
+        </div>
+
+        <!-- Step 1: Sent -->
+        <div class="flex flex-col items-center space-y-2.5 z-10 w-[80px]">
+          <div id="s1" class="w-11 h-11 rounded-full flex items-center justify-center text-sm shadow-sm transition-all duration-400 bg-slate-100 text-slate-400">
+            <i class="fa-solid fa-paper-plane"></i>
+          </div>
+          <span id="s1t" class="text-[11px] font-bold text-slate-400 tracking-wide">Sent</span>
+        </div>
+
+        <!-- Step 2: Processed -->
+        <div class="flex flex-col items-center space-y-2.5 z-10 w-[80px]">
+          <div id="s2" class="w-11 h-11 rounded-full flex items-center justify-center text-sm shadow-sm transition-all duration-400 bg-slate-100 text-slate-400">
+            <i class="fa-solid fa-gears"></i>
+          </div>
+          <span id="s2t" class="text-[11px] font-bold text-slate-400 tracking-wide">Processed</span>
+        </div>
+
+        <!-- Step 3: Completed -->
+        <div class="flex flex-col items-center space-y-2.5 z-10 w-[80px]">
+          <div id="s3" class="w-11 h-11 rounded-full flex items-center justify-center text-sm shadow-sm transition-all duration-400 bg-slate-100 text-slate-400">
+            <i class="fa-solid fa-check-double"></i>
+          </div>
+          <span id="s3t" class="text-[11px] font-bold text-slate-400 tracking-wide">Completed</span>
+        </div>
       </div>
+
     </div>
   </div>
 </div>
@@ -968,29 +978,71 @@ function stopSlide(){
 }
 
 // ─── ORDER SUBMISSION ────────────────────────────────────────
-function setStep(n){
-    const icons=['s1','s2','s3'], lines=['line1','line2'];
-    const cls=['bg-navyPrimary text-white','bg-sky-500 text-white step-pulse','bg-emerald-500 text-white'];
-    const tcls=['text-[11px] font-extrabold text-navyPrimary','text-[11px] font-extrabold text-sky-600','text-[11px] font-extrabold text-emerald-600'];
-    for(let i=0;i<3;i++){
-        document.getElementById(icons[i]).className=i<n?`w-8 h-8 rounded-full ${cls[i]} flex items-center justify-center text-xs shadow-md`:(i===n?`w-8 h-8 rounded-full ${cls[i]} flex items-center justify-center text-xs shadow-md`:'w-8 h-8 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center text-xs shadow-sm transition-all');
-        document.getElementById(icons[i]+'t').className=i<n?tcls[i]:'text-[11px] font-bold text-slate-400';
+// step 0 = reset, 1 = Sent active, 2 = Processed active, 3 = all done
+// Style matches sample: ✅ green done | 🔵 navy+glow active | ⬜ gray pending
+function setStep(n) {
+    // Icon base size classes (bigger than before, like sample)
+    const BASE  = 'w-11 h-11 rounded-full flex items-center justify-center text-sm shadow-sm transition-all duration-400';
+    // State classes
+    const DONE    = `${BASE} bg-emerald-500 text-white shadow-md`;           // green ✅
+    const ACTIVE  = `${BASE} bg-navyPrimary text-white shadow-[0_0_18px_6px_rgba(56,189,248,0.5)]`; // navy + blue glow
+    const PENDING = `${BASE} bg-slate-100 text-slate-400`;                   // gray
+
+    const TLABEL_DONE    = 'text-[11px] font-extrabold text-emerald-500 tracking-wide';
+    const TLABEL_ACTIVE  = 'text-[11px] font-extrabold text-navyPrimary tracking-wide';
+    const TLABEL_PENDING = 'text-[11px] font-bold text-slate-400 tracking-wide';
+
+    // Icons swap: done=check, active=original, pending=original
+    const ICONS_DONE   = ['fa-solid fa-check', 'fa-solid fa-check', 'fa-solid fa-check'];
+    const ICONS_ORIG   = ['fa-solid fa-paper-plane', 'fa-solid fa-gears', 'fa-solid fa-check-double'];
+
+    const s = [document.getElementById('s1'), document.getElementById('s2'), document.getElementById('s3')];
+    const t = [document.getElementById('s1t'),document.getElementById('s2t'),document.getElementById('s3t')];
+    const l = [document.getElementById('line1'), document.getElementById('line2')];
+
+    for (let i = 0; i < 3; i++) {
+        const si = s[i].querySelector('i');
+        if (i < n) {
+            // Done
+            s[i].className = DONE;
+            t[i].className = TLABEL_DONE;
+            if (si) si.className = ICONS_DONE[i];
+        } else if (i === n) {
+            // Active — glow pulse
+            s[i].className = ACTIVE;
+            t[i].className = TLABEL_ACTIVE;
+            if (si) si.className = ICONS_ORIG[i] + (i===1?' fa-spin':'');
+        } else {
+            // Pending
+            s[i].className = PENDING;
+            t[i].className = TLABEL_PENDING;
+            if (si) si.className = ICONS_ORIG[i];
+        }
     }
-    for(let i=0;i<lines.length;i++) document.getElementById(lines[i]).style.width=i<n-1?'100%':'0%';
+    // Progress lines: line1 fills when n>=2, line2 fills when n>=3
+    if (l[0]) l[0].style.width = n >= 2 ? '100%' : '0%';
+    if (l[1]) l[1].style.width = n >= 3 ? '100%' : '0%';
+}
+
+function setProgText(title, sub, titleCls, subCls) {
+    const pt = document.getElementById('progTitle');
+    const ps = document.getElementById('progSub');
+    if (pt) { pt.innerText = title; pt.className = titleCls; }
+    if (ps) { ps.innerText = sub;   ps.className = subCls; }
 }
 
 function submitOrder(){
-    const overlay=document.getElementById('loadingOverlay');
+    const overlay = document.getElementById('loadingOverlay');
     overlay.classList.remove('hidden');
-    document.getElementById('progTitle').innerText='PROCESSING ORDER...';
-    document.getElementById('progTitle').className='font-extrabold text-sm text-navyPrimary uppercase tracking-wider';
-    document.getElementById('progSub').innerText='Initializing secure connection...';
-    document.getElementById('progSub').className='text-xs text-sky-600 pt-2 font-semibold';
-    document.getElementById('mainIconBg').className='w-14 h-14 rounded-full bg-sky-50 text-sky-500 flex items-center justify-center text-2xl border-2 border-sky-200 shadow-lg mx-auto step-pulse';
-    document.getElementById('mainIcon').className='fa-solid fa-cloud-arrow-up';
+    setProgText(
+        'PROCESSING REQUEST',
+        'Initializing secure connection...',
+        'font-extrabold text-[17px] text-navyPrimary uppercase tracking-wide leading-tight',
+        'text-slate-400 text-[13px] font-medium mt-1.5'
+    );
     setStep(0);
 
-    const data={
+    const data = {
         branch:    document.getElementById('branch').value,
         orderDate: document.getElementById('orderDate').value,
         pickupTime:document.getElementById('pickupTime').value.trim(),
@@ -1000,32 +1052,54 @@ function submitOrder(){
         item7:quantities['item7']||0
     };
 
-    setTimeout(()=>{ setStep(1); document.getElementById('progSub').innerText='Dispatching to server...'; },300);
-    setTimeout(()=>{ setStep(2); document.getElementById('mainIcon').className='fa-solid fa-gears'; document.getElementById('progSub').innerText='Syncing with Google Sheets & Telegram...'; },900);
+    // Step 1 — Sent (300ms)
+    setTimeout(() => {
+        setStep(1);
+        setProgText(
+            'PROCESSING REQUEST',
+            'Dispatching order to server...',
+            'font-extrabold text-[17px] text-navyPrimary uppercase tracking-wide leading-tight',
+            'text-slate-400 text-[13px] font-medium mt-1.5'
+        );
+    }, 300);
 
-    fetch(WEB_APP_URL,{ method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) })
-    .then(()=>{
+    // Step 2 — Processed (900ms)
+    setTimeout(() => {
+        setStep(2);
+        setProgText(
+            'PROCESSING REQUEST',
+            'Updating Database & Telegram...',
+            'font-extrabold text-[17px] text-navyPrimary uppercase tracking-wide leading-tight',
+            'text-sky-500 text-[13px] font-semibold mt-1.5'
+        );
+    }, 900);
+
+    fetch(WEB_APP_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) })
+    .then(() => {
         // Cache local pending entry
-        const entry={ timestamp:Date.now(), doNo:'(Pending Sync)', branch:data.branch, orderDate:data.orderDate,
-            pickupTime:data.pickupTime, orderedBy:data.orderedBy,
-            item1:data.item1,item2:data.item2,item3:data.item3,item4:data.item4,
-            item5:data.item5,item6:data.item6,item7:data.item7,
-            totalQty:Object.values(quantities).reduce((a,b)=>a+b,0) };
-        const h=JSON.parse(localStorage.getItem(CACHE_KEY)||'[]');
-        h.unshift(entry); localStorage.setItem(CACHE_KEY,JSON.stringify(h));
+        const entry = {
+            timestamp: Date.now(), doNo:'(Pending Sync)', branch:data.branch,
+            orderDate:data.orderDate, pickupTime:data.pickupTime, orderedBy:data.orderedBy,
+            item1:data.item1, item2:data.item2, item3:data.item3, item4:data.item4,
+            item5:data.item5, item6:data.item6, item7:data.item7,
+            totalQty: Object.values(quantities).reduce((a,b)=>a+b,0)
+        };
+        const h = JSON.parse(localStorage.getItem(CACHE_KEY)||'[]');
+        h.unshift(entry); localStorage.setItem(CACHE_KEY, JSON.stringify(h));
 
-        setTimeout(()=>{
+        // Step 3 — Completed (1200ms) + haptic HERE only
+        setTimeout(() => {
             setStep(3);
-            document.getElementById('mainIconBg').className='w-14 h-14 rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center text-2xl border-2 border-emerald-200 shadow-lg mx-auto animate-bounce';
-            document.getElementById('mainIcon').className='fa-solid fa-check';
-            document.getElementById('progTitle').innerText='THANK YOU FOR YOUR ORDER!';
-            document.getElementById('progTitle').className='font-extrabold text-sm text-emerald-600 uppercase tracking-wider';
-            document.getElementById('progSub').innerText='PDF generated & sent to Telegram successfully.';
-            document.getElementById('progSub').className='text-xs text-emerald-600 pt-2 font-semibold';
-            if('vibrate' in navigator) navigator.vibrate([150,75,150]);
+            setProgText(
+                'ORDER COMPLETED! 🎉',
+                'PDF sent to Telegram successfully.',
+                'font-extrabold text-[17px] text-emerald-500 uppercase tracking-wide leading-tight',
+                'text-emerald-400 text-[13px] font-semibold mt-1.5'
+            );
+            // ── Haptic on final complete only ──
             triggerHaptic('success');
-            setTimeout(()=>window.location.reload(),3500);
-        },1200);
+            setTimeout(() => window.location.reload(), 3500);
+        }, 1200);
     })
     .catch(()=>{
         // [P3] Save to retry queue if network fails
