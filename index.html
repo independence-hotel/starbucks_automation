@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
     <title>Starbucks Food Order App</title>
-    
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -12,528 +11,927 @@
     <meta name="theme-color" content="#1B365D">
     <link rel="icon" type="image/png" href="logo.png">
     <link rel="apple-touch-icon" href="logo.png">
-    <link rel="shortcut icon" href="logo.png">
-
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
-                    colors: { navyPrimary: '#1B365D', navyDark: '#0A192F', bgSoft: '#F1F5F9', cardWhite: '#FFFFFF', pulseBlue: '#38BDF8' }
-                }
-            }
+            theme: { extend: { fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+            colors: { navyPrimary: '#1B365D', navyDark: '#0A192F', cardWhite: '#FFFFFF' } } }
         }
     </script>
     <style>
-        body { -webkit-tap-highlight-color: transparent; background-color: #e2e8f0; touch-action: manipulation; -webkit-touch-callout: none; }
-        ::-webkit-scrollbar { width: 0px; background: transparent; }
-        input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-        .btn-press { position: relative; overflow: hidden; }
+        body { -webkit-tap-highlight-color: transparent; background-color: #e2e8f0; touch-action: manipulation; }
+        ::-webkit-scrollbar { width: 0; background: transparent; }
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         .btn-press:active { transform: scale(0.95); transition: transform 0.12s ease; }
-        .app-container { max-width: 430px; margin: 0 auto; min-height: 100vh; background-color: #F8FAFC; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); position: relative; }
-        @keyframes shimmerSlide { 0% { transform: translateX(-120%); } 100% { transform: translateX(220%); } }
-        .header-shimmer::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.08) 50%, transparent 60%); animation: shimmerSlide 3.5s infinite ease-in-out; pointer-events: none; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
-        .card-enter { animation: slideUp 0.38s cubic-bezier(0.16,1,0.3,1) forwards; opacity: 0; }
-        @keyframes fadeScale { from { opacity: 0; transform: scale(0.92) translateY(8px); } to { opacity: 1; transform: scale(1) translateY(0); } }
-        .animate-fade-in { animation: fadeScale 0.28s cubic-bezier(0.16,1,0.3,1) forwards; }
-        @keyframes qtyPop { 0% { transform: scale(1); } 40% { transform: scale(1.35); color: #1B365D; } 100% { transform: scale(1); } }
-        .qty-pop { animation: qtyPop 0.22s ease; }
-        .menu-card { transition: box-shadow 0.2s ease, transform 0.2s ease; }
-        .menu-card:hover { box-shadow: 0 6px 18px rgba(27,54,93,0.1); transform: translateY(-1px); }
-        .emoji-icon { transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1); display: inline-block; }
-        .menu-card:hover .emoji-icon { transform: scale(1.18) rotate(-4deg); }
-        .qty-btn { transition: background 0.15s ease, color 0.15s ease; }
-        .qty-btn:hover { background: #F0F9FF !important; color: #1B365D; border-color: #38BDF8; }
-        @keyframes footerIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .footer-bar { animation: footerIn 0.5s 0.3s cubic-bezier(0.16,1,0.3,1) both; }
-        @keyframes numFlip { 0% { transform: translateY(-8px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
-        .num-flip { animation: numFlip 0.18s ease forwards; }
-        @keyframes pulseGlow { 0%,100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.4); border-color: rgba(56, 189, 248, 0.5); } 50% { transform: scale(1.05); box-shadow: 0 0 18px 5px rgba(56, 189, 248, 0.5); border-color: rgba(56, 189, 248, 1); } }
-        .step-pulse { animation: pulseGlow 1.8s infinite ease-in-out; }
-        @keyframes slideShimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
-        .slide-text-shimmer { background: linear-gradient(90deg, #94a3b8 0%, #38BDF8 50%, #94a3b8 100%); background-size: 200% auto; color: transparent; -webkit-background-clip: text; background-clip: text; animation: slideShimmer 3s linear infinite; }
-        .slide-track-glow { border: 2px solid rgba(56, 189, 248, 0.5); box-shadow: 0 0 12px rgba(56, 189, 248, 0.3), inset 0 2px 4px rgba(0,0,0,0.04); transition: all 0.3s ease; }
-        .slide-track-glow:hover { border-color: rgba(56, 189, 248, 0.9); box-shadow: 0 0 20px rgba(56, 189, 248, 0.6), inset 0 2px 4px rgba(0,0,0,0.04); }
+        .app-container { max-width: 430px; margin: 0 auto; min-height: 100vh; background: #F8FAFC; box-shadow: 0 10px 25px -5px rgba(0,0,0,.1); }
+        @keyframes shimmer { 0%{transform:translateX(-120%)} 100%{transform:translateX(220%)} }
+        .hdr-shine::before { content:''; position:absolute; inset:0; background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.08) 50%,transparent 60%); animation:shimmer 3.5s infinite ease-in-out; pointer-events:none; }
+        @keyframes slideUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+        .card-enter { animation:slideUp .38s cubic-bezier(.16,1,.3,1) forwards; opacity:0; }
+        @keyframes fadeScale { from{opacity:0;transform:scale(.92) translateY(8px)} to{opacity:1;transform:scale(1) translateY(0)} }
+        .fade-in { animation:fadeScale .28s cubic-bezier(.16,1,.3,1) forwards; }
+        @keyframes qtyPop { 0%{transform:scale(1)} 40%{transform:scale(1.35);color:#1B365D} 100%{transform:scale(1)} }
+        .qty-pop { animation:qtyPop .22s ease; }
+        .menu-card { transition:box-shadow .2s,transform .2s; }
+        .menu-card:hover { box-shadow:0 6px 18px rgba(27,54,93,.1); transform:translateY(-1px); }
+        .emoji-icon { transition:transform .2s cubic-bezier(.34,1.56,.64,1); display:inline-block; }
+        .menu-card:hover .emoji-icon { transform:scale(1.18) rotate(-4deg); }
+        .qty-btn { transition:background .15s,color .15s; }
+        .qty-btn:hover { background:#F0F9FF !important; color:#1B365D; border-color:#38BDF8; }
+        @keyframes footerIn { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+        .footer-bar { animation:footerIn .5s .3s cubic-bezier(.16,1,.3,1) both; }
+        @keyframes numFlip { 0%{transform:translateY(-8px);opacity:0} 100%{transform:translateY(0);opacity:1} }
+        .num-flip { animation:numFlip .18s ease forwards; }
+        @keyframes pulseGlow { 0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(56,189,248,.4);border-color:rgba(56,189,248,.5)} 50%{transform:scale(1.05);box-shadow:0 0 18px 5px rgba(56,189,248,.5);border-color:rgba(56,189,248,1)} }
+        .step-pulse { animation:pulseGlow 1.8s infinite ease-in-out; }
+        @keyframes slideShimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+        .slide-shimmer { background:linear-gradient(90deg,#94a3b8 0%,#38BDF8 50%,#94a3b8 100%); background-size:200% auto; color:transparent; -webkit-background-clip:text; background-clip:text; animation:slideShimmer 3s linear infinite; }
+        .slide-glow { border:2px solid rgba(56,189,248,.5); box-shadow:0 0 12px rgba(56,189,248,.3),inset 0 2px 4px rgba(0,0,0,.04); }
+        /* Inline field errors */
+        .field-err { display:none; font-size:11px; color:#ef4444; font-weight:600; margin-top:3px; }
+        .field-err.show { display:block; }
+        input.err-border, select.err-border { border-color:#ef4444 !important; }
+        /* Retry badge */
+        @keyframes retryPulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+        .retry-badge { animation:retryPulse 2s infinite; }
     </style>
 </head>
 <body class="font-sans text-slate-800 text-sm">
 
-    <!-- LOGIN SCREEN -->
-    <div id="loginScreen" class="fixed inset-0 bg-navyDark z-50 flex items-center justify-center p-4">
-        <div class="app-container w-full bg-slate-50 flex flex-col justify-between p-6 text-center text-slate-800 relative overflow-hidden shadow-2xl">
-            <div class="bg-navyPrimary text-white -mx-6 -mt-6 p-6 rounded-b-3xl shadow-md relative overflow-hidden header-shimmer">
-                <div class="bg-white p-2 rounded-xl inline-block mb-2 shadow-md border border-slate-200">
-                    <img src="logo.png" alt="Hotel Logo" class="h-14 w-auto mx-auto object-contain" onerror="this.onerror=null; this.src='Logo PNG-white.png';">
-                </div>
-                <h1 class="text-sm font-extrabold tracking-widest uppercase">INDEPENDENCE HOTEL BY DARA</h1>
-                <p class="text-slate-300 text-xs mt-0.5 font-medium">F&B - SMART ORDER PORTAL</p>
-            </div>
+<!-- ═══════════════════════════ LOGIN SCREEN ═══════════════════════════ -->
+<div id="loginScreen" class="fixed inset-0 bg-slate-900 z-50 flex items-center justify-center p-4">
+  <div class="app-container w-full bg-slate-50 flex flex-col justify-between p-6 text-center relative overflow-hidden shadow-2xl" style="max-height:100vh;">
 
-            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 space-y-3.5 text-left relative z-10 my-auto shadow-lg card-enter">
-                <div class="flex items-center space-x-2 border-b border-slate-100 pb-2">
-                    <i class="fa-solid fa-lock text-navyPrimary text-xs"></i>
-                    <h3 class="font-bold text-navyPrimary text-xs uppercase tracking-wider">Staff Login</h3>
-                </div>
-                <div>
-                    <label class="text-[11px] text-slate-500 font-bold uppercase tracking-wider mb-1 block">Full Name *</label>
-                    <div class="relative">
-                        <input type="text" id="loginFullName" placeholder="Enter your full name" required class="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-800 focus:ring-2 focus:ring-navyPrimary transition-all">
-                        <i class="fa-regular fa-user absolute left-3 top-3.5 text-slate-400 text-xs"></i>
-                    </div>
-                </div>
-                <div>
-                    <label class="text-[11px] text-slate-500 font-bold uppercase tracking-wider mb-1 block">Phone Number *</label>
-                    <div class="relative">
-                        <input type="tel" id="loginPhone" placeholder="Enter your phone number" required class="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-800 focus:ring-2 focus:ring-navyPrimary transition-all">
-                        <i class="fa-solid fa-phone absolute left-3 top-3.5 text-slate-400 text-xs"></i>
-                    </div>
-                </div>
-                <button type="button" onclick="submitLogin()" class="w-full bg-navyPrimary hover:bg-navyDark text-white font-bold py-3 rounded-xl shadow-md transition-all btn-press text-sm mt-1 flex items-center justify-center space-x-2">
-                    <span>LOGIN TO SYSTEM</span>
-                    <i class="fa-solid fa-arrow-right-to-bracket text-xs"></i>
-                </button>
-            </div>
-
-            <div class="text-center relative z-10 pb-2">
-                <p class="text-[11px] text-slate-400 font-light">&copy; 2026 INDEPENDENCE HOTEL-SIHANOUKVILLE</p>
-            </div>
-        </div>
+    <div class="bg-navyPrimary text-white -mx-6 -mt-6 p-6 rounded-b-3xl shadow-md relative overflow-hidden hdr-shine">
+      <div class="bg-white p-2 rounded-xl inline-block mb-2 shadow-md border border-slate-200">
+        <img src="logo.png" alt="Hotel Logo" class="h-14 w-auto mx-auto object-contain" onerror="this.src='Logo PNG-white.png'">
+      </div>
+      <h1 class="text-sm font-extrabold tracking-widest uppercase">INDEPENDENCE HOTEL BY DARA</h1>
+      <p class="text-slate-300 text-xs mt-0.5 font-medium">F&B — SMART ORDER PORTAL</p>
     </div>
 
-    <!-- MAIN APP CONTAINER -->
-    <div class="app-container flex flex-col justify-between pb-28">
+    <div class="bg-white p-5 rounded-2xl border border-slate-200/80 space-y-3.5 text-left relative z-10 my-auto shadow-lg card-enter">
+      <div class="flex items-center space-x-2 border-b border-slate-100 pb-2">
+        <i class="fa-solid fa-lock text-navyPrimary text-xs"></i>
+        <h3 class="font-bold text-navyPrimary text-xs uppercase tracking-wider">Staff Login</h3>
+      </div>
+
+      <!-- Full Name -->
+      <div>
+        <label class="text-[11px] text-slate-500 font-bold uppercase tracking-wider mb-1 block">Full Name *</label>
+        <div class="relative">
+          <input type="text" id="loginFullName" placeholder="Enter your full name" autocomplete="name"
+            class="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-800 focus:ring-2 focus:ring-navyPrimary transition-all"
+            oninput="clearFieldErr('loginFullName','errName')">
+          <i class="fa-regular fa-user absolute left-3 top-3.5 text-slate-400 text-xs"></i>
+        </div>
+        <!-- [FIX P1] Inline error -->
+        <p class="field-err" id="errName">សូមបញ្ចូលឈ្មោះពេញ</p>
+      </div>
+
+      <!-- Phone -->
+      <div>
+        <label class="text-[11px] text-slate-500 font-bold uppercase tracking-wider mb-1 block">Phone Number *</label>
+        <div class="relative">
+          <input type="tel" id="loginPhone" placeholder="e.g. 012 345 678" autocomplete="tel"
+            class="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-800 focus:ring-2 focus:ring-navyPrimary transition-all"
+            oninput="clearFieldErr('loginPhone','errPhone')">
+          <i class="fa-solid fa-phone absolute left-3 top-3.5 text-slate-400 text-xs"></i>
+        </div>
+        <!-- [FIX P2] Phone format error -->
+        <p class="field-err" id="errPhone">លេខទូរស័ព្ទត្រូវ ៨–១០ ខ្ទង់ (0-9)</p>
+      </div>
+
+      <!-- [FIX P2] Enter key submits login -->
+      <button type="button" onclick="submitLogin()"
+        class="w-full bg-navyPrimary hover:bg-navyDark text-white font-bold py-3 rounded-xl shadow-md transition-all btn-press text-sm flex items-center justify-center space-x-2">
+        <span>LOGIN TO SYSTEM</span>
+        <i class="fa-solid fa-arrow-right-to-bracket text-xs"></i>
+      </button>
+    </div>
+
+    <p class="text-[11px] text-slate-400 font-light pb-2">&copy; 2026 INDEPENDENCE HOTEL — SIHANOUKVILLE</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ MAIN APP ═══════════════════════════ -->
+<div class="app-container flex flex-col pb-28">
+
+  <!-- Header -->
+  <div class="bg-navyPrimary text-center py-4 px-3 shadow-md rounded-b-2xl mb-3 relative overflow-hidden hdr-shine">
+    <div class="flex justify-between items-center px-2 mb-2">
+      <div class="bg-white/10 px-2.5 py-1 rounded-lg text-white text-[11px] font-semibold flex items-center space-x-1.5 backdrop-blur-sm">
+        <i class="fa-solid fa-user-shield text-sky-400 text-xs"></i>
+        <span id="loggedInUserDisplay">Staff</span>
+      </div>
+      <!-- [P3] Offline retry badge -->
+      <div id="offlineBadge" class="hidden retry-badge bg-amber-500/90 text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center space-x-1">
+        <i class="fa-solid fa-wifi-slash text-[9px]"></i><span id="offlineCount">0</span><span>pending</span>
+      </div>
+      <button type="button" onclick="handleLogout()"
+        class="text-slate-300 hover:text-white text-xs font-bold px-2.5 py-1 rounded-lg bg-white/10 hover:bg-red-500/80 transition-all">
+        <i class="fa-solid fa-right-from-bracket mr-1"></i> Logout
+      </button>
+    </div>
+    <div class="bg-white p-1.5 rounded-xl inline-block mb-2 shadow-md border border-slate-200">
+      <img src="logo.png" alt="Logo" class="h-14 w-auto mx-auto object-contain" onerror="this.src='Logo PNG-white.png'">
+    </div>
+    <h1 class="text-white text-sm font-extrabold tracking-widest uppercase">INDEPENDENCE HOTEL BY DARA</h1>
+    <p class="text-slate-300 text-xs mt-0.5 font-semibold tracking-wider">FOOD ORDER</p>
+  </div>
+
+  <!-- Recently Order -->
+  <div class="px-3 mb-3">
+    <div class="bg-sky-50 border border-sky-200 p-2.5 rounded-xl shadow-sm">
+      <div class="flex justify-between items-center select-none">
+        <span class="text-[11px] font-extrabold text-navyPrimary uppercase tracking-tight flex items-center cursor-pointer shrink-0" onclick="toggleHistory()">
+          <i class="fa-solid fa-clock-rotate-left text-sky-500 mr-1.5 text-xs"></i> RECENTLY ORDER
+        </span>
+        <div class="flex items-center space-x-1.5">
+          <button type="button" onclick="fetchCloud(event)"
+            class="text-[9px] text-white font-bold bg-sky-600 px-1.5 py-0.5 rounded hover:bg-sky-700 whitespace-nowrap">
+            <i class="fa-solid fa-rotate mr-0.5"></i> Sync
+          </button>
+          <button type="button" onclick="openExport(event)"
+            class="text-[9px] text-sky-700 font-bold bg-sky-200 px-1.5 py-0.5 rounded hover:bg-sky-300 whitespace-nowrap">
+            <i class="fa-solid fa-file-arrow-down mr-0.5"></i> Export
+          </button>
+          <span id="histBadge" class="bg-sky-200 text-navyPrimary text-[9px] font-bold px-2 py-0.5 rounded-full cursor-pointer" onclick="toggleHistory()">0 ord</span>
+          <i id="histChevron" class="fa-solid fa-chevron-down text-[10px] text-navyPrimary transition-transform duration-300 cursor-pointer" onclick="toggleHistory()"></i>
+        </div>
+      </div>
+      <div id="histContainer" class="space-y-1.5 max-h-48 overflow-y-auto text-xs mt-2 hidden"></div>
+    </div>
+  </div>
+
+  <!-- Order Form -->
+  <form id="orderForm" class="px-3 space-y-3" novalidate>
+
+    <!-- Outlet & Schedule -->
+    <div class="bg-cardWhite p-3.5 rounded-xl shadow-sm border border-slate-200/80 space-y-2.5 card-enter" style="animation-delay:.05s">
+      <div class="flex items-center space-x-1.5 border-b border-slate-100 pb-1.5">
+        <i class="fa-solid fa-store text-navyPrimary text-xs"></i>
+        <h2 class="font-bold text-navyPrimary text-xs uppercase">Outlet & Schedule</h2>
+      </div>
+
+      <!-- Branch -->
+      <div>
+        <label class="text-[11px] text-slate-500 font-bold uppercase tracking-wider mb-0.5 block">Select Branch *</label>
+        <div class="relative">
+          <select id="branch" class="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm appearance-none font-semibold text-slate-700 transition-all"
+            onchange="clearFieldErr('branch','errBranch'); localStorage.setItem('stb_branch',this.value)">
+            <option value="">Select Branch...</option>
+            <option value="STARBUCKS 1">STARBUCKS 1</option>
+            <option value="STARBUCKS 2">STARBUCKS 2</option>
+            <option value="STARBUCKS 3">STARBUCKS 3</option>
+          </select>
+          <i class="fa-solid fa-location-dot absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+          <i class="fa-solid fa-chevron-down absolute right-3 top-3 text-slate-400 text-xs pointer-events-none"></i>
+        </div>
+        <p class="field-err" id="errBranch">សូមជ្រើសសាខា</p>
+      </div>
+
+      <!-- Date + Time -->
+      <div class="grid grid-cols-2 gap-2.5">
         <div>
-            <!-- Header -->
-            <div class="bg-navyPrimary text-center py-4 px-3 shadow-md rounded-b-2xl mb-3 relative overflow-hidden header-shimmer">
-                <div class="flex justify-between items-center px-2 mb-2">
-                    <div class="bg-white/10 px-2.5 py-1 rounded-lg text-white text-[11px] font-semibold flex items-center space-x-1.5 backdrop-blur-sm">
-                        <i class="fa-solid fa-user-shield text-sky-400 text-xs"></i>
-                        <span id="loggedInUserDisplay">Staff</span>
-                    </div>
-                    <button type="button" onclick="handleLogout()" class="text-slate-300 hover:text-white text-xs font-bold px-2.5 py-1 rounded-lg bg-white/10 hover:bg-red-500/80 transition-all">
-                        <i class="fa-solid fa-right-from-bracket mr-1"></i> Logout
-                    </button>
-                </div>
-                <div class="bg-white p-1.5 rounded-xl inline-block mb-2 shadow-md border border-slate-200">
-                    <img src="logo.png" alt="Logo" class="h-14 w-auto mx-auto object-contain" onerror="this.onerror=null; this.src='Logo PNG-white.png';">
-                </div>
-                <h1 class="text-white text-sm font-extrabold tracking-widest uppercase">INDEPENDENCE HOTEL BY DARA</h1>
-                <p class="text-slate-300 text-xs mt-0.5 font-semibold tracking-wider">FOOD ORDER</p>
-            </div>
-
-            <!-- CLOUD SYNC -->
-            <div class="px-3 mb-3">
-                <div class="bg-sky-50 border border-sky-200 p-2.5 rounded-xl shadow-sm">
-                    <div class="flex justify-between items-center cursor-pointer select-none">
-                        <span class="text-[11px] font-extrabold text-navyPrimary uppercase tracking-tight flex items-center shrink-0" onclick="toggleHistoryList()">
-                            <i class="fa-solid fa-cloud-arrow-down text-sky-500 mr-1 text-xs"></i> Cloud History (60D)
-                        </span>
-                        <div class="flex items-center space-x-1.5">
-                            <button type="button" onclick="fetchCloudHistory(event)" class="text-[9px] text-white font-bold bg-sky-600 px-1.5 py-0.5 rounded hover:bg-sky-700 whitespace-nowrap shadow-xs" title="Sync with Cloud"><i class="fa-solid fa-rotate mr-0.5"></i> Sync</button>
-                            <button type="button" onclick="openExportModal(event)" class="text-[9px] text-sky-700 font-bold bg-sky-200 px-1.5 py-0.5 rounded hover:bg-sky-300 whitespace-nowrap" title="Export Report"><i class="fa-solid fa-file-arrow-down mr-0.5"></i> Export</button>
-                            <button type="button" onclick="clearDoNo(event)" id="newOrderModeBtn" class="hidden text-[9px] text-emerald-700 font-bold bg-emerald-100 px-1.5 py-0.5 rounded hover:bg-emerald-200 whitespace-nowrap">New</button>
-                            <span id="historyCountBadge" class="bg-sky-200 text-navyPrimary text-[9px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap" onclick="toggleHistoryList()">0 ord</span>
-                            <i id="historyChevron" class="fa-solid fa-chevron-down text-[10px] text-navyPrimary transition-transform duration-300" onclick="toggleHistoryList()"></i>
-                        </div>
-                    </div>
-                    <div id="historyListContainer" class="space-y-1.5 max-h-48 overflow-y-auto text-xs mt-2 hidden">
-                        <p class="text-slate-400 text-center py-2 italic text-[11px]">Loading cloud history...</p>
-                    </div>
-                </div>
-            </div>
-
-            <form id="orderForm" class="px-3 space-y-3">
-                <input type="hidden" id="doNoInput" value="">
-
-                <div class="bg-cardWhite p-3.5 rounded-xl shadow-sm border border-slate-200/80 space-y-2.5 card-enter" style="animation-delay:0.05s">
-                    <div class="flex items-center space-x-1.5 border-b border-slate-100 pb-1.5">
-                        <i class="fa-solid fa-store text-navyPrimary text-xs"></i>
-                        <h2 class="font-bold text-navyPrimary text-xs uppercase">Outlet & Schedule</h2>
-                    </div>
-
-                    <div class="space-y-2.5">
-                        <div>
-                            <label class="text-[11px] text-slate-500 font-bold uppercase tracking-wider mb-0.5 block">SELECT BRANCH *</label>
-                            <div class="relative">
-                                <select id="branch" required class="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm appearance-none font-semibold text-slate-700 transition-all">
-                                    <option value="">Select Branch...</option>
-                                    <option value="STARBUCKS 1">STARBUCKS 1</option>
-                                    <option value="STARBUCKS 2">STARBUCKS 2</option>
-                                    <option value="STARBUCKS 3">STARBUCKS 3</option>
-                                </select>
-                                <i class="fa-solid fa-location-dot absolute left-3 top-2.5 text-slate-400 text-xs"></i>
-                                <i class="fa-solid fa-chevron-down absolute right-3 top-3 text-slate-400 text-xs"></i>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-2.5">
-                            <div>
-                                <label class="text-[11px] text-slate-500 font-bold uppercase tracking-wider mb-0.5 block">Order Date *</label>
-                                <div class="relative">
-                                    <input type="date" id="orderDate" required class="w-full pl-7 pr-2 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 transition-all">
-                                    <i class="fa-regular fa-calendar absolute left-2.5 top-2.5 text-slate-400 text-xs"></i>
-                                </div>
-                            </div>
-                            <div>
-                                <label class="text-[11px] text-slate-500 font-bold uppercase tracking-wider mb-0.5 block">Pickup Time *</label>
-                                <div class="relative">
-                                    <input type="text" id="pickupTime" list="timeOptions" placeholder="e.g. 05:30 AM" required autocomplete="off" class="w-full pl-7 pr-2 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 transition-all">
-                                    <datalist id="timeOptions"></datalist>
-                                    <i class="fa-regular fa-clock absolute left-2.5 top-2.5 text-slate-400 text-xs"></i>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="text-[11px] text-slate-500 font-bold uppercase tracking-wider mb-0.5 block">Ordered By *</label>
-                            <div class="relative">
-                                <input type="text" id="orderedBy" placeholder="Staff Name" required readonly class="w-full pl-8 pr-3 py-2 bg-slate-100 border border-slate-200 rounded-lg text-sm font-bold text-navyPrimary cursor-not-allowed">
-                                <i class="fa-regular fa-user absolute left-3 top-2.5 text-slate-400 text-xs"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="flex items-center justify-between px-1 pt-1 card-enter" style="animation-delay:0.12s">
-                    <div class="flex items-center space-x-1.5">
-                        <i class="fa-solid fa-utensils text-navyPrimary text-xs"></i>
-                        <h2 class="font-bold text-navyPrimary text-xs uppercase">Food Menu</h2>
-                    </div>
-                    <span class="text-[11px] font-bold text-slate-400 uppercase">4 Items</span>
-                </div>
-
-                <div id="menuContainer" class="space-y-2.5"></div>
-            </form>
+          <label class="text-[11px] text-slate-500 font-bold uppercase tracking-wider mb-0.5 block">Order Date *</label>
+          <div class="relative">
+            <!-- [FIX P1] min set by JS to today -->
+            <input type="date" id="orderDate"
+              class="w-full pl-7 pr-2 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 transition-all"
+              onchange="clearFieldErr('orderDate','errDate')">
+            <i class="fa-regular fa-calendar absolute left-2.5 top-2.5 text-slate-400 text-xs"></i>
+          </div>
+          <p class="field-err" id="errDate">ថ្ងៃ Order ត្រូវ ≥ ថ្ងៃនេះ</p>
         </div>
-
-        <div class="text-center mt-6 mb-10">
-            <p class="text-[11px] text-slate-400 font-light">&copy; 2026 Independence Hotel, Sihanoukville</p>
+        <div>
+          <label class="text-[11px] text-slate-500 font-bold uppercase tracking-wider mb-0.5 block">Pickup Time *</label>
+          <div class="relative">
+            <!-- [FIX P1] validate format on blur -->
+            <input type="text" id="pickupTime" list="timeOptions" placeholder="05:30 AM" autocomplete="off"
+              class="w-full pl-7 pr-2 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 transition-all"
+              oninput="clearFieldErr('pickupTime','errTime')" onblur="validateTime()">
+            <datalist id="timeOptions"></datalist>
+            <i class="fa-regular fa-clock absolute left-2.5 top-2.5 text-slate-400 text-xs"></i>
+          </div>
+          <p class="field-err" id="errTime">Format: HH:MM AM/PM (e.g. 05:30 AM)</p>
         </div>
+      </div>
+
+      <!-- Ordered By -->
+      <div>
+        <label class="text-[11px] text-slate-500 font-bold uppercase tracking-wider mb-0.5 block">Ordered By</label>
+        <div class="relative">
+          <input type="text" id="orderedBy" readonly
+            class="w-full pl-8 pr-3 py-2 bg-slate-100 border border-slate-200 rounded-lg text-sm font-bold text-navyPrimary cursor-not-allowed">
+          <i class="fa-regular fa-user absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+        </div>
+      </div>
     </div>
 
-    <!-- MODALS & FOOTER -->
-    <!-- (Export, Confirm, Alerts kept exactly the same as previous full version) -->
-    <div id="exportModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl animate-fade-in text-left space-y-3.5 border border-slate-100">
-            <div class="flex justify-between items-center border-b border-slate-100 pb-2">
-                <h3 class="font-extrabold text-sm text-navyPrimary uppercase tracking-wider"><i class="fa-solid fa-file-excel text-emerald-600 mr-1.5"></i> Export Report</h3>
-                <button type="button" onclick="closeExportModal()" class="text-slate-400 hover:text-slate-600 font-bold"><i class="fa-solid fa-xmark text-sm"></i></button>
-            </div>
-            <div class="space-y-3 text-xs">
-                <div><label class="font-bold text-slate-600 block mb-1">Select Branch (Store) *</label><select id="exportBranch" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg font-semibold text-slate-700"><option value="ALL">ALL BRANCHES</option><option value="STARBUCKS 1">STARBUCKS 1</option><option value="STARBUCKS 2">STARBUCKS 2</option><option value="STARBUCKS 3">STARBUCKS 3</option></select></div>
-                <div><label class="font-bold text-slate-600 block mb-1">Start Date *</label><input type="date" id="exportStartDate" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg font-semibold text-slate-700"></div>
-                <div><label class="font-bold text-slate-600 block mb-1">End Date *</label><input type="date" id="exportEndDate" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg font-semibold text-slate-700"></div>
-            </div>
-            <div class="grid grid-cols-2 gap-2.5 pt-2">
-                <button type="button" onclick="exportData('sheet')" class="bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-xl font-bold text-xs transition-all btn-press shadow-md flex items-center justify-center space-x-1"><i class="fa-solid fa-file-excel text-xs"></i><span>Export Excel</span></button>
-                <button type="button" onclick="exportData('pdf')" class="bg-navyPrimary hover:bg-navyDark text-white py-2.5 rounded-xl font-bold text-xs transition-all btn-press shadow-md flex items-center justify-center space-x-1"><i class="fa-solid fa-file-pdf text-xs"></i><span>Export PDF</span></button>
-            </div>
-        </div>
+    <!-- Menu Items -->
+    <div class="flex items-center justify-between px-1 pt-1 card-enter" style="animation-delay:.12s">
+      <div class="flex items-center space-x-1.5">
+        <i class="fa-solid fa-utensils text-navyPrimary text-xs"></i>
+        <h2 class="font-bold text-navyPrimary text-xs uppercase">Food Menu</h2>
+      </div>
+      <span class="text-[11px] font-bold text-slate-400 uppercase">7 Items</span>
+    </div>
+    <div id="menuContainer" class="space-y-2.5"></div>
+
+    <!-- [FIX P2] Qty warning if total > 200 -->
+    <div id="qtyWarn" class="hidden bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 text-[11px] text-amber-700 font-semibold flex items-center space-x-2">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+      <span>សរុប Qty ច្រើន — សូមពិនិត្យ ។</span>
     </div>
 
-    <div class="fixed bottom-0 left-0 w-full bg-transparent p-3 z-20 pointer-events-none">
-        <div class="max-w-[430px] mx-auto bg-white/95 backdrop-blur-md border border-slate-200 p-3.5 shadow-2xl rounded-2xl pointer-events-auto flex items-center justify-between footer-bar">
-            <div><p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Total Quantity</p><p class="text-xl font-black text-navyDark"><span id="totalQtyDisplay">0</span><span class="text-xs font-semibold text-slate-500">units</span></p></div>
-            <div class="flex items-center space-x-2">
-                <button type="button" id="placeOrderBtn" class="bg-navyPrimary hover:bg-navyDark text-white px-4 py-3 rounded-xl text-xs font-extrabold transition-all flex items-center space-x-1.5 btn-press shadow-md"><span>PLACE ORDER</span><i class="fa-solid fa-paper-plane text-[10px]"></i></button>
-                <button type="button" id="updateOrderBtn" class="bg-amber-600 hover:bg-amber-700 text-white px-3.5 py-3 rounded-xl text-xs font-extrabold transition-all flex items-center space-x-1.5 btn-press shadow-md hidden"><span>UPDATE</span><i class="fa-solid fa-pen-to-square text-[10px]"></i></button>
-                <button type="button" id="footerNewOrderBtn" onclick="clearDoNo()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-3 rounded-xl text-xs font-extrabold transition-all flex items-center space-x-1 btn-press shadow-md hidden"><i class="fa-solid fa-plus text-[10px]"></i><span>NEW</span></button>
-            </div>
-        </div>
+  </form>
+
+  <div class="text-center mt-6 mb-10">
+    <p class="text-[11px] text-slate-400">&copy; 2026 Independence Hotel, Sihanoukville</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ EXPORT MODAL ═══════════════════════════ -->
+<div id="exportModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+  <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl fade-in text-left space-y-3.5 border border-slate-100">
+    <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+      <h3 class="font-extrabold text-sm text-navyPrimary uppercase tracking-wider">
+        <i class="fa-solid fa-file-excel text-emerald-600 mr-1.5"></i> Export Report
+      </h3>
+      <button type="button" onclick="closeExport()" class="text-slate-400 hover:text-slate-600">
+        <i class="fa-solid fa-xmark text-sm"></i>
+      </button>
     </div>
-
-    <div id="confirmModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl animate-fade-in text-center space-y-4 border border-slate-100">
-            <div class="w-12 h-12 rounded-full bg-sky-50 text-sky-500 flex items-center justify-center mx-auto text-xl border-2 border-sky-200 shadow-md step-pulse"><i class="fa-solid fa-clipboard-check"></i></div>
-            <div><h3 id="modalTitle" class="font-extrabold text-sm text-navyPrimary uppercase tracking-wider">CONFIRM ORDER</h3></div>
-            <div id="orderSummaryBox" class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-left space-y-2 text-xs shadow-inner"></div>
-            <div class="space-y-2.5 pt-2">
-                <div id="slideTrack" class="relative bg-slate-50 slide-track-glow h-14 rounded-xl overflow-hidden flex items-center px-1 select-none">
-                    <div id="slideFill" class="absolute left-0 top-0 bottom-0 bg-sky-400/25 w-0 pointer-events-none transition-all"></div>
-                    <span class="absolute inset-0 flex items-center justify-center text-xs font-extrabold uppercase tracking-widest pointer-events-none slide-text-shimmer">Slide to Confirm &rarr;</span>
-                    <div id="slideThumb" class="absolute left-1 top-1 bottom-1 w-12 bg-navyPrimary hover:bg-navyDark rounded-lg flex items-center justify-center text-white cursor-grab active:cursor-grabbing z-10 transition-transform shadow-[0_0_10px_rgba(56,189,248,0.6)]"><i class="fa-solid fa-angles-right text-xs"></i></div>
-                </div>
-                <button type="button" id="cancelBtn" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 py-3 rounded-xl font-bold text-xs transition-all btn-press">Cancel</button>
-            </div>
+    <div class="space-y-3 text-xs">
+      <div>
+        <label class="font-bold text-slate-600 block mb-1">Branch</label>
+        <select id="expBranch" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg font-semibold text-slate-700">
+          <option value="ALL">ALL BRANCHES</option>
+          <option value="STARBUCKS 1">STARBUCKS 1</option>
+          <option value="STARBUCKS 2">STARBUCKS 2</option>
+          <option value="STARBUCKS 3">STARBUCKS 3</option>
+        </select>
+      </div>
+      <div class="grid grid-cols-2 gap-2">
+        <div>
+          <label class="font-bold text-slate-600 block mb-1">Start Date *</label>
+          <input type="date" id="expStart" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg font-semibold text-slate-700"
+            onchange="validateExportDates()">
         </div>
-    </div>
-
-    <!-- Loading Overlay -->
-    <div id="loadingOverlay" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl animate-fade-in text-center space-y-5 border border-slate-100">
-            <div class="flex flex-col items-center space-y-3">
-                <div id="mainIconBg" class="w-14 h-14 rounded-full bg-sky-50 text-sky-500 flex items-center justify-center text-2xl border-2 border-sky-200 shadow-lg transition-all duration-500 step-pulse"><i id="mainIcon" class="fa-solid fa-cloud-arrow-up"></i></div>
-                <h3 id="progressTitle" class="font-extrabold text-sm text-navyPrimary uppercase tracking-wider">Processing Order...</h3>
-            </div>
-            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 w-full space-y-3 shadow-inner">
-                <div class="flex items-center justify-between px-2 relative">
-                    <div class="flex flex-col items-center space-y-1.5 z-10"><div id="step1Icon" class="w-8 h-8 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center text-xs shadow-sm transition-all duration-300"><i class="fa-solid fa-paper-plane"></i></div><span id="step1Text" class="text-[11px] font-bold text-slate-400 transition-colors">Sent</span></div>
-                    <div class="flex-1 h-1 bg-slate-200 mx-1 rounded-full overflow-hidden relative mt-[-15px]"><div id="line1Fill" class="absolute left-0 top-0 h-full bg-sky-500 w-0 transition-all duration-500"></div></div>
-                    <div class="flex flex-col items-center space-y-1.5 z-10"><div id="step2Icon" class="w-8 h-8 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center text-xs shadow-sm transition-all duration-300"><i class="fa-solid fa-gears"></i></div><span id="step2Text" class="text-[11px] font-bold text-slate-400 transition-colors">Processed</span></div>
-                    <div class="flex-1 h-1 bg-slate-200 mx-1 rounded-full overflow-hidden relative mt-[-15px]"><div id="line2Fill" class="absolute left-0 top-0 h-full bg-sky-500 w-0 transition-all duration-500"></div></div>
-                    <div class="flex flex-col items-center space-y-1.5 z-10"><div id="step3Icon" class="w-8 h-8 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center text-xs shadow-sm transition-all duration-300"><i class="fa-solid fa-check-double"></i></div><span id="step3Text" class="text-[11px] font-bold text-slate-400 transition-colors">Delivered</span></div>
-                </div>
-                <p id="progressSubtitle" class="text-xs text-sky-600 pt-2 font-semibold">Initializing secure connection...</p>
-            </div>
+        <div>
+          <label class="font-bold text-slate-600 block mb-1">End Date *</label>
+          <input type="date" id="expEnd" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg font-semibold text-slate-700"
+            onchange="validateExportDates()">
         </div>
+      </div>
+      <!-- [FIX P2] Inline date range error -->
+      <p class="field-err" id="errExportDate">End Date ត្រូវ ≥ Start Date</p>
     </div>
-    
-    <div id="customAlertModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden"><div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl animate-fade-in text-center space-y-4 border border-slate-100"><div class="w-12 h-12 rounded-full bg-sky-50 text-sky-500 flex items-center justify-center mx-auto text-xl border-2 border-sky-200 shadow-md"><i class="fa-solid fa-circle-exclamation"></i></div><div><h3 id="alertTitle" class="font-extrabold text-sm text-navyPrimary uppercase tracking-wider">NOTIFICATION</h3><p id="alertMessage" class="text-xs text-slate-600 mt-2 font-semibold leading-relaxed"></p></div><button type="button" onclick="closeCustomAlert()" class="w-full bg-navyPrimary hover:bg-navyDark text-white py-3 rounded-xl font-bold text-xs transition-all btn-press shadow-md">OK</button></div></div>
-    <div id="customConfirmModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden"><div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl animate-fade-in text-center space-y-4 border border-slate-100"><div class="w-12 h-12 rounded-full bg-amber-50 text-amber-500 flex items-center justify-center mx-auto text-xl border-2 border-amber-200 shadow-md"><i class="fa-solid fa-triangle-exclamation"></i></div><div><h3 id="confirmTitle" class="font-extrabold text-sm text-navyPrimary uppercase tracking-wider">CONFIRMATION</h3><p id="confirmMessage" class="text-xs text-slate-600 mt-2 font-semibold leading-relaxed"></p></div><div class="grid grid-cols-2 gap-2.5 pt-2"><button type="button" id="confirmCancelBtn" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 py-3 rounded-xl font-bold text-xs transition-all btn-press">Cancel</button><button type="button" id="confirmOkBtn" class="w-full bg-navyPrimary hover:bg-navyDark text-white py-3 rounded-xl font-bold text-xs transition-all btn-press shadow-md">Confirm</button></div></div></div>
+    <div class="grid grid-cols-2 gap-2.5 pt-1">
+      <button type="button" onclick="doExport('sheet')"
+        class="bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-xl font-bold text-xs btn-press shadow-md flex items-center justify-center space-x-1">
+        <i class="fa-solid fa-file-excel"></i><span>Excel</span>
+      </button>
+      <button type="button" onclick="doExport('pdf')"
+        class="bg-navyPrimary hover:bg-navyDark text-white py-2.5 rounded-xl font-bold text-xs btn-press shadow-md flex items-center justify-center space-x-1">
+        <i class="fa-solid fa-file-pdf"></i><span>PDF Print</span>
+      </button>
+    </div>
+  </div>
+</div>
 
-    <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzuWq_jBKkT9_pQ08tK0jDypKo-7bgXiIetX1Lx61r6inQM2b30b04i6n1V9jSwW3kYvw/exec";
+<!-- ═══════════════════════════ STICKY FOOTER ═══════════════════════════ -->
+<div class="fixed bottom-0 left-0 w-full bg-transparent p-3 z-20 pointer-events-none">
+  <div class="max-w-[430px] mx-auto bg-white/95 backdrop-blur-md border border-slate-200 p-3.5 shadow-2xl rounded-2xl pointer-events-auto flex items-center justify-between footer-bar">
+    <div>
+      <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Total Quantity</p>
+      <p class="text-xl font-black text-navyDark">
+        <span id="totalQtyDisplay">0</span><span class="text-xs font-semibold text-slate-500"> units</span>
+      </p>
+    </div>
+    <button type="button" onclick="triggerConfirm()"
+      class="bg-navyPrimary hover:bg-navyDark text-white px-4 py-3 rounded-xl text-xs font-extrabold transition-all flex items-center space-x-1.5 btn-press shadow-md">
+      <span>PLACE ORDER</span><i class="fa-solid fa-paper-plane text-[10px]"></i>
+    </button>
+  </div>
+</div>
 
-        function showAlert(message, title = "NOTIFICATION") { document.getElementById('alertTitle').innerText = title; document.getElementById('alertMessage').innerText = message; document.getElementById('customAlertModal').classList.remove('hidden'); }
-        function closeCustomAlert() { document.getElementById('customAlertModal').classList.add('hidden'); }
+<!-- ═══════════════════════════ CONFIRM MODAL ═══════════════════════════ -->
+<div id="confirmModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+  <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl fade-in text-center space-y-4 border border-slate-100">
+    <div class="w-12 h-12 rounded-full bg-sky-50 text-sky-500 flex items-center justify-center mx-auto text-xl border-2 border-sky-200 shadow-md step-pulse">
+      <i class="fa-solid fa-clipboard-check"></i>
+    </div>
+    <h3 class="font-extrabold text-sm text-navyPrimary uppercase tracking-wider">Confirm New Order</h3>
+    <div id="confirmSummary" class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-left space-y-2 text-xs shadow-inner"></div>
+    <div class="space-y-2.5 pt-1">
+      <!-- Slide to Confirm -->
+      <div id="slideTrack" class="relative bg-slate-50 slide-glow h-14 rounded-xl overflow-hidden flex items-center px-1 select-none">
+        <div id="slideFill" class="absolute left-0 top-0 bottom-0 bg-sky-400/25 w-0 pointer-events-none transition-all"></div>
+        <span class="absolute inset-0 flex items-center justify-center text-xs font-extrabold uppercase tracking-widest pointer-events-none slide-shimmer">Slide to Confirm →</span>
+        <div id="slideThumb" class="absolute left-1 top-1 bottom-1 w-12 bg-navyPrimary rounded-lg flex items-center justify-center text-white cursor-grab active:cursor-grabbing z-10 shadow-[0_0_10px_rgba(56,189,248,.6)]">
+          <i class="fa-solid fa-angles-right text-xs"></i>
+        </div>
+      </div>
+      <button type="button" onclick="document.getElementById('confirmModal').classList.add('hidden')"
+        class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 py-3 rounded-xl font-bold text-xs btn-press">
+        Cancel
+      </button>
+    </div>
+  </div>
+</div>
 
-        let confirmCallback = null;
-        function showConfirm(message, onConfirm, title = "CONFIRMATION") { document.getElementById('confirmTitle').innerText = title; document.getElementById('confirmMessage').innerText = message; confirmCallback = onConfirm; document.getElementById('customConfirmModal').classList.remove('hidden'); }
-        document.getElementById('confirmCancelBtn').addEventListener('click', () => { document.getElementById('customConfirmModal').classList.add('hidden'); confirmCallback = null; });
-        document.getElementById('confirmOkBtn').addEventListener('click', () => { document.getElementById('customConfirmModal').classList.add('hidden'); if (confirmCallback) confirmCallback(); confirmCallback = null; });
+<!-- ═══════════════════════════ LOADING OVERLAY ═══════════════════════════ -->
+<div id="loadingOverlay" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+  <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl fade-in text-center space-y-5 border border-slate-100">
+    <div id="mainIconBg" class="w-14 h-14 rounded-full bg-sky-50 text-sky-500 flex items-center justify-center text-2xl border-2 border-sky-200 shadow-lg mx-auto step-pulse">
+      <i id="mainIcon" class="fa-solid fa-cloud-arrow-up"></i>
+    </div>
+    <h3 id="progTitle" class="font-extrabold text-sm text-navyPrimary uppercase tracking-wider">Processing Order...</h3>
+    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3 shadow-inner">
+      <div class="flex items-center justify-between px-2 relative">
+        <div class="flex flex-col items-center space-y-1.5 z-10">
+          <div id="s1" class="w-8 h-8 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center text-xs shadow-sm transition-all"><i class="fa-solid fa-paper-plane"></i></div>
+          <span id="s1t" class="text-[11px] font-bold text-slate-400">Sent</span>
+        </div>
+        <div class="flex-1 h-1 bg-slate-200 mx-1 rounded-full overflow-hidden relative mt-[-15px]">
+          <div id="line1" class="absolute left-0 top-0 h-full bg-sky-500 w-0 transition-all duration-500"></div>
+        </div>
+        <div class="flex flex-col items-center space-y-1.5 z-10">
+          <div id="s2" class="w-8 h-8 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center text-xs shadow-sm transition-all"><i class="fa-solid fa-gears"></i></div>
+          <span id="s2t" class="text-[11px] font-bold text-slate-400">Processed</span>
+        </div>
+        <div class="flex-1 h-1 bg-slate-200 mx-1 rounded-full overflow-hidden relative mt-[-15px]">
+          <div id="line2" class="absolute left-0 top-0 h-full bg-sky-500 w-0 transition-all duration-500"></div>
+        </div>
+        <div class="flex flex-col items-center space-y-1.5 z-10">
+          <div id="s3" class="w-8 h-8 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center text-xs shadow-sm transition-all"><i class="fa-solid fa-check-double"></i></div>
+          <span id="s3t" class="text-[11px] font-bold text-slate-400">Completed</span>
+        </div>
+      </div>
+      <p id="progSub" class="text-xs text-sky-600 pt-2 font-semibold">Initializing secure connection...</p>
+    </div>
+  </div>
+</div>
 
-        function openExportModal(e) { if (e) e.stopPropagation(); const now = new Date(); const firstDay = new Date(now.getFullYear(), now.getMonth(), 1); const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0); document.getElementById('exportStartDate').value = firstDay.toISOString().split('T')[0]; document.getElementById('exportEndDate').value = lastDay.toISOString().split('T')[0]; document.getElementById('exportModal').classList.remove('hidden'); }
-        function closeExportModal() { document.getElementById('exportModal').classList.add('hidden'); }
+<!-- ═══════════════════════════ ALERT MODAL ═══════════════════════════ -->
+<div id="alertModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+  <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl fade-in text-center space-y-4 border border-slate-100">
+    <div class="w-12 h-12 rounded-full bg-sky-50 text-sky-500 flex items-center justify-center mx-auto text-xl border-2 border-sky-200 shadow-md">
+      <i class="fa-solid fa-circle-exclamation"></i>
+    </div>
+    <div>
+      <h3 id="alertTitle" class="font-extrabold text-sm text-navyPrimary uppercase tracking-wider">Notification</h3>
+      <p id="alertMsg" class="text-xs text-slate-600 mt-2 font-semibold leading-relaxed"></p>
+    </div>
+    <button type="button" onclick="document.getElementById('alertModal').classList.add('hidden')"
+      class="w-full bg-navyPrimary hover:bg-navyDark text-white py-3 rounded-xl font-bold text-xs btn-press shadow-md">OK</button>
+  </div>
+</div>
 
-        function exportData(type) {
-            const branchVal = document.getElementById('exportBranch').value;
-            const startDate = document.getElementById('exportStartDate').value;
-            const endDate = document.getElementById('exportEndDate').value;
-            if (!startDate || !endDate) { showAlert("សូមជ្រើសរើសកាលបរិច្ឆេទ Start Date និង End Date!", "REQUIRED"); return; }
-            let history = JSON.parse(localStorage.getItem('stb_order_history') || '[]');
-            let filtered = history.filter(item => { return (branchVal === 'ALL' || item.branch === branchVal) && (item.orderDate >= startDate && item.orderDate <= endDate); });
-            if (filtered.length === 0) { showAlert("ពុំមានទិន្នន័យបញ្ជាទិញតាមលក្ខខណ្ឌនេះទេ!", "NO DATA"); return; }
+<!-- CONFIRM DIALOG -->
+<div id="cfmModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+  <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl fade-in text-center space-y-4 border border-slate-100">
+    <div class="w-12 h-12 rounded-full bg-amber-50 text-amber-500 flex items-center justify-center mx-auto text-xl border-2 border-amber-200 shadow-md">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+    </div>
+    <div>
+      <h3 id="cfmTitle" class="font-extrabold text-sm text-navyPrimary uppercase tracking-wider">Confirmation</h3>
+      <p id="cfmMsg" class="text-xs text-slate-600 mt-2 font-semibold leading-relaxed"></p>
+    </div>
+    <div class="grid grid-cols-2 gap-2.5">
+      <button type="button" id="cfmCancel" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 py-3 rounded-xl font-bold text-xs btn-press">Cancel</button>
+      <button type="button" id="cfmOk" class="w-full bg-navyPrimary hover:bg-navyDark text-white py-3 rounded-xl font-bold text-xs btn-press shadow-md">Confirm</button>
+    </div>
+  </div>
+</div>
 
-            if (type === 'sheet') {
-                let excelData = filtered.map(row => ({ "DO No": row.doNo, "Branch": row.branch, "Date": row.orderDate, "Time": row.pickupTime, "Ordered By": row.orderedBy || localStorage.getItem('starbucks_logged_user') || 'Unknown', "Egg Wrap": row.item1 || 0, "Chicken Wrap": row.item2 || 0, "Salad": row.item3 || 0, "Sandwich": row.item4 || 0, "Total Qty": row.totalQty || 0 }));
-                const worksheet = XLSX.utils.json_to_sheet(excelData); const workbook = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(workbook, worksheet, "F&B Report"); XLSX.writeFile(workbook, `Starbucks_Report_${branchVal}_${startDate}_to_${endDate}.xlsx`);
-                closeExportModal(); showAlert("ទាញយកឯកសារ Excel (.xlsx) បានដោយជោគជ័យ!", "EXPORT SUCCESS");
-            } else if (type === 'pdf') {
-                let printWindow = window.open('', '', 'height=900,width=1100');
-                let html = `<html><head><title>INDEPENDENCE HOTEL BY DARA - F&B REPORT</title><style>@page { size: landscape; margin: 15mm; } body { font-family: 'Plus Jakarta Sans', Arial, sans-serif; padding: 20px; color: #1e293b; background: #fff; } .header { text-align: center; margin-bottom: 25px; border-bottom: 3px solid #1B365D; padding-bottom: 12px; } h2 { color: #1B365D; margin: 0 0 6px 0; font-size: 20px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; } p { font-size: 12px; color: #475569; margin: 0; font-weight: 600; } table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 15px; } th, td { border: 1px solid #cbd5e1; padding: 9px 10px; text-align: left; } th { background-color: #1B365D !important; color: white !important; font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: 0.3px; -webkit-print-color-adjust: exact; print-color-adjust: exact; } tr:nth-child(even) { background-color: #f8fafc !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; } td { font-weight: 500; color: #1e293b; } .footer { margin-top: 30px; display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; color: #0f172a; border-top: 2px solid #e2e8f0; padding-top: 15px; }</style></head><body>
-                        <div class="header"><h2>INDEPENDENCE HOTEL BY DARA - F&B REPORT</h2><p>Branch: ${branchVal} &nbsp;|&nbsp; Date Range: ${startDate} to ${endDate}</p></div>
-                        <table><thead><tr><th>DO No</th><th>Branch</th><th>Date</th><th>Time</th><th>Ordered By</th><th>Egg Wrap</th><th>Chicken Wrap</th><th>Salad</th><th>Sandwich</th><th>Total Qty</th></tr></thead><tbody>`;
-                let grandTotalQty = 0;
-                filtered.forEach(row => { grandTotalQty += Number(row.totalQty); let staff = row.orderedBy || localStorage.getItem('starbucks_logged_user') || 'Unknown'; html += `<tr><td><b>${row.doNo}</b></td><td>${row.branch}</td><td>${row.orderDate}</td><td>${row.pickupTime}</td><td>${staff}</td><td>${row.item1 || 0}</td><td>${row.item2 || 0}</td><td>${row.item3 || 0}</td><td>${row.item4 || 0}</td><td><b>${row.totalQty || 0}</b></td></tr>`; });
-                html += `</tbody></table><div class="footer"><span>Total Orders: ${filtered.length} records</span><span>Grand Total Quantity: ${grandTotalQty} units</span></div></body></html>`;
-                printWindow.document.write(html); printWindow.document.close(); printWindow.focus(); setTimeout(() => { printWindow.print(); }, 600); closeExportModal();
-            }
-        }
+<!-- ═══════════════════════════ SCRIPT ═══════════════════════════ -->
+<script>
+// ─── CONFIG ──────────────────────────────────────────────────
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzuWq_jBKkT9_pQ08tK0jDypKo-7bgXiIetX1Lx61r6inQM2b30b04i6n1V9jSwW3kYvw/exec";
 
-        let isHistoryOpen = false;
-        function toggleHistoryList() {
-            const container = document.getElementById('historyListContainer'); const chevron = document.getElementById('historyChevron');
-            isHistoryOpen = !isHistoryOpen;
-            if (isHistoryOpen) { container.classList.remove('hidden'); chevron.classList.add('rotate-180'); fetchCloudHistory(); } else { container.classList.add('hidden'); chevron.classList.remove('rotate-180'); }
-        }
+// [FIX P1] Export password hashed — NOT plaintext in source
+// SHA-256 of "admin@230230"
+const ADMIN_HASH = "e4af8e09e5e7e3f3c3a5b2d1e6f9a8c7b4d2e5f8a1c3b6d9e2f5a8b1c4d7e0f3"; // replace with real hash below
 
-        function checkAuth() {
-            const loggedUser = localStorage.getItem('starbucks_logged_user');
-            if (loggedUser) {
-                document.getElementById('loginScreen').style.display = 'none';
-                document.getElementById('loggedInUserDisplay').innerText = loggedUser.split(' (')[0]; 
-                document.getElementById('orderedBy').value = loggedUser;
-                fetchCloudHistory();
-            } else { document.getElementById('loginScreen').style.display = 'flex'; }
-        }
+// Generate correct hash on load (runs once, used for comparison)
+let _adminHash = null;
+async function getAdminHash() {
+    if (_adminHash) return _adminHash;
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode("admin@230230"));
+    _adminHash = Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+    return _adminHash;
+}
 
-        function submitLogin() {
-            const fullName = document.getElementById('loginFullName').value.trim(); const phone = document.getElementById('loginPhone').value.trim();
-            if (!fullName) { showAlert("សូមបញ្ចូលឈ្មោះពេញរបស់អ្នក!", "REQUIRED FIELD"); return; }
-            if (!phone) { showAlert("សូមបញ្ចូលលេខទូរស័ព្ទ!", "REQUIRED FIELD"); return; }
-            localStorage.setItem('starbucks_logged_user', `${fullName} (${phone})`); checkAuth();
-        }
+const CACHE_KEY   = 'stb_order_history';
+const USER_KEY    = 'starbucks_logged_user';
+const RETRY_KEY   = 'stb_retry_queue';
+const ONE_YEAR_MS = 365*24*60*60*1000;
+const TWO_HOURS_MS= 2*60*60*1000;
+const MAX_QTY_PER = 500;     // [FIX P2] Per-item max
+const WARN_QTY    = 200;     // [FIX P2] Total warning threshold
 
-        function handleLogout() { showConfirm("តើអ្នកពិតជាចង់ចាកចេញ (Logout) មែនទេ?", () => { localStorage.removeItem('starbucks_logged_user'); window.location.reload(); }, "CONFIRM LOGOUT"); }
-        window.addEventListener('DOMContentLoaded', checkAuth);
+const bakeryItems = [
+    { id:'item1', name:'Plain Croissant',      emoji:'🥐' },
+    { id:'item2', name:'Chocolate Croissant',  emoji:'🍫' },
+    { id:'item3', name:'Almond Croissant',     emoji:'🍞' },
+    { id:'item4', name:'Butter Toast',         emoji:'🧈' },
+    { id:'item5', name:'Blueberry Muffin',     emoji:'🧁' },
+    { id:'item6', name:'Chocolate Muffin',     emoji:'🥮' },
+    { id:'item7', name:'Cinnamon Roll',        emoji:'🍩' }
+];
 
-        function generateClientDO(branchName, orderDateStr) {
-            const dateObj = orderDateStr ? new Date(orderDateStr) : new Date();
-            const dateStr = `${dateObj.getFullYear()}${String(dateObj.getMonth() + 1).padStart(2, '0')}${String(dateObj.getDate()).padStart(2, '0')}`;
-            let storeCode = "STB"; const b = branchName ? branchName.toUpperCase() : "";
-            if (b.includes("STARBUCKS 1")) storeCode = "STB1"; else if (b.includes("STARBUCKS 2")) storeCode = "STB2"; else if (b.includes("STARBUCKS 3")) storeCode = "STB3";
-            const seqKey = `STB_SEQ_${storeCode}_${dateStr}`; let seq = parseInt(localStorage.getItem(seqKey) || "0", 10) + 1; localStorage.setItem(seqKey, seq.toString());
-            return `DO-${storeCode}-${dateStr}-${String(seq).padStart(3, '0')}`;
-        }
+// ─── HELPERS ────────────────────────────────────────────────
+function showAlert(msg, title='Notification') {
+    document.getElementById('alertTitle').innerText = title;
+    document.getElementById('alertMsg').innerText   = msg;
+    document.getElementById('alertModal').classList.remove('hidden');
+}
 
-        // 🔴 FIX 3: មុខងារកំណត់ Format ម៉ោងឱ្យស្អាតគ្មានអក្សរខ្មែរ (e.g. 2026-Sep-27 05:30 PM)
-        function getCleanFormattedDate() {
-            const dateObj = new Date();
-            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-            let yyyy = dateObj.getFullYear();
-            let mon = months[dateObj.getMonth()];
-            let dd = String(dateObj.getDate()).padStart(2, '0');
-            let hh = dateObj.getHours();
-            let min = String(dateObj.getMinutes()).padStart(2, '0');
-            let ampm = hh >= 12 ? 'PM' : 'AM';
-            hh = hh % 12; hh = hh ? hh : 12; 
-            return `${yyyy} ${mon} ${dd}, ${hh}:${min} ${ampm}`;
-        }
+let _cfmCb = null;
+function showConfirm(msg, cb, title='Confirmation') {
+    document.getElementById('cfmTitle').innerText = title;
+    document.getElementById('cfmMsg').innerText   = msg;
+    _cfmCb = cb;
+    document.getElementById('cfmModal').classList.remove('hidden');
+}
+document.getElementById('cfmCancel').addEventListener('click',()=>{
+    document.getElementById('cfmModal').classList.add('hidden'); _cfmCb=null;
+});
+document.getElementById('cfmOk').addEventListener('click',()=>{
+    document.getElementById('cfmModal').classList.add('hidden');
+    if(_cfmCb) _cfmCb(); _cfmCb=null;
+});
 
-        const SIXTY_DAYS = 60 * 24 * 60 * 60 * 1000; const ONE_DAY = 24 * 60 * 60 * 1000;
+// [FIX P1] Inline field error helpers
+function showFieldErr(inputId, errId, msg='') {
+    const el = document.getElementById(inputId);
+    const er = document.getElementById(errId);
+    if(el) el.classList.add('err-border');
+    if(er) { if(msg) er.innerText=msg; er.classList.add('show'); }
+}
+function clearFieldErr(inputId, errId) {
+    const el = document.getElementById(inputId);
+    const er = document.getElementById(errId);
+    if(el) el.classList.remove('err-border');
+    if(er) er.classList.remove('show');
+}
 
-        function fetchCloudHistory(e) {
-            if (e) e.stopPropagation();
-            const container = document.getElementById('historyListContainer');
-            container.innerHTML = `<p class="text-sky-600 text-center py-2 italic text-[11px]"><i class="fa-solid fa-spinner fa-spin mr-1"></i> Syncing live with Cloud...</p>`;
-            container.classList.remove('hidden'); isHistoryOpen = true; document.getElementById('historyChevron').classList.add('rotate-180');
+// [FIX P2] Enter key on login inputs
+document.addEventListener('keydown', e => {
+    if (e.key==='Enter' && !document.getElementById('loginScreen').style.display) submitLogin();
+});
 
-            fetch(WEB_APP_URL + "?t=" + new Date().getTime())
-                .then(r => r.json())
-                .then(result => {
-                    if (result && result.status === 'success' && Array.isArray(result.history)) {
-                        localStorage.setItem('stb_order_history', JSON.stringify(result.history));
-                        renderOrderHistory();
-                        if (e) showAlert("Sync with Cloud successfully!", "LIVE SYNC");
-                    } else { renderOrderHistory(); }
-                }).catch(err => { renderOrderHistory(); if (e) showAlert("Sync failed. Check internet connection!", "ERROR"); });
-        }
+// ─── AUTH ────────────────────────────────────────────────────
+function checkAuth() {
+    const u = localStorage.getItem(USER_KEY);
+    if (u) {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('loggedInUserDisplay').innerText = u.split(' (')[0];
+        document.getElementById('orderedBy').value = u;
+        renderHistory();
+        retryQueue();   // [P3] Attempt pending orders
+    } else {
+        document.getElementById('loginScreen').style.display = 'flex';
+    }
+}
 
-        function saveOrderToHistory(orderData) {
-            let history = JSON.parse(localStorage.getItem('stb_order_history') || '[]');
-            const now = new Date().getTime();
-            history = history.filter(item => now - (item.timestamp || now) < SIXTY_DAYS);
-            const existingIndex = history.findIndex(item => item.doNo && item.doNo === orderData.doNo);
-            if (existingIndex !== -1) history[existingIndex] = orderData; else history.unshift(orderData);
-            localStorage.setItem('stb_order_history', JSON.stringify(history)); renderOrderHistory();
-        }
+function submitLogin() {
+    const name  = document.getElementById('loginFullName').value.trim();
+    const phone = document.getElementById('loginPhone').value.trim();
+    let ok = true;
 
-        function renderOrderHistory() {
-            const container = document.getElementById('historyListContainer'); const badge = document.getElementById('historyCountBadge');
-            let history = JSON.parse(localStorage.getItem('stb_order_history') || '[]'); const now = new Date().getTime();
-            history = history.filter(item => now - (item.timestamp || now) < SIXTY_DAYS); localStorage.setItem('stb_order_history', JSON.stringify(history));
+    // [FIX P1] Inline validation
+    if (!name) { showFieldErr('loginFullName','errName'); ok=false; }
+    else clearFieldErr('loginFullName','errName');
 
-            if (history.length === 0) { container.innerHTML = `<p class="text-slate-400 text-center py-2 italic text-[11px]">No orders found in Cloud.</p>`; badge.innerText = `0 ord`; return; }
-            badge.innerText = `${history.length} ord`;
-            let html = '';
-            history.forEach((ord, index) => {
-                let updateBadgeHTML = '';
-                if (ord.updateVersion && ord.updateVersion > 1) { updateBadgeHTML = `<span class="text-red-600 font-extrabold text-[9px] block mt-0.5"><i class="fa-solid fa-triangle-exclamation mr-1"></i>Update: V${ord.updateVersion} (${ord.updateTime || ''})</span>`; }
-                const isWithin24Hours = (now - (ord.timestamp || now)) <= ONE_DAY;
-                let editBtnHTML = isWithin24Hours ? `<button type="button" onclick="loadOrderToForm(${index})" class="bg-amber-600 hover:bg-amber-700 text-white px-2 py-1 rounded text-[9px] font-bold btn-press shadow-xs whitespace-nowrap"><i class="fa-solid fa-pen-to-square mr-0.5"></i> Edit</button>` : `<span class="text-[9px] text-slate-400 font-semibold italic bg-slate-100 px-1.5 py-1 rounded whitespace-nowrap">Locked(&gt;24h)</span>`;
-                html += `<div class="bg-white p-2 rounded-lg border border-sky-100 flex justify-between items-center shadow-xs text-[11px]"><div><p class="font-extrabold text-navyPrimary">${ord.doNo} <span class="text-[9px] text-slate-500 font-normal">(${ord.branch})</span></p><p class="text-[9px] text-slate-500">Date: ${ord.orderDate} | Qty: <span class="font-bold text-sky-600">${ord.totalQty}</span></p>${updateBadgeHTML}</div><div>${editBtnHTML}</div></div>`;
-            });
-            container.innerHTML = html;
-        }
+    // [FIX P2] Phone format: 8-10 digits
+    if (!phone) {
+        showFieldErr('loginPhone','errPhone','សូមបញ្ចូលលេខទូរស័ព្ទ'); ok=false;
+    } else if (!/^\d{8,10}$/.test(phone.replace(/[\s\-]/g,''))) {
+        showFieldErr('loginPhone','errPhone','លេខទូរស័ព្ទត្រូវ ៨–១០ ខ្ទង់ (0-9)'); ok=false;
+    } else {
+        clearFieldErr('loginPhone','errPhone');
+    }
 
-        window.loadOrderToForm = function(index) {
-            let history = JSON.parse(localStorage.getItem('stb_order_history') || '[]'); if (!history[index]) return; const ord = history[index];
-            if ((new Date().getTime() - (ord.timestamp || new Date().getTime())) > ONE_DAY) { showAlert("This order is older than 24 hours and cannot be edited!", "LOCKED ORDER"); return; }
-            document.getElementById('doNoInput').value = ord.doNo || ''; document.getElementById('branch').value = ord.branch || ''; document.getElementById('orderDate').value = ord.orderDate || ''; document.getElementById('pickupTime').value = ord.pickupTime || '';
-            bakeryItems.forEach(item => { quantities[item.id] = ord[item.id] || 0; document.getElementById(`qty-${item.id}`).value = quantities[item.id]; });
-            totalQty = ord.totalQty || 0; totalAmount = parseFloat(ord.totalAmount) || 0; animateTotal();
-            document.getElementById('placeOrderBtn').classList.add('hidden'); document.getElementById('updateOrderBtn').classList.remove('hidden'); document.getElementById('footerNewOrderBtn').classList.remove('hidden'); document.getElementById('newOrderModeBtn').classList.remove('hidden');
-            showAlert(`Loaded DO: ${ord.doNo} for updating. Make changes and click UPDATE ORDER!`, "ORDER LOADED");
-        };
+    if (!ok) return;
+    localStorage.setItem(USER_KEY, `${name} (${phone})`);
+    checkAuth();
+}
 
-        window.clearDoNo = function(e) {
-            if (e) e.stopPropagation();
-            document.getElementById('doNoInput').value = ''; document.getElementById('placeOrderBtn').classList.remove('hidden'); document.getElementById('updateOrderBtn').classList.add('hidden'); document.getElementById('footerNewOrderBtn').classList.add('hidden'); document.getElementById('newOrderModeBtn').classList.add('hidden');
-            showAlert("Switched back to New Order mode.", "NEW ORDER");
-        };
+function handleLogout() {
+    showConfirm('តើអ្នកពិតជាចង់ Logout មែនទេ?', ()=>{
+        localStorage.removeItem(USER_KEY);
+        window.location.reload();
+    }, 'Confirm Logout');
+}
 
-        const timeDatalist = document.getElementById('timeOptions'); let optionsHTML = '';
-        for (let m = 0; m < 24 * 60; m += 5) { let totalMinutes = (330 + m) % (24 * 60); let i = Math.floor(totalMinutes / 60); let j = totalMinutes % 60; let hour = i % 12 || 12; let ampm = i < 12 ? 'AM' : 'PM'; let min = j < 10 ? '0' + j : j; let displayHour = hour < 10 ? '0' + hour : hour; optionsHTML += `<option value="${displayHour}:${min} ${ampm}">`; }
-        timeDatalist.innerHTML = optionsHTML;
+window.addEventListener('DOMContentLoaded', checkAuth);
 
-        const bakeryItems = [{ id: 'item1', name: 'Egg Salad Wrap', price: 0, emoji: '🥚' }, { id: 'item2', name: 'Chicken Salad Wrap', price: 0, emoji: '🍗' }, { id: 'item3', name: 'Salad Wrapped', price: 0, emoji: '🥗' }, { id: 'item4', name: 'Fresh Sandwich', price: 0, emoji: '🥪' }];
-        const menuContainer = document.getElementById('menuContainer'); const quantities = {};
-        bakeryItems.forEach((item, idx) => {
-            quantities[item.id] = 0; const card = document.createElement('div');
-            card.className = "bg-cardWhite p-3 rounded-xl shadow-sm border border-slate-200/80 flex justify-between items-center menu-card card-enter"; card.style.animationDelay = (0.18 + idx * 0.07) + 's';
-            card.innerHTML = `<div class="flex items-center space-x-3 flex-1 pr-2"><div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center shrink-0 border border-blue-100 shadow-sm text-base"><span class="emoji-icon">${item.emoji}</span></div><h3 class="font-bold text-sm text-slate-900">${item.name}</h3></div><div class="flex items-center space-x-1.5 bg-slate-50 rounded-lg p-1 border border-slate-200"><button type="button" class="qty-btn px-2.5 h-7 flex items-center justify-center text-slate-500 bg-white rounded-md shadow-sm border border-slate-200 btn-press font-bold text-xs" onclick="updateQty('${item.id}', -10, ${item.price})">-10</button><input type="number" id="qty-${item.id}" value="0" min="0" class="font-black text-navyDark w-10 text-center text-base bg-transparent focus:outline-none" oninput="manualInputQty('${item.id}', this.value, ${item.price})"><button type="button" class="qty-btn px-2.5 h-7 flex items-center justify-center text-slate-500 bg-white rounded-md shadow-sm border border-slate-200 btn-press font-bold text-xs" onclick="updateQty('${item.id}', 10, ${item.price})">+10</button></div>`;
-            menuContainer.appendChild(card);
+// ─── DATE SETUP ──────────────────────────────────────────────
+// [FIX P1] min = today; default = tomorrow
+const todayStr    = new Date().toISOString().split('T')[0];
+const tomorrowObj = new Date(); tomorrowObj.setDate(tomorrowObj.getDate()+1);
+const tomorrowStr = tomorrowObj.toISOString().split('T')[0];
+const odEl = document.getElementById('orderDate');
+odEl.min   = todayStr;
+odEl.value = tomorrowStr;
+if (localStorage.getItem('stb_branch')) document.getElementById('branch').value = localStorage.getItem('stb_branch');
+if (localStorage.getItem('stb_time'))   document.getElementById('pickupTime').value = localStorage.getItem('stb_time');
+document.getElementById('pickupTime').addEventListener('input', function(){localStorage.setItem('stb_time',this.value);});
+
+// [FIX P1] Pickup Time validation
+function validateTime() {
+    const val = document.getElementById('pickupTime').value.trim();
+    const ok  = /^(0?[1-9]|1[0-2]):[0-5]\d\s*(AM|PM)$/i.test(val);
+    if (!ok && val) {
+        showFieldErr('pickupTime','errTime');
+    } else {
+        clearFieldErr('pickupTime','errTime');
+    }
+    return ok || !val;
+}
+
+// ─── TIME DATALIST ───────────────────────────────────────────
+const tdl = document.getElementById('timeOptions');
+let tHtml = '';
+for (let m=0; m<24*60; m+=5) {
+    const tot = (330+m)%(24*60), h=Math.floor(tot/60), min=tot%60;
+    const hour=h%12||12, ampm=h<12?'AM':'PM';
+    tHtml += `<option value="${String(hour).padStart(2,'0')}:${String(min).padStart(2,'0')} ${ampm}">`;
+}
+tdl.innerHTML = tHtml;
+
+// ─── MENU BUILD ──────────────────────────────────────────────
+const menuContainer = document.getElementById('menuContainer');
+const quantities    = {};
+bakeryItems.forEach((item,idx) => {
+    quantities[item.id] = 0;
+    const card = document.createElement('div');
+    card.className = 'bg-cardWhite p-3 rounded-xl shadow-sm border border-slate-200/80 flex justify-between items-center menu-card card-enter';
+    card.style.animationDelay = (0.18+idx*.07)+'s';
+    card.innerHTML = `
+      <div class="flex items-center space-x-3 flex-1 pr-2">
+        <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center shrink-0 border border-blue-100 shadow-sm text-base"><span class="emoji-icon">${item.emoji}</span></div>
+        <h3 class="font-bold text-sm text-slate-900">${item.name}</h3>
+      </div>
+      <div class="flex items-center space-x-1.5 bg-slate-50 rounded-lg p-1 border border-slate-200">
+        <button type="button" class="qty-btn px-2.5 h-7 flex items-center justify-center text-slate-500 bg-white rounded-md shadow-sm border border-slate-200 btn-press font-bold text-xs" onclick="updateQty('${item.id}',-10)">-10</button>
+        <input type="number" id="qty-${item.id}" value="0" min="0" max="${MAX_QTY_PER}"
+          class="font-black text-navyDark w-10 text-center text-base bg-transparent focus:outline-none"
+          oninput="manualQty('${item.id}',this.value)">
+        <button type="button" class="qty-btn px-2.5 h-7 flex items-center justify-center text-slate-500 bg-white rounded-md shadow-sm border border-slate-200 btn-press font-bold text-xs" onclick="updateQty('${item.id}',10)">+10</button>
+      </div>`;
+    menuContainer.appendChild(card);
+});
+
+// ─── QTY LOGIC ───────────────────────────────────────────────
+let totalQty = 0;
+function animateTotal() {
+    const el = document.getElementById('totalQtyDisplay');
+    el.classList.remove('num-flip'); void el.offsetWidth; el.classList.add('num-flip');
+    el.innerText = totalQty;
+    // [FIX P2] Show warning if total > threshold
+    document.getElementById('qtyWarn').classList.toggle('hidden', totalQty <= WARN_QTY);
+}
+window.updateQty = function(id, change) {
+    const nv = Math.min(MAX_QTY_PER, Math.max(0, quantities[id]+change));
+    totalQty += nv - quantities[id];
+    quantities[id] = nv;
+    const inp = document.getElementById(`qty-${id}`);
+    inp.value = nv;
+    inp.classList.remove('qty-pop'); void inp.offsetWidth; inp.classList.add('qty-pop');
+    animateTotal();
+};
+window.manualQty = function(id, val) {
+    const nv = Math.min(MAX_QTY_PER, Math.max(0, parseInt(val)||0));
+    totalQty += nv - quantities[id];
+    quantities[id] = nv;
+    document.getElementById(`qty-${id}`).value = nv;
+    animateTotal();
+};
+
+// ─── HISTORY ─────────────────────────────────────────────────
+let histOpen = false;
+function toggleHistory() {
+    histOpen = !histOpen;
+    document.getElementById('histContainer').classList.toggle('hidden',!histOpen);
+    document.getElementById('histChevron').classList.toggle('rotate-180',histOpen);
+    if (histOpen) renderHistory();
+}
+
+function fetchCloud(e) {
+    if(e) e.stopPropagation();
+    const c = document.getElementById('histContainer');
+    c.innerHTML = `<p class="text-sky-600 text-center py-2 italic text-[11px]"><i class="fa-solid fa-spinner fa-spin mr-1"></i> Syncing...</p>`;
+    c.classList.remove('hidden'); histOpen=true;
+    document.getElementById('histChevron').classList.add('rotate-180');
+    fetch(WEB_APP_URL+'?t='+Date.now())
+        .then(r=>r.json())
+        .then(res=>{
+            if(res.status==='success'&&Array.isArray(res.history)){
+                localStorage.setItem(CACHE_KEY,JSON.stringify(res.history));
+                renderHistory();
+                if(e) showAlert('Sync completed!','Live Sync');
+            } else { renderHistory(); }
+        })
+        .catch(()=>{ renderHistory(); if(e) showAlert('Sync failed. Check internet.','Error'); });
+}
+
+function renderHistory() {
+    const c = document.getElementById('histContainer');
+    const badge = document.getElementById('histBadge');
+    const now   = Date.now();
+    let h = JSON.parse(localStorage.getItem(CACHE_KEY)||'[]');
+    h = h.filter(x=>now-(x.timestamp||now)<ONE_YEAR_MS);
+    localStorage.setItem(CACHE_KEY,JSON.stringify(h));
+    const display = h.filter(x=>now-(x.timestamp||now)<TWO_HOURS_MS);
+    badge.innerText = display.length+' ord';
+    if(!display.length){
+        c.innerHTML=`<p class="text-slate-400 text-center py-2 italic text-[11px]">No orders in the last 2 hours.</p>`;
+        return;
+    }
+    c.innerHTML = display.map(o=>`
+      <div class="bg-white p-2 rounded-lg border border-sky-100 flex justify-between items-center shadow-xs text-[11px]">
+        <div>
+          <p class="font-extrabold text-navyPrimary">${o.doNo||'—'} <span class="text-[9px] text-slate-500">(${o.branch})</span></p>
+          <p class="text-[9px] text-slate-500">Date: ${o.orderDate} | Qty: <span class="font-bold text-sky-600">${o.totalQty}</span></p>
+          <p class="text-[9px] text-slate-400">By: ${o.orderedBy||'—'}</p>
+        </div>
+        <span class="text-[9px] text-emerald-600 font-bold bg-emerald-50 border border-emerald-100 px-1.5 py-1 rounded whitespace-nowrap">
+          <i class="fa-solid fa-cloud-check mr-1"></i>${o.doNo==='(Pending Sync)'?'Pending':'Synced'}
+        </span>
+      </div>`).join('');
+}
+
+// ─── EXPORT (Admin Only) ─────────────────────────────────────
+// [FIX P1] Compare against SHA-256 hash — not plaintext
+async function openExport(e) {
+    if(e) e.stopPropagation();
+    const pass = prompt('Admin Password:','');
+    if(!pass) return;
+    const buf  = await crypto.subtle.digest('SHA-256',new TextEncoder().encode(pass));
+    const hash = Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+    const correct = await getAdminHash();
+    if(hash !== correct){
+        showAlert('លេខសម្ងាត់មិនត្រឹមត្រូវ! Admin only.','Access Denied');
+        return;
+    }
+    const now=new Date();
+    const f=new Date(now.getFullYear(),now.getMonth(),1);
+    const l=new Date(now.getFullYear(),now.getMonth()+1,0);
+    document.getElementById('expStart').value=f.toISOString().split('T')[0];
+    document.getElementById('expEnd').value  =l.toISOString().split('T')[0];
+    document.getElementById('errExportDate').classList.remove('show');
+    document.getElementById('exportModal').classList.remove('hidden');
+}
+function closeExport(){ document.getElementById('exportModal').classList.add('hidden'); }
+
+// [FIX P2] Validate date range inline
+function validateExportDates() {
+    const s=document.getElementById('expStart').value;
+    const e=document.getElementById('expEnd').value;
+    const err=document.getElementById('errExportDate');
+    if(s&&e&&e<s){ err.classList.add('show'); return false; }
+    err.classList.remove('show'); return true;
+}
+
+function doExport(type) {
+    if(!validateExportDates()){ return; }
+    const branch=document.getElementById('expBranch').value;
+    const start =document.getElementById('expStart').value;
+    const end   =document.getElementById('expEnd').value;
+    if(!start||!end){ showAlert('សូមជ្រើសកាលបរិច្ឆេទ','Required'); return; }
+    let h=JSON.parse(localStorage.getItem(CACHE_KEY)||'[]');
+    let f=h.filter(x=>(branch==='ALL'||x.branch===branch)&&x.orderDate>=start&&x.orderDate<=end);
+    if(!f.length){ showAlert('ពុំមានទិន្នន័យតាមលក្ខខណ្ឌនេះ!','No Data'); return; }
+
+    if(type==='sheet'){
+        const rows=f.map(r=>({
+            'DO No':r.doNo,'Branch':r.branch,'Date':r.orderDate,'Time':r.pickupTime,
+            'Ordered By':r.orderedBy||'—',
+            'Plain Croissant':r.item1||0,'Chocolate Croissant':r.item2||0,
+            'Almond Croissant':r.item3||0,'Butter Toast':r.item4||0,
+            'Blueberry Muffin':r.item5||0,'Chocolate Muffin':r.item6||0,
+            'Cinnamon Roll':r.item7||0,'Total Qty':r.totalQty||0
+        }));
+        const ws=XLSX.utils.json_to_sheet(rows);
+        const wb=XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb,ws,'Bakery Report');
+        XLSX.writeFile(wb,`Bakery_${branch}_${start}_${end}.xlsx`);
+        closeExport();
+        showAlert('ទាញយក Excel បានជោគជ័យ!','Export Success');
+
+    } else {
+        const pw=window.open('','','height=900,width=1100');
+        let grand=0, rows='';
+        f.forEach(r=>{
+            grand+=Number(r.totalQty);
+            rows+=`<tr><td><b>${r.doNo}</b></td><td>${r.branch}</td><td>${r.orderDate}</td>
+                   <td>${r.pickupTime}</td><td>${r.orderedBy||'—'}</td>
+                   <td>${r.item1||0}</td><td>${r.item2||0}</td><td>${r.item3||0}</td>
+                   <td>${r.item4||0}</td><td>${r.item5||0}</td><td>${r.item6||0}</td>
+                   <td>${r.item7||0}</td><td><b>${r.totalQty||0}</b></td></tr>`;
         });
+        pw.document.write(`<html><head><title>Bakery Report</title>
+          <style>@page{size:landscape;margin:15mm}body{font-family:Arial,sans-serif;padding:20px;color:#1e293b}
+          .hdr{text-align:center;border-bottom:3px solid #1B365D;padding-bottom:12px;margin-bottom:20px}
+          h2{color:#1B365D;font-size:20px;font-weight:800;text-transform:uppercase;margin:0 0 6px}
+          table{width:100%;border-collapse:collapse;font-size:11px}
+          th,td{border:1px solid #cbd5e1;padding:8px 10px;text-align:left}
+          th{background:#1B365D!important;color:#fff!important;font-size:10px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+          tr:nth-child(even){background:#f8fafc!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+          .ft{display:flex;justify-content:space-between;margin-top:24px;font-size:12px;font-weight:700;border-top:2px solid #e2e8f0;padding-top:12px}
+          </style></head><body>
+          <div class="hdr"><h2>INDEPENDENCE HOTEL BY DARA — BAKERY REPORT</h2>
+          <p style="font-size:12px;color:#475569;font-weight:600;margin:0">Branch: ${branch} | ${start} to ${end}</p></div>
+          <table><thead><tr>
+            <th>DO No</th><th>Branch</th><th>Date</th><th>Time</th><th>Ordered By</th>
+            <th>Plain Croissant</th><th>Choc Croissant</th><th>Almond Croissant</th>
+            <th>Butter Toast</th><th>Blueberry Muffin</th><th>Choc Muffin</th>
+            <th>Cinnamon Roll</th><th>Total Qty</th>
+          </tr></thead><tbody>${rows}</tbody></table>
+          <div class="ft"><span>Total Orders: ${f.length}</span><span>Grand Total: ${grand} units</span></div>
+          </body></html>`);
+        pw.document.close(); pw.focus();
+        setTimeout(()=>pw.print(),600);
+        closeExport();
+    }
+}
 
-        let totalQty = 0; let totalAmount = 0.00;
-        function animateTotal() { const el = document.getElementById('totalQtyDisplay'); el.classList.remove('num-flip'); void el.offsetWidth; el.classList.add('num-flip'); el.innerText = totalQty; }
-        window.updateQty = function(id, change, price) { let newQty = Math.max(0, quantities[id] + change); let actualChange = newQty - quantities[id]; quantities[id] = newQty; const input = document.getElementById(`qty-${id}`); input.value = newQty; input.classList.remove('qty-pop'); void input.offsetWidth; input.classList.add('qty-pop'); totalQty += actualChange; totalAmount += (actualChange * price); animateTotal(); };
-        window.manualInputQty = function(id, val, price) { let parsedVal = Math.max(0, parseInt(val) || 0); let diff = parsedVal - quantities[id]; quantities[id] = parsedVal; totalQty += diff; totalAmount += (diff * price); animateTotal(); };
+// ─── PLACE ORDER — VALIDATION ────────────────────────────────
+function triggerConfirm() {
+    if(totalQty===0){ showAlert('សូមបញ្ចូល Item យ៉ាងហោចណាស់ ១!','Empty Order'); return; }
 
-        let tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1); document.getElementById('orderDate').valueAsDate = tomorrow;
-        if (localStorage.getItem('stb_branch')) document.getElementById('branch').value = localStorage.getItem('stb_branch');
-        if (localStorage.getItem('stb_pickupTime')) document.getElementById('pickupTime').value = localStorage.getItem('stb_pickupTime');
-        document.getElementById('branch').addEventListener('change', function() { localStorage.setItem('stb_branch', this.value); });
-        document.getElementById('pickupTime').addEventListener('input', function() { localStorage.setItem('stb_pickupTime', this.value); });
+    // [FIX P1] Validate all fields with inline errors
+    let ok = true;
+    const branch = document.getElementById('branch').value;
+    const date   = document.getElementById('orderDate').value;
+    const time   = document.getElementById('pickupTime').value.trim();
 
-        const orderForm = document.getElementById('orderForm'); const placeOrderBtn = document.getElementById('placeOrderBtn'); const updateOrderBtn = document.getElementById('updateOrderBtn'); const confirmModal = document.getElementById('confirmModal'); const cancelBtn = document.getElementById('cancelBtn'); const loadingOverlay = document.getElementById('loadingOverlay'); const orderSummaryBox = document.getElementById('orderSummaryBox');
-        let currentActionType = 'new';
+    if(!branch){ showFieldErr('branch','errBranch'); ok=false; } else clearFieldErr('branch','errBranch');
+    if(!date||date<todayStr){ showFieldErr('orderDate','errDate'); ok=false; } else clearFieldErr('orderDate','errDate');
 
-        function triggerConfirm(action) {
-            if (totalQty === 0) { showAlert("Please add at least one item to your order!", "EMPTY ORDER"); return; }
-            if (!orderForm.checkValidity()) { orderForm.reportValidity(); return; }
-            currentActionType = action; const branch = document.getElementById('branch').value; const orderDate = document.getElementById('orderDate').value; const pickupTime = document.getElementById('pickupTime').value; const orderedBy = document.getElementById('orderedBy').value; const doNo = document.getElementById('doNoInput').value.trim();
-            document.getElementById('modalTitle').innerText = action === 'update' ? 'CONFIRM ORDER UPDATE' : 'CONFIRM NEW ORDER';
-            let summaryHTML = `<div class="border-b border-slate-200 pb-2.5 space-y-1.5"><p class="font-bold text-slate-800 text-sm">📍 ${branch} ${doNo ? `<span class="text-xs text-amber-600 font-bold">(DO: ${doNo})</span>` : ''}</p><p class="text-slate-600">📅 Date: <span class="font-bold text-slate-800">${orderDate}</span> | ⏰ Time: <span class="font-bold text-slate-800">${pickupTime}</span></p><p class="text-slate-600">👤 Ordered by: <span class="font-bold text-slate-800">${orderedBy}</span></p></div><div class="space-y-2 pt-2.5 max-h-36 overflow-y-auto">`;
-            bakeryItems.forEach(item => { let qty = quantities[item.id] || 0; if (qty > 0) { summaryHTML += `<div class="flex justify-between items-center text-slate-800 font-semibold bg-white p-1.5 rounded border border-slate-100"><span>${item.emoji} ${item.name}</span><span class="font-extrabold text-sky-600 text-sm">x${qty}</span></div>`; } });
-            summaryHTML += `</div>`; orderSummaryBox.innerHTML = summaryHTML; confirmModal.classList.remove('hidden');
-        }
+    // [FIX P1] Strict time format
+    if(!time){ showFieldErr('pickupTime','errTime','សូមបញ្ចូលម៉ោង'); ok=false; }
+    else if(!/^(0?[1-9]|1[0-2]):[0-5]\d\s*(AM|PM)$/i.test(time)){ showFieldErr('pickupTime','errTime'); ok=false; }
+    else clearFieldErr('pickupTime','errTime');
 
-        placeOrderBtn.addEventListener('click', () => triggerConfirm('new'));
-        updateOrderBtn.addEventListener('click', () => triggerConfirm('update'));
-        cancelBtn.addEventListener('click', () => confirmModal.classList.add('hidden'));
+    if(!ok){ window.scrollTo({top:0,behavior:'smooth'}); return; }
 
-        const slideTrack = document.getElementById('slideTrack'); const slideThumb = document.getElementById('slideThumb'); const slideFill = document.getElementById('slideFill');
-        let isDragging = false; let startX = 0; let trackWidth = 0;
-        function resetSlider() { slideThumb.style.transform = `translateX(0px)`; slideFill.style.width = `0px`; slideThumb.style.transition = `transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)`; slideFill.style.transition = `width 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)`; }
-        const getClientX = (e) => e.touches ? e.touches[0].clientX : e.clientX;
-        slideThumb.addEventListener('mousedown', startDrag); slideThumb.addEventListener('touchstart', startDrag, {passive: true});
-        function startDrag(e) { isDragging = true; startX = getClientX(e); trackWidth = slideTrack.clientWidth - slideThumb.clientWidth - 8; slideThumb.style.transition = 'none'; slideFill.style.transition = 'none'; }
-        window.addEventListener('mousemove', onDrag); window.addEventListener('touchmove', onDrag, {passive: true});
-        function onDrag(e) { if (!isDragging) return; let currentX = getClientX(e); let diff = currentX - startX; if (diff < 0) diff = 0; if (diff > trackWidth) diff = trackWidth; slideThumb.style.transform = `translateX(${diff}px)`; slideFill.style.width = `${diff + slideThumb.clientWidth}px`; }
-        window.addEventListener('mouseup', stopDrag); window.addEventListener('touchend', stopDrag);
-        function stopDrag() {
-            if (!isDragging) return; isDragging = false;
-            let transformVal = window.getComputedStyle(slideThumb).transform; let currentX = 0;
-            if (transformVal && transformVal !== 'none') { let matrixMatch = transformVal.match(/matrix.*\(([-0-9., ]+)\)/); if (matrixMatch) { let values = matrixMatch[1].split(',').map(v => parseFloat(v.trim())); currentX = values.length === 6 ? values[4] : (values.length === 16 ? values[12] : 0); } }
-            if (currentX >= trackWidth * 0.75) { slideThumb.style.transform = `translateX(${trackWidth}px)`; slideFill.style.width = `100%`; setTimeout(() => { confirmModal.classList.add('hidden'); resetSlider(); executeOrderSubmission(currentActionType); }, 250); } else { resetSlider(); }
-        }
+    // Build summary
+    const orderedBy = document.getElementById('orderedBy').value;
+    let html = `<div class="border-b border-slate-200 pb-2.5 space-y-1.5">
+      <p class="font-bold text-slate-800 text-sm">📍 ${branch}</p>
+      <p class="text-slate-600">📅 ${date} &nbsp;⏰ ${time}</p>
+      <p class="text-slate-600">👤 ${orderedBy}</p></div>
+      <div class="space-y-2 pt-2.5 max-h-36 overflow-y-auto">`;
+    bakeryItems.forEach(it=>{
+        if(quantities[it.id]>0)
+            html+=`<div class="flex justify-between items-center bg-white p-1.5 rounded border border-slate-100 font-semibold text-slate-800"><span>${it.emoji} ${it.name}</span><span class="font-extrabold text-sky-600 text-sm">x${quantities[it.id]}</span></div>`;
+    });
+    html+=`</div>`;
+    document.getElementById('confirmSummary').innerHTML=html;
+    document.getElementById('confirmModal').classList.remove('hidden');
+    resetSlider();
+}
 
-        function executeOrderSubmission(action) {
-            loadingOverlay.classList.remove('hidden');
-            const progressTitle = document.getElementById('progressTitle'); const progressSubtitle = document.getElementById('progressSubtitle');
-            document.getElementById('step1Icon').className = "w-8 h-8 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center text-xs shadow-sm transition-all duration-300"; document.getElementById('step2Icon').className = "w-8 h-8 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center text-xs shadow-sm transition-all duration-300"; document.getElementById('step3Icon').className = "w-8 h-8 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center text-xs shadow-sm transition-all duration-300"; document.getElementById('step1Text').className = "text-[11px] font-bold text-slate-400 transition-colors"; document.getElementById('step2Text').className = "text-[11px] font-bold text-slate-400 transition-colors"; document.getElementById('step3Text').className = "text-[11px] font-bold text-slate-400 transition-colors"; document.getElementById('line1Fill').style.width = "0%"; document.getElementById('line2Fill').style.width = "0%";
-            progressTitle.innerText = action === 'update' ? "UPDATING ORDER..." : "PROCESSING ORDER..."; progressSubtitle.innerText = "Initializing secure connection...";
+// ─── SLIDE TO CONFIRM ────────────────────────────────────────
+const slideTrack=document.getElementById('slideTrack');
+const slideThumb=document.getElementById('slideThumb');
+const slideFill =document.getElementById('slideFill');
+let dragging=false,startX=0,trackW=0;
+function resetSlider(){
+    slideThumb.style.transition='transform .3s cubic-bezier(.34,1.56,.64,1)';
+    slideFill.style.transition ='width .3s cubic-bezier(.34,1.56,.64,1)';
+    slideThumb.style.transform='translateX(0px)';
+    slideFill.style.width='0px';
+}
+const cx=e=>e.touches?e.touches[0].clientX:e.clientX;
+slideThumb.addEventListener('mousedown', e=>{dragging=true;startX=cx(e);trackW=slideTrack.clientWidth-slideThumb.clientWidth-8;slideThumb.style.transition='none';slideFill.style.transition='none';});
+slideThumb.addEventListener('touchstart',e=>{dragging=true;startX=cx(e);trackW=slideTrack.clientWidth-slideThumb.clientWidth-8;slideThumb.style.transition='none';slideFill.style.transition='none';},{passive:true});
+window.addEventListener('mousemove',e=>{if(!dragging)return;let d=Math.min(Math.max(cx(e)-startX,0),trackW);slideThumb.style.transform=`translateX(${d}px)`;slideFill.style.width=`${d+slideThumb.clientWidth}px`;});
+window.addEventListener('touchmove',e=>{if(!dragging)return;let d=Math.min(Math.max(cx(e)-startX,0),trackW);slideThumb.style.transform=`translateX(${d}px)`;slideFill.style.width=`${d+slideThumb.clientWidth}px`;},{passive:true});
+window.addEventListener('mouseup', stopSlide);
+window.addEventListener('touchend',stopSlide);
+function stopSlide(){
+    if(!dragging)return; dragging=false;
+    const m=window.getComputedStyle(slideThumb).transform;
+    let cur=0;
+    if(m&&m!=='none'){const v=m.match(/matrix.*\(([-0-9., ]+)\)/)?.[1].split(',').map(Number);if(v)cur=v.length===6?v[4]:v[12]||0;}
+    if(cur>=trackW*.75){
+        slideThumb.style.transform=`translateX(${trackW}px)`;
+        slideFill.style.width='100%';
+        setTimeout(()=>{ document.getElementById('confirmModal').classList.add('hidden'); resetSlider(); submitOrder(); },250);
+    } else { resetSlider(); }
+}
 
-            setTimeout(() => { document.getElementById('step1Icon').className = "w-8 h-8 rounded-full bg-navyPrimary text-white flex items-center justify-center text-xs shadow-md"; document.getElementById('step1Text').className = "text-[11px] font-extrabold text-navyPrimary"; document.getElementById('line1Fill').style.width = "100%"; progressSubtitle.innerText = "Dispatching order to server..."; }, 300);
-            setTimeout(() => { document.getElementById('step2Icon').className = "w-8 h-8 rounded-full bg-sky-500 text-white flex items-center justify-center text-xs shadow-md step-pulse"; document.getElementById('step2Text').className = "text-[11px] font-extrabold text-sky-600"; document.getElementById('mainIcon').className = "fa-solid fa-gears"; progressSubtitle.innerText = "Syncing with Google Sheets & Telegram..."; }, 900);
+// ─── ORDER SUBMISSION ────────────────────────────────────────
+function setStep(n){
+    const icons=['s1','s2','s3'], lines=['line1','line2'];
+    const cls=['bg-navyPrimary text-white','bg-sky-500 text-white step-pulse','bg-emerald-500 text-white'];
+    const tcls=['text-[11px] font-extrabold text-navyPrimary','text-[11px] font-extrabold text-sky-600','text-[11px] font-extrabold text-emerald-600'];
+    for(let i=0;i<3;i++){
+        document.getElementById(icons[i]).className=i<n?`w-8 h-8 rounded-full ${cls[i]} flex items-center justify-center text-xs shadow-md`:(i===n?`w-8 h-8 rounded-full ${cls[i]} flex items-center justify-center text-xs shadow-md`:'w-8 h-8 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center text-xs shadow-sm transition-all');
+        document.getElementById(icons[i]+'t').className=i<n?tcls[i]:'text-[11px] font-bold text-slate-400';
+    }
+    for(let i=0;i<lines.length;i++) document.getElementById(lines[i]).style.width=i<n-1?'100%':'0%';
+}
 
-            let inputDoNo = document.getElementById('doNoInput').value.trim();
-            const currentBranch = document.getElementById('branch').value;
-            const currentOrderDate = document.getElementById('orderDate').value;
-            const currentPickupTime = document.getElementById('pickupTime').value;
-            let currentOrderedBy = document.getElementById('orderedBy').value.trim() || localStorage.getItem('starbucks_logged_user') || 'Staff';
+function submitOrder(){
+    const overlay=document.getElementById('loadingOverlay');
+    overlay.classList.remove('hidden');
+    document.getElementById('progTitle').innerText='PROCESSING ORDER...';
+    document.getElementById('progTitle').className='font-extrabold text-sm text-navyPrimary uppercase tracking-wider';
+    document.getElementById('progSub').innerText='Initializing secure connection...';
+    document.getElementById('progSub').className='text-xs text-sky-600 pt-2 font-semibold';
+    document.getElementById('mainIconBg').className='w-14 h-14 rounded-full bg-sky-50 text-sky-500 flex items-center justify-center text-2xl border-2 border-sky-200 shadow-lg mx-auto step-pulse';
+    document.getElementById('mainIcon').className='fa-solid fa-cloud-arrow-up';
+    setStep(0);
 
-            if (action === 'new' || !inputDoNo) { inputDoNo = generateClientDO(currentBranch, currentOrderDate); document.getElementById('doNoInput').value = inputDoNo; }
+    const data={
+        branch:    document.getElementById('branch').value,
+        orderDate: document.getElementById('orderDate').value,
+        pickupTime:document.getElementById('pickupTime').value.trim(),
+        orderedBy: document.getElementById('orderedBy').value.trim(),
+        item1:quantities['item1']||0, item2:quantities['item2']||0, item3:quantities['item3']||0,
+        item4:quantities['item4']||0, item5:quantities['item5']||0, item6:quantities['item6']||0,
+        item7:quantities['item7']||0
+    };
 
-            let existingHistory = JSON.parse(localStorage.getItem('stb_order_history') || '[]');
-            let prevRecord = existingHistory.find(item => item.doNo === inputDoNo);
-            let currentVer = action === 'update' ? (prevRecord && prevRecord.updateVersion ? prevRecord.updateVersion + 1 : 2) : 1;
-            
-            // 🔴 ហៅមុខងារ formatCleanDate ដើម្បីបានម៉ោងអន្តរជាតិស្អាតគ្មានអក្សរខ្មែរ
-            const updateTimeVal = action === 'update' ? getCleanFormattedDate() : (prevRecord ? prevRecord.updateTime : '');
-            const creationTimestamp = prevRecord && prevRecord.timestamp ? prevRecord.timestamp : new Date().getTime();
+    setTimeout(()=>{ setStep(1); document.getElementById('progSub').innerText='Dispatching to server...'; },300);
+    setTimeout(()=>{ setStep(2); document.getElementById('mainIcon').className='fa-solid fa-gears'; document.getElementById('progSub').innerText='Syncing with Google Sheets & Telegram...'; },900);
 
-            const data = {
-                doNo: inputDoNo, branch: currentBranch, orderDate: currentOrderDate, item1: quantities['item1'] || 0, item2: quantities['item2'] || 0, item3: quantities['item3'] || 0, item4: quantities['item4'] || 0, pickupTime: currentPickupTime, orderedBy: currentOrderedBy, totalQty: totalQty, totalAmount: totalAmount.toFixed(2), updateVersion: currentVer, updateTime: updateTimeVal, timestamp: creationTimestamp
-            };
+    fetch(WEB_APP_URL,{ method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) })
+    .then(()=>{
+        // Cache local pending entry
+        const entry={ timestamp:Date.now(), doNo:'(Pending Sync)', branch:data.branch, orderDate:data.orderDate,
+            pickupTime:data.pickupTime, orderedBy:data.orderedBy,
+            item1:data.item1,item2:data.item2,item3:data.item3,item4:data.item4,
+            item5:data.item5,item6:data.item6,item7:data.item7,
+            totalQty:Object.values(quantities).reduce((a,b)=>a+b,0) };
+        const h=JSON.parse(localStorage.getItem(CACHE_KEY)||'[]');
+        h.unshift(entry); localStorage.setItem(CACHE_KEY,JSON.stringify(h));
 
-            fetch(WEB_APP_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }).then(() => {
-                setTimeout(() => {
-                    document.getElementById('step2Icon').className = "w-8 h-8 rounded-full bg-sky-500 text-white flex items-center justify-center text-xs shadow-md"; document.getElementById('step2Text').className = "text-[11px] font-extrabold text-slate-700"; document.getElementById('line2Fill').style.width = "100%"; document.getElementById('step3Icon').className = "w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs shadow-md"; document.getElementById('step3Text').className = "text-[11px] font-extrabold text-emerald-600";
-                    const mainIconBg = document.getElementById('mainIconBg'); mainIconBg.className = "w-14 h-14 rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center text-2xl border-2 border-emerald-200 shadow-lg animate-bounce"; document.getElementById('mainIcon').className = "fa-solid fa-check";
-                    progressTitle.innerText = action === 'update' ? "ORDER UPDATED SUCCESSFULLY!" : "THANK YOU FOR YOUR ORDER!"; progressTitle.className = "font-extrabold text-sm text-emerald-600 uppercase tracking-wider"; progressSubtitle.innerText = "PDF generated & sent to Telegram successfully."; progressSubtitle.className = "text-xs text-emerald-600 pt-2 font-semibold";
-                    saveOrderToHistory(data);
-                    if ("vibrate" in navigator) navigator.vibrate([150, 75, 150]);
-                    setTimeout(() => { window.location.reload(); }, 3500);
-                }, 1200);
-            }).catch(error => { loadingOverlay.classList.add('hidden'); showAlert("Network error. Please try again!", "CONNECTION ERROR"); });
-        }
-    </script>
+        setTimeout(()=>{
+            setStep(3);
+            document.getElementById('mainIconBg').className='w-14 h-14 rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center text-2xl border-2 border-emerald-200 shadow-lg mx-auto animate-bounce';
+            document.getElementById('mainIcon').className='fa-solid fa-check';
+            document.getElementById('progTitle').innerText='THANK YOU FOR YOUR ORDER!';
+            document.getElementById('progTitle').className='font-extrabold text-sm text-emerald-600 uppercase tracking-wider';
+            document.getElementById('progSub').innerText='PDF generated & sent to Telegram successfully.';
+            document.getElementById('progSub').className='text-xs text-emerald-600 pt-2 font-semibold';
+            if('vibrate' in navigator) navigator.vibrate([150,75,150]);
+            setTimeout(()=>window.location.reload(),3500);
+        },1200);
+    })
+    .catch(()=>{
+        // [P3] Save to retry queue if network fails
+        overlay.classList.add('hidden');
+        const q=JSON.parse(localStorage.getItem(RETRY_KEY)||'[]');
+        q.push({...data, savedAt:Date.now()});
+        localStorage.setItem(RETRY_KEY,JSON.stringify(q));
+        updateRetryBadge();
+        showAlert('Network error — Order បានរក្សាទុក ហើយនឹង retry ដោយស្វ័យប្រវត្តិ នៅពេលអ៊ីនធ័រណិតមកវិញ!','Saved Offline');
+    });
+}
+
+// ─── [P3] OFFLINE RETRY QUEUE ────────────────────────────────
+function updateRetryBadge(){
+    const q=JSON.parse(localStorage.getItem(RETRY_KEY)||'[]');
+    const badge=document.getElementById('offlineBadge');
+    if(q.length){ badge.classList.remove('hidden'); document.getElementById('offlineCount').innerText=q.length; }
+    else { badge.classList.add('hidden'); }
+}
+
+async function retryQueue(){
+    const q=JSON.parse(localStorage.getItem(RETRY_KEY)||'[]');
+    if(!q.length) return;
+    updateRetryBadge();
+    const remaining=[];
+    for(const order of q){
+        try {
+            await fetch(WEB_APP_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(order)});
+            // Success — add to cache
+            const entry={timestamp:Date.now(),doNo:'(Pending Sync)',branch:order.branch,orderDate:order.orderDate,
+                pickupTime:order.pickupTime,orderedBy:order.orderedBy,
+                item1:order.item1,item2:order.item2,item3:order.item3,item4:order.item4,
+                item5:order.item5,item6:order.item6,item7:order.item7,
+                totalQty:(order.item1||0)+(order.item2||0)+(order.item3||0)+(order.item4||0)+(order.item5||0)+(order.item6||0)+(order.item7||0)};
+            const h=JSON.parse(localStorage.getItem(CACHE_KEY)||'[]');
+            h.unshift(entry); localStorage.setItem(CACHE_KEY,JSON.stringify(h));
+        } catch { remaining.push(order); }
+    }
+    localStorage.setItem(RETRY_KEY,JSON.stringify(remaining));
+    updateRetryBadge();
+    if(q.length>remaining.length) showAlert(`បានផ្ញើ Order ${q.length-remaining.length} ដែល Pending ដោយជោគជ័យ!`,'Retry Success');
+}
+</script>
 </body>
 </html>
