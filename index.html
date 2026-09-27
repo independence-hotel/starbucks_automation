@@ -473,49 +473,53 @@
         <p id="progSub" class="text-slate-400 text-[13px] font-medium mt-2">Initializing secure connection...</p>
       </div>
 
-      <!-- Step row: [S1] ›››› [S2] ›››› [S3] -->
-      <div class="flex items-center justify-center space-x-0 px-2">
+      <!-- Step row: full-width spread [S1]──────[S2]──────[S3] -->
+      <div class="w-full px-2 pt-2 pb-1">
 
-        <!-- Step 1: Sent -->
-        <div class="flex flex-col items-center space-y-3">
-          <div id="s1" class="w-14 h-14 rounded-full flex items-center justify-center text-xl transition-all duration-500 bg-slate-100 text-slate-300 border-2 border-slate-200">
-            <i class="fa-solid fa-paper-plane"></i>
+        <!-- Icons + labels row -->
+        <div class="flex items-start justify-between w-full">
+
+          <!-- Step 1: Sent -->
+          <div class="flex flex-col items-center space-y-2.5 flex-1">
+            <div id="s1" class="w-16 h-16 rounded-full flex items-center justify-center text-2xl transition-all duration-500 bg-slate-100 text-slate-300 border-2 border-slate-200">
+              <i class="fa-solid fa-paper-plane"></i>
+            </div>
+            <span id="s1t" class="text-[12px] font-bold text-slate-400 tracking-wide">Sent</span>
           </div>
-          <span id="s1t" class="text-[11px] font-bold text-slate-400 tracking-wide">Sent</span>
-        </div>
 
-        <!-- Arrow connector 1 — 4 chevrons -->
-        <div id="arr1" class="flex items-center space-x-[-4px] mb-[18px] mx-2">
-          <i class="fa-solid fa-chevron-right text-slate-300 text-[13px]" id="a1c1"></i>
-          <i class="fa-solid fa-chevron-right text-slate-300 text-[13px]" id="a1c2"></i>
-          <i class="fa-solid fa-chevron-right text-slate-300 text-[13px]" id="a1c3"></i>
-          <i class="fa-solid fa-chevron-right text-slate-300 text-[13px]" id="a1c4"></i>
-        </div>
-
-        <!-- Step 2: Processed -->
-        <div class="flex flex-col items-center space-y-3">
-          <div id="s2" class="w-14 h-14 rounded-full flex items-center justify-center text-xl transition-all duration-500 bg-slate-100 text-slate-300 border-2 border-slate-200">
-            <i class="fa-solid fa-gears"></i>
+          <!-- Arrow 1 — stretches between S1 and S2 -->
+          <div id="arr1" class="flex items-center justify-center space-x-[-3px] flex-1 mt-[22px]">
+            <i class="fa-solid fa-chevron-right text-slate-300 text-[14px]"></i>
+            <i class="fa-solid fa-chevron-right text-slate-300 text-[14px]"></i>
+            <i class="fa-solid fa-chevron-right text-slate-300 text-[14px]"></i>
+            <i class="fa-solid fa-chevron-right text-slate-300 text-[14px]"></i>
           </div>
-          <span id="s2t" class="text-[11px] font-bold text-slate-400 tracking-wide">Processed</span>
-        </div>
 
-        <!-- Arrow connector 2 — 4 chevrons -->
-        <div id="arr2" class="flex items-center space-x-[-4px] mb-[18px] mx-2">
-          <i class="fa-solid fa-chevron-right text-slate-300 text-[13px]" id="a2c1"></i>
-          <i class="fa-solid fa-chevron-right text-slate-300 text-[13px]" id="a2c2"></i>
-          <i class="fa-solid fa-chevron-right text-slate-300 text-[13px]" id="a2c3"></i>
-          <i class="fa-solid fa-chevron-right text-slate-300 text-[13px]" id="a2c4"></i>
-        </div>
-
-        <!-- Step 3: Completed — clock icon pending -->
-        <div class="flex flex-col items-center space-y-3">
-          <div id="s3" class="w-14 h-14 rounded-full flex items-center justify-center text-xl transition-all duration-500 bg-slate-100 text-slate-300 border-2 border-slate-200">
-            <i id="s3icon" class="fa-regular fa-clock"></i>
+          <!-- Step 2: Processed -->
+          <div class="flex flex-col items-center space-y-2.5 flex-1">
+            <div id="s2" class="w-16 h-16 rounded-full flex items-center justify-center text-2xl transition-all duration-500 bg-slate-100 text-slate-300 border-2 border-slate-200">
+              <i class="fa-solid fa-gears"></i>
+            </div>
+            <span id="s2t" class="text-[12px] font-bold text-slate-400 tracking-wide">Processed</span>
           </div>
-          <span id="s3t" class="text-[11px] font-bold text-slate-400 tracking-wide">Completed</span>
-        </div>
 
+          <!-- Arrow 2 — stretches between S2 and S3 -->
+          <div id="arr2" class="flex items-center justify-center space-x-[-3px] flex-1 mt-[22px]">
+            <i class="fa-solid fa-chevron-right text-slate-300 text-[14px]"></i>
+            <i class="fa-solid fa-chevron-right text-slate-300 text-[14px]"></i>
+            <i class="fa-solid fa-chevron-right text-slate-300 text-[14px]"></i>
+            <i class="fa-solid fa-chevron-right text-slate-300 text-[14px]"></i>
+          </div>
+
+          <!-- Step 3: Completed -->
+          <div class="flex flex-col items-center space-y-2.5 flex-1">
+            <div id="s3" class="w-16 h-16 rounded-full flex items-center justify-center text-2xl transition-all duration-500 bg-slate-100 text-slate-300 border-2 border-slate-200">
+              <i id="s3icon" class="fa-regular fa-clock"></i>
+            </div>
+            <span id="s3t" class="text-[12px] font-bold text-slate-400 tracking-wide">Completed</span>
+          </div>
+
+        </div>
       </div>
     </div>
   </div>
@@ -669,7 +673,10 @@ function checkAuth() {
         document.getElementById('loggedInUserDisplay').innerText = u.split(' (')[0];
         document.getElementById('orderedBy').value = u;
         renderHistory();
-        retryQueue();   // [P3] Attempt pending orders
+        retryQueue();
+        startRealtimePoll();  // ← Realtime 30s auto-sync
+        // Tick "synced Xs ago" every second
+        setInterval(() => { if (histOpen) renderHistory(); }, 1000);
     } else {
         document.getElementById('loginScreen').style.display = 'flex';
     }
@@ -790,55 +797,126 @@ window.manualQty = function(id, val) {
     animateTotal();
 };
 
-// ─── HISTORY ─────────────────────────────────────────────────
-let histOpen = false;
+// ─── HISTORY — REALTIME SYNC ─────────────────────────────────
+let histOpen      = false;
+let _pollTimer    = null;
+let _lastSyncTime = 0;
+const POLL_MS     = 30_000; // 30 seconds
+
 function toggleHistory() {
     histOpen = !histOpen;
-    document.getElementById('histContainer').classList.toggle('hidden',!histOpen);
-    document.getElementById('histChevron').classList.toggle('rotate-180',histOpen);
+    document.getElementById('histContainer').classList.toggle('hidden', !histOpen);
+    document.getElementById('histChevron').classList.toggle('rotate-180', histOpen);
     if (histOpen) renderHistory();
 }
 
+// Silent background fetch — no alert, no UI flash unless triggered by button
 function fetchCloud(e) {
-    if(e) e.stopPropagation();
-    const c = document.getElementById('histContainer');
-    c.innerHTML = `<p class="text-sky-600 text-center py-2 italic text-[11px]"><i class="fa-solid fa-spinner fa-spin mr-1"></i> Syncing...</p>`;
-    c.classList.remove('hidden'); histOpen=true;
-    document.getElementById('histChevron').classList.add('rotate-180');
-    fetch(WEB_APP_URL+'?t='+Date.now())
-        .then(r=>r.json())
-        .then(res=>{
-            if(res.status==='success'&&Array.isArray(res.history)){
-                localStorage.setItem(CACHE_KEY,JSON.stringify(res.history));
-                renderHistory();
-                if(e) showAlert('Sync completed!','Live Sync','success');
-            } else { renderHistory(); }
+    const manual = !!e;
+    if (manual) e.stopPropagation();
+
+    // Show spinner only on manual button press
+    if (manual) {
+        const c = document.getElementById('histContainer');
+        c.innerHTML = `<p class="text-sky-600 text-center py-2 italic text-[11px]">
+            <i class="fa-solid fa-spinner fa-spin mr-1"></i> Syncing...</p>`;
+        c.classList.remove('hidden');
+        histOpen = true;
+        document.getElementById('histChevron').classList.add('rotate-180');
+    }
+
+    // Show dot on Sync button while fetching
+    const syncBtn = document.querySelector('[onclick="fetchCloud(event)"]');
+    if (syncBtn) syncBtn.innerHTML = '<i class="fa-solid fa-rotate fa-spin mr-0.5"></i> Sync';
+
+    fetch(WEB_APP_URL + '?t=' + Date.now())
+        .then(r => r.json())
+        .then(res => {
+            if (res.status === 'success' && Array.isArray(res.history)) {
+                localStorage.setItem(CACHE_KEY, JSON.stringify(res.history));
+                _lastSyncTime = Date.now();
+            }
+            renderHistory();
+            if (manual) showAlert('Sync completed!', 'Live Sync', 'success');
         })
-        .catch(()=>{ renderHistory(); if(e) showAlert('Sync failed. Check internet.','Error','error'); });
+        .catch(() => {
+            renderHistory();
+            if (manual) showAlert('Sync failed. Check internet.', 'Error', 'error');
+        })
+        .finally(() => {
+            if (syncBtn) syncBtn.innerHTML = '<i class="fa-solid fa-rotate mr-0.5"></i> Sync';
+        });
 }
 
+// Auto background poll every 30s — silent, no modals
+function startRealtimePoll() {
+    if (_pollTimer) clearInterval(_pollTimer);
+    // First sync immediately on login
+    fetchCloud(null);
+    _pollTimer = setInterval(() => {
+        fetchCloud(null);
+    }, POLL_MS);
+}
+
+function stopRealtimePoll() {
+    if (_pollTimer) { clearInterval(_pollTimer); _pollTimer = null; }
+}
+
+// Pause poll when tab hidden, resume when visible — saves battery/quota
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+        stopRealtimePoll();
+    } else {
+        // Resume only if logged in
+        if (localStorage.getItem(USER_KEY)) startRealtimePoll();
+    }
+});
+
 function renderHistory() {
-    const c = document.getElementById('histContainer');
+    const c     = document.getElementById('histContainer');
     const badge = document.getElementById('histBadge');
     const now   = Date.now();
-    let h = JSON.parse(localStorage.getItem(CACHE_KEY)||'[]');
-    h = h.filter(x=>now-(x.timestamp||now)<ONE_YEAR_MS);
-    localStorage.setItem(CACHE_KEY,JSON.stringify(h));
-    const display = h.filter(x=>now-(x.timestamp||now)<TWO_HOURS_MS);
-    badge.innerText = display.length+' ord';
-    if(!display.length){
-        c.innerHTML=`<p class="text-slate-400 text-center py-2 italic text-[11px]">No orders in the last 2 hours.</p>`;
+
+    let h = JSON.parse(localStorage.getItem(CACHE_KEY) || '[]');
+    h = h.filter(x => now - (x.timestamp || now) < ONE_YEAR_MS);
+    localStorage.setItem(CACHE_KEY, JSON.stringify(h));
+
+    const display = h.filter(x => now - (x.timestamp || now) < TWO_HOURS_MS);
+
+    // Badge: count + live dot
+    badge.innerHTML = `<span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1 align-middle animate-pulse"></span>${display.length} ord`;
+
+    // Last-synced timestamp line
+    const syncAgo = _lastSyncTime
+        ? `<p class="text-[9px] text-slate-300 text-right pr-1 mt-1 mb-0.5">
+               <i class="fa-solid fa-rotate text-[8px] mr-0.5"></i>
+               Synced ${Math.round((now - _lastSyncTime) / 1000)}s ago
+           </p>`
+        : '';
+
+    if (!display.length) {
+        c.innerHTML = syncAgo +
+            `<p class="text-slate-400 text-center py-2 italic text-[11px]">No orders in the last 2 hours.</p>`;
         return;
     }
-    c.innerHTML = display.map(o=>`
+
+    c.innerHTML = syncAgo + display.map(o => `
       <div class="bg-white p-2 rounded-lg border border-sky-100 flex justify-between items-center shadow-xs text-[11px]">
         <div>
-          <p class="font-extrabold text-navyPrimary">${o.doNo||'—'} <span class="text-[9px] text-slate-500">(${o.branch})</span></p>
-          <p class="text-[9px] text-slate-500">Date: ${o.orderDate} | Qty: <span class="font-bold text-sky-600">${o.totalQty}</span></p>
-          <p class="text-[9px] text-slate-400">By: ${o.orderedBy||'—'}</p>
+          <p class="font-extrabold text-navyPrimary">${o.doNo || '—'}
+            <span class="text-[9px] text-slate-500">(${o.branch})</span>
+          </p>
+          <p class="text-[9px] text-slate-500">
+            Date: ${o.orderDate} | Qty: <span class="font-bold text-sky-600">${o.totalQty}</span>
+          </p>
+          <p class="text-[9px] text-slate-400">By: ${o.orderedBy || '—'}</p>
         </div>
-        <span class="text-[9px] text-emerald-600 font-bold bg-emerald-50 border border-emerald-100 px-1.5 py-1 rounded whitespace-nowrap">
-          <i class="fa-solid fa-cloud-check mr-1"></i>${o.doNo==='(Pending Sync)'?'Pending':'Synced'}
+        <span class="text-[9px] font-bold px-1.5 py-1 rounded whitespace-nowrap
+          ${o.doNo === '(Pending Sync)'
+            ? 'text-amber-600 bg-amber-50 border border-amber-100'
+            : 'text-emerald-600 bg-emerald-50 border border-emerald-100'}">
+          <i class="fa-solid ${o.doNo === '(Pending Sync)' ? 'fa-hourglass-half' : 'fa-cloud-check'} mr-1"></i>
+          ${o.doNo === '(Pending Sync)' ? 'Pending' : 'Synced'}
         </span>
       </div>`).join('');
 }
@@ -1008,7 +1086,7 @@ function stopSlide(){
 // ─── ORDER SUBMISSION ────────────────────────────────────────
 // n=0 reset | n=1 Sent active | n=2 Processed active | n=3 all done
 function setStep(n) {
-    const BASE    = 'w-14 h-14 rounded-full flex items-center justify-center text-xl transition-all duration-500 border-2';
+    const BASE    = 'w-16 h-16 rounded-full flex items-center justify-center text-2xl transition-all duration-500 border-2';
     const PENDING = `${BASE} bg-slate-100 text-slate-300 border-slate-200`;
     const DONE    = `${BASE} bg-emerald-500 text-white border-emerald-400 shadow-md`;
     const ACTIVE  = `${BASE} bg-navyPrimary text-white border-sky-400 s-glow`;
@@ -1058,15 +1136,17 @@ function setStep(n) {
     // ── Arrow connectors ────────────────────────────────────
     // arr1 (between S1 and S2): active when n=1, done when n>=2
     // arr2 (between S2 and S3): active when n=2, done when n>=3
+    const ARR_BASE   = 'flex items-center justify-center space-x-[-3px] flex-1 mt-[22px]';
+
     if (a[0]) {
-        a[0].className = n === 1 ? 'arr-active flex items-center space-x-[-4px] mb-[18px] mx-2'
-                       : n >= 2  ? 'arr-done  flex items-center space-x-[-4px] mb-[18px] mx-2'
-                                 : 'flex items-center space-x-[-4px] mb-[18px] mx-2';
+        a[0].className = n === 1 ? `arr-active ${ARR_BASE}`
+                       : n >= 2  ? `arr-done  ${ARR_BASE}`
+                                 : ARR_BASE;
     }
     if (a[1]) {
-        a[1].className = n === 2 ? 'arr-active flex items-center space-x-[-4px] mb-[18px] mx-2'
-                       : n >= 3  ? 'arr-done  flex items-center space-x-[-4px] mb-[18px] mx-2'
-                                 : 'flex items-center space-x-[-4px] mb-[18px] mx-2';
+        a[1].className = n === 2 ? `arr-active ${ARR_BASE}`
+                       : n >= 3  ? `arr-done  ${ARR_BASE}`
+                                 : ARR_BASE;
     }
 }
 
