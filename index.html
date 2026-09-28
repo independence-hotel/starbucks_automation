@@ -480,43 +480,43 @@
         <div class="flex items-start justify-between w-full">
 
           <!-- Step 1: Sent -->
-          <div class="flex flex-col items-center space-y-2.5 flex-1">
-            <div id="s1" class="w-16 h-16 rounded-full flex items-center justify-center text-2xl transition-all duration-500 bg-slate-100 text-slate-300 border-2 border-slate-200">
+          <div class="flex flex-col items-center space-y-2 flex-1">
+            <div id="s1" class="w-11 h-11 rounded-full flex items-center justify-center text-base transition-all duration-500 bg-slate-100 text-slate-300 border-2 border-slate-200">
               <i class="fa-solid fa-paper-plane"></i>
             </div>
-            <span id="s1t" class="text-[12px] font-bold text-slate-400 tracking-wide">Sent</span>
+            <span id="s1t" class="text-[11px] font-bold text-slate-400 tracking-wide">Sent</span>
           </div>
 
-          <!-- Arrow 1 — stretches between S1 and S2 -->
-          <div id="arr1" class="flex items-center justify-center space-x-[-3px] flex-1 mt-[22px]">
-            <i class="fa-solid fa-chevron-right text-slate-300 text-[14px]"></i>
-            <i class="fa-solid fa-chevron-right text-slate-300 text-[14px]"></i>
-            <i class="fa-solid fa-chevron-right text-slate-300 text-[14px]"></i>
-            <i class="fa-solid fa-chevron-right text-slate-300 text-[14px]"></i>
+          <!-- Arrow 1 -->
+          <div id="arr1" class="flex items-center justify-center space-x-[-3px] flex-1 mt-[14px]">
+            <i class="fa-solid fa-chevron-right text-slate-300 text-[12px]"></i>
+            <i class="fa-solid fa-chevron-right text-slate-300 text-[12px]"></i>
+            <i class="fa-solid fa-chevron-right text-slate-300 text-[12px]"></i>
+            <i class="fa-solid fa-chevron-right text-slate-300 text-[12px]"></i>
           </div>
 
           <!-- Step 2: Processed -->
-          <div class="flex flex-col items-center space-y-2.5 flex-1">
-            <div id="s2" class="w-16 h-16 rounded-full flex items-center justify-center text-2xl transition-all duration-500 bg-slate-100 text-slate-300 border-2 border-slate-200">
+          <div class="flex flex-col items-center space-y-2 flex-1">
+            <div id="s2" class="w-11 h-11 rounded-full flex items-center justify-center text-base transition-all duration-500 bg-slate-100 text-slate-300 border-2 border-slate-200">
               <i class="fa-solid fa-gears"></i>
             </div>
-            <span id="s2t" class="text-[12px] font-bold text-slate-400 tracking-wide">Processed</span>
+            <span id="s2t" class="text-[11px] font-bold text-slate-400 tracking-wide">Processed</span>
           </div>
 
-          <!-- Arrow 2 — stretches between S2 and S3 -->
-          <div id="arr2" class="flex items-center justify-center space-x-[-3px] flex-1 mt-[22px]">
-            <i class="fa-solid fa-chevron-right text-slate-300 text-[14px]"></i>
-            <i class="fa-solid fa-chevron-right text-slate-300 text-[14px]"></i>
-            <i class="fa-solid fa-chevron-right text-slate-300 text-[14px]"></i>
-            <i class="fa-solid fa-chevron-right text-slate-300 text-[14px]"></i>
+          <!-- Arrow 2 -->
+          <div id="arr2" class="flex items-center justify-center space-x-[-3px] flex-1 mt-[14px]">
+            <i class="fa-solid fa-chevron-right text-slate-300 text-[12px]"></i>
+            <i class="fa-solid fa-chevron-right text-slate-300 text-[12px]"></i>
+            <i class="fa-solid fa-chevron-right text-slate-300 text-[12px]"></i>
+            <i class="fa-solid fa-chevron-right text-slate-300 text-[12px]"></i>
           </div>
 
           <!-- Step 3: Completed -->
-          <div class="flex flex-col items-center space-y-2.5 flex-1">
-            <div id="s3" class="w-16 h-16 rounded-full flex items-center justify-center text-2xl transition-all duration-500 bg-slate-100 text-slate-300 border-2 border-slate-200">
+          <div class="flex flex-col items-center space-y-2 flex-1">
+            <div id="s3" class="w-11 h-11 rounded-full flex items-center justify-center text-base transition-all duration-500 bg-slate-100 text-slate-300 border-2 border-slate-200">
               <i id="s3icon" class="fa-regular fa-clock"></i>
             </div>
-            <span id="s3t" class="text-[12px] font-bold text-slate-400 tracking-wide">Completed</span>
+            <span id="s3t" class="text-[11px] font-bold text-slate-400 tracking-wide">Completed</span>
           </div>
 
         </div>
@@ -572,14 +572,63 @@
   </div>
 </div>
 
-<!-- ═══════════════════════════ SCRIPT ═══════════════════════════ -->
+<!-- ═══════════════════════════ ADMIN PASSWORD MODAL ═══════════════════════════ -->
+<div id="adminModal" class="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-5 hidden">
+  <div class="modal-card bg-white rounded-2xl w-full max-w-[320px] shadow-2xl overflow-hidden border border-slate-100">
+    <div class="h-1.5 w-full bg-gradient-to-r from-navyDark to-navyPrimary"></div>
+    <div class="p-5 space-y-4">
+      <!-- Header -->
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-navyPrimary/10 flex items-center justify-center shrink-0">
+          <i class="fa-solid fa-shield-halved text-navyPrimary text-sm"></i>
+        </div>
+        <div>
+          <p class="font-extrabold text-xs text-navyPrimary uppercase tracking-widest">Admin Access</p>
+          <p class="text-[10px] text-slate-400 font-medium mt-0.5">Export is restricted to admins only</p>
+        </div>
+      </div>
+
+      <!-- Password field -->
+      <div>
+        <label class="text-[11px] text-slate-500 font-bold uppercase tracking-wider mb-1 block">Password</label>
+        <div class="relative">
+          <input type="password" id="adminPassInput" placeholder="Enter admin password"
+            class="w-full pl-9 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-800 focus:ring-2 focus:ring-navyPrimary transition-all"
+            oninput="document.getElementById('adminPassErr').classList.add('hidden')">
+          <i class="fa-solid fa-lock absolute left-3 top-3 text-slate-400 text-xs"></i>
+          <!-- Toggle visibility -->
+          <button type="button" onclick="toggleAdminPass()"
+            class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 transition-colors">
+            <i id="adminPassEye" class="fa-regular fa-eye text-xs"></i>
+          </button>
+        </div>
+        <!-- Inline error -->
+        <p id="adminPassErr" class="hidden text-[11px] text-red-500 font-semibold mt-1.5 flex items-center space-x-1">
+          <i class="fa-solid fa-circle-exclamation text-[10px]"></i>
+          <span>លេខសម្ងាត់មិនត្រឹមត្រូវ!</span>
+        </p>
+      </div>
+
+      <!-- Buttons -->
+      <div class="grid grid-cols-2 gap-2 pt-1">
+        <button type="button" onclick="closeAdminModal()"
+          class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 py-2.5 rounded-xl font-bold text-xs btn-press transition-all">
+          Cancel
+        </button>
+        <button type="button" onclick="submitAdminPass()"
+          class="btn-navy w-full text-white py-2.5 rounded-xl font-bold text-xs shadow-md flex items-center justify-center space-x-1.5">
+          <i class="fa-solid fa-unlock text-[10px]"></i><span>Unlock</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 <script>
 // ─── CONFIG ──────────────────────────────────────────────────
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzuWq_jBKkT9_pQ08tK0jDypKo-7bgXiIetX1Lx61r6inQM2b30b04i6n1V9jSwW3kYvw/exec";
 
 // [FIX P1] Export password hashed — NOT plaintext in source
-// SHA-256 of "admin@230230"
-const ADMIN_HASH = "e4af8e09e5e7e3f3c3a5b2d1e6f9a8c7b4d2e5f8a1c3b6d9e2f5a8b1c4d7e0f3"; // replace with real hash below
+// SHA-256 compared at runtime via getAdminHash()
 
 // Generate correct hash on load (runs once, used for comparison)
 let _adminHash = null;
@@ -922,26 +971,67 @@ function renderHistory() {
 }
 
 // ─── EXPORT (Admin Only) ─────────────────────────────────────
-// [FIX P1] Compare against SHA-256 hash — not plaintext
-async function openExport(e) {
+// [FIX P1] Custom modal — no browser prompt(), SHA-256 hash compare
+function openExport(e) {
     if(e) e.stopPropagation();
-    const pass = prompt('Admin Password:','');
-    if(!pass) return;
-    const buf  = await crypto.subtle.digest('SHA-256',new TextEncoder().encode(pass));
-    const hash = Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
-    const correct = await getAdminHash();
-    if(hash !== correct){
-        showAlert('លេខសម្ងាត់មិនត្រឹមត្រូវ! Admin only.','Access Denied','error');
+    // Reset modal state
+    const inp = document.getElementById('adminPassInput');
+    inp.value = '';
+    inp.type  = 'password';
+    document.getElementById('adminPassEye').className = 'fa-regular fa-eye text-xs';
+    document.getElementById('adminPassErr').classList.add('hidden');
+    document.getElementById('adminModal').classList.remove('hidden');
+    setTimeout(() => inp.focus(), 100);
+}
+
+function closeAdminModal() {
+    document.getElementById('adminModal').classList.add('hidden');
+}
+
+function toggleAdminPass() {
+    const inp = document.getElementById('adminPassInput');
+    const eye = document.getElementById('adminPassEye');
+    if (inp.type === 'password') {
+        inp.type = 'text';
+        eye.className = 'fa-regular fa-eye-slash text-xs';
+    } else {
+        inp.type = 'password';
+        eye.className = 'fa-regular fa-eye text-xs';
+    }
+}
+
+async function submitAdminPass() {
+    const pass = document.getElementById('adminPassInput').value;
+    if (!pass) {
+        document.getElementById('adminPassErr').classList.remove('hidden');
         return;
     }
-    const now=new Date();
-    const f=new Date(now.getFullYear(),now.getMonth(),1);
-    const l=new Date(now.getFullYear(),now.getMonth()+1,0);
-    document.getElementById('expStart').value=f.toISOString().split('T')[0];
-    document.getElementById('expEnd').value  =l.toISOString().split('T')[0];
+    const buf     = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pass));
+    const hash    = Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+    const correct = await getAdminHash();
+    if (hash !== correct) {
+        document.getElementById('adminPassErr').classList.remove('hidden');
+        document.getElementById('adminPassInput').value = '';
+        document.getElementById('adminPassInput').focus();
+        return;
+    }
+    // ✅ Correct — open export modal
+    closeAdminModal();
+    const now = new Date();
+    const f   = new Date(now.getFullYear(), now.getMonth(), 1);
+    const l   = new Date(now.getFullYear(), now.getMonth()+1, 0);
+    document.getElementById('expStart').value = f.toISOString().split('T')[0];
+    document.getElementById('expEnd').value   = l.toISOString().split('T')[0];
     document.getElementById('errExportDate').classList.remove('show');
     document.getElementById('exportModal').classList.remove('hidden');
 }
+
+// Allow Enter key inside password field
+document.addEventListener('DOMContentLoaded', () => {
+    const inp = document.getElementById('adminPassInput');
+    if (inp) inp.addEventListener('keydown', e => { if (e.key === 'Enter') submitAdminPass(); });
+});
+
 function closeExport(){ document.getElementById('exportModal').classList.add('hidden'); }
 
 // [FIX P2] Validate date range inline
@@ -1086,7 +1176,7 @@ function stopSlide(){
 // ─── ORDER SUBMISSION ────────────────────────────────────────
 // n=0 reset | n=1 Sent active | n=2 Processed active | n=3 all done
 function setStep(n) {
-    const BASE    = 'w-16 h-16 rounded-full flex items-center justify-center text-2xl transition-all duration-500 border-2';
+    const BASE    = 'w-11 h-11 rounded-full flex items-center justify-center text-base transition-all duration-500 border-2';
     const PENDING = `${BASE} bg-slate-100 text-slate-300 border-slate-200`;
     const DONE    = `${BASE} bg-emerald-500 text-white border-emerald-400 shadow-md`;
     const ACTIVE  = `${BASE} bg-navyPrimary text-white border-sky-400 s-glow`;
@@ -1101,7 +1191,6 @@ function setStep(n) {
     const s3icon = document.getElementById('s3icon');
 
     // ── Step icons ──────────────────────────────────────────
-    const states = ['sent','processed','completed'];
     for (let i = 0; i < 3; i++) {
         const si = s[i].querySelector('i');
         if (i < n) {
