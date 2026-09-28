@@ -1064,7 +1064,7 @@ function doExport(type) {
         }));
         const ws=XLSX.utils.json_to_sheet(rows);
         const wb=XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb,ws,'Bakery Report');
+        XLSX.utils.book_append_sheet(wb,ws,'F&B Report');
         XLSX.writeFile(wb,`Bakery_${branch}_${start}_${end}.xlsx`);
         closeExport();
         showAlert('ទាញយក Excel បានជោគជ័យ!','Export Success','success');
@@ -1080,7 +1080,7 @@ function doExport(type) {
                    <td>${r.item4||0}</td><td>${r.item5||0}</td><td>${r.item6||0}</td>
                    <td>${r.item7||0}</td><td><b>${r.totalQty||0}</b></td></tr>`;
         });
-        pw.document.write(`<html><head><title>Bakery Report</title>
+        pw.document.write(`<html><head><title>Food & Beverage Department</title>
           <style>@page{size:landscape;margin:15mm}body{font-family:Arial,sans-serif;padding:20px;color:#1e293b}
           .hdr{text-align:center;border-bottom:3px solid #1B365D;padding-bottom:12px;margin-bottom:20px}
           h2{color:#1B365D;font-size:20px;font-weight:800;text-transform:uppercase;margin:0 0 6px}
@@ -1090,7 +1090,7 @@ function doExport(type) {
           tr:nth-child(even){background:#f8fafc!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
           .ft{display:flex;justify-content:space-between;margin-top:24px;font-size:12px;font-weight:700;border-top:2px solid #e2e8f0;padding-top:12px}
           </style></head><body>
-          <div class="hdr"><h2>INDEPENDENCE HOTEL BY DARA — BAKERY REPORT</h2>
+          <div class="hdr"><h2>INDEPENDENCE HOTEL BY DARA — F&B REPORT</h2>
           <p style="font-size:12px;color:#475569;font-weight:600;margin:0">Branch: ${branch} | ${start} to ${end}</p></div>
           <table><thead><tr>
             <th>DO No</th><th>Branch</th><th>Date</th><th>Time</th><th>Ordered By</th>
