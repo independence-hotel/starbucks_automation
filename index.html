@@ -815,7 +815,7 @@ bakeryItems.forEach((item,idx) => {
         <input type="number" id="qty-${item.id}" value="0" min="0" max="${MAX_QTY_PER}"
           class="font-black text-navyDark w-10 text-center text-base bg-transparent focus:outline-none"
           oninput="manualQty('${item.id}',this.value)">
-        <button type="button" class="qty-btn px-2.5 h-7 flex items-center justify-center text-slate-500 bg-white rounded-md shadow-sm border border-slate-200 btn-press font-bold text-xs" onclick="updateQty('${item.id}',10)">+10</button>
+        <button type="button" class="qty-btn px-2.5 h-7 flex items-center justify-center text-slate-500 bg-white rounded-md shadow-sm border border-slate-200 btn-press font-bold text-xs" onclick="updateQty('${item.id}',20)">+20</button>
       </div>`;
     menuContainer.appendChild(card);
 });
